@@ -1,435 +1,342 @@
-<ul class="menu-inner py-1">
-            <!-- Dashboards -->
-            <li class="menu-item active open">
-              <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
-              </a>
-            </li>
+<ul class="menu">
+                        <li class="sidebar-title">Menu</li>
 
-            <!-- Layouts -->
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-layout"></i>
-                <div class="text-truncate" data-i18n="Layouts">Layouts</div>
-              </a>
+                        <li class="sidebar-item active ">
+                            <a href="index.html" class='sidebar-link'>
+                                <i class="bi bi-grid-fill"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
 
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="layouts-without-menu.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Without menu">Without menu</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-without-navbar.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Without navbar">Without navbar</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-fluid.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Fluid">Fluid</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-container.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Container">Container</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-blank.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Blank">Blank</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-stack"></i>
+                                <span>Components</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="component-alert.html">Alert</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-badge.html">Badge</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-breadcrumb.html">Breadcrumb</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-button.html">Button</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-card.html">Card</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-carousel.html">Carousel</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-dropdown.html">Dropdown</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-list-group.html">List Group</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-modal.html">Modal</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-navs.html">Navs</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-pagination.html">Pagination</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-progress.html">Progress</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-spinner.html">Spinner</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-tooltip.html">Tooltip</a>
+                                </li>
+                            </ul>
+                        </li>
 
-            <!-- Front Pages -->
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-store"></i>
-                <div class="text-truncate" data-i18n="Front Pages">Front Pages</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a
-                    href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/landing-page.html"
-                    class="menu-link"
-                    target="_blank">
-                    <div class="text-truncate" data-i18n="Landing">Landing</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a
-                    href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/pricing-page.html"
-                    class="menu-link"
-                    target="_blank">
-                    <div class="text-truncate" data-i18n="Pricing">Pricing</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a
-                    href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/payment-page.html"
-                    class="menu-link"
-                    target="_blank">
-                    <div class="text-truncate" data-i18n="Payment">Payment</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a
-                    href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/checkout-page.html"
-                    class="menu-link"
-                    target="_blank">
-                    <div class="text-truncate" data-i18n="Checkout">Checkout</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a
-                    href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/help-center-landing.html"
-                    class="menu-link"
-                    target="_blank">
-                    <div class="text-truncate" data-i18n="Help Center">Help Center</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-collection-fill"></i>
+                                <span>Extra Components</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="extra-component-avatar.html">Avatar</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-sweetalert.html">Sweet Alert</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-toastify.html">Toastify</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-rating.html">Rating</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-divider.html">Divider</a>
+                                </li>
+                            </ul>
+                        </li>
 
-            <!-- Apps & Pages -->
-            <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Apps &amp; Pages</span>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-email.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
-                <div class="text-truncate" data-i18n="Email">Email</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-chat.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-chat"></i>
-                <div class="text-truncate" data-i18n="Chat">Chat</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-calendar.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-calendar"></i>
-                <div class="text-truncate" data-i18n="Calendar">Calendar</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-kanban.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-grid"></i>
-                <div class="text-truncate" data-i18n="Kanban">Kanban</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <!-- Pages -->
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-dock-top"></i>
-                <div class="text-truncate" data-i18n="Account Settings">Account Settings</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="pages-account-settings-account.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Account">Account</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="pages-account-settings-notifications.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Notifications">Notifications</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="pages-account-settings-connections.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Connections">Connections</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-                <div class="text-truncate" data-i18n="Authentications">Authentications</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="auth-login-basic.html" class="menu-link" target="_blank">
-                    <div class="text-truncate" data-i18n="Basic">Login</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="auth-register-basic.html" class="menu-link" target="_blank">
-                    <div class="text-truncate" data-i18n="Basic">Register</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
-                    <div class="text-truncate" data-i18n="Basic">Forgot Password</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-cube-alt"></i>
-                <div class="text-truncate" data-i18n="Misc">Misc</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="pages-misc-error.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Error">Error</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="pages-misc-under-maintenance.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Under Maintenance">Under Maintenance</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <!-- Components -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
-            <!-- Cards -->
-            <li class="menu-item">
-              <a href="cards-basic.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div class="text-truncate" data-i18n="Basic">Cards</div>
-              </a>
-            </li>
-            <!-- User interface -->
-            <li class="menu-item">
-              <a href="javascript:void(0)" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-box"></i>
-                <div class="text-truncate" data-i18n="User interface">User interface</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="ui-accordion.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Accordion">Accordion</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-alerts.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Alerts">Alerts</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-badges.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Badges">Badges</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-buttons.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Buttons">Buttons</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-carousel.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Carousel">Carousel</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-collapse.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Collapse">Collapse</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-dropdowns.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Dropdowns">Dropdowns</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-footer.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Footer">Footer</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-list-groups.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="List Groups">List groups</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-modals.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Modals">Modals</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-navbar.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Navbar">Navbar</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-offcanvas.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Offcanvas">Offcanvas</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-pagination-breadcrumbs.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Pagination & Breadcrumbs">Pagination &amp; Breadcrumbs</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-progress.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Progress">Progress</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-spinners.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Spinners">Spinners</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-tabs-pills.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Tabs & Pills">Tabs &amp; Pills</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-toasts.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Toasts">Toasts</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-tooltips-popovers.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Tooltips & Popovers">Tooltips &amp; Popovers</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="ui-typography.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Typography">Typography</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-grid-1x2-fill"></i>
+                                <span>Layouts</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="layout-default.html">Default Layout</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-vertical-1-column.html">1 Column</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-vertical-navbar.html">Vertical with Navbar</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-horizontal.html">Horizontal Menu</a>
+                                </li>
+                            </ul>
+                        </li>
 
-            <!-- Extended components -->
-            <li class="menu-item">
-              <a href="javascript:void(0)" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-copy"></i>
-                <div class="text-truncate" data-i18n="Extended UI">Extended UI</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="extended-ui-perfect-scrollbar.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Perfect Scrollbar">Perfect Scrollbar</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="extended-ui-text-divider.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Text Divider">Text Divider</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
+                        <li class="sidebar-title">Forms &amp; Tables</li>
 
-            <li class="menu-item">
-              <a href="icons-boxicons.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-crown"></i>
-                <div class="text-truncate" data-i18n="Boxicons">Boxicons</div>
-              </a>
-            </li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-hexagon-fill"></i>
+                                <span>Form Elements</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="form-element-input.html">Input</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-input-group.html">Input Group</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-select.html">Select</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-radio.html">Radio</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-checkbox.html">Checkbox</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-textarea.html">Textarea</a>
+                                </li>
+                            </ul>
+                        </li>
 
-            <!-- Forms & Tables -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Forms &amp; Tables</span></li>
-            <!-- Forms -->
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-detail"></i>
-                <div class="text-truncate" data-i18n="Form Elements">Form Elements</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="forms-basic-inputs.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Basic Inputs">Basic Inputs</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="forms-input-groups.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Input groups">Input groups</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-detail"></i>
-                <div class="text-truncate" data-i18n="Form Layouts">Form Layouts</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="form-layouts-vertical.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Vertical Form">Vertical Form</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="form-layouts-horizontal.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Horizontal Form">Horizontal Form</div>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <!-- Form Validation -->
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/form-validation.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-list-check"></i>
-                <div class="text-truncate" data-i18n="Form Validation">Form Validation</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <!-- Tables -->
-            <li class="menu-item">
-              <a href="tables-basic.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-table"></i>
-                <div class="text-truncate" data-i18n="Tables">Tables</div>
-              </a>
-            </li>
-            <!-- Data Tables -->
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/tables-datatables-basic.html"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-grid"></i>
-                <div class="text-truncate" data-i18n="Datatables">Datatables</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
-              </a>
-            </li>
-            <!-- Misc -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Misc</span></li>
-            <li class="menu-item">
-              <a
-                href="https://github.com/themeselection/sneat-bootstrap-html-admin-template-free/issues"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-support"></i>
-                <div class="text-truncate" data-i18n="Support">Support</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/"
-                target="_blank"
-                class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div class="text-truncate" data-i18n="Documentation">Documentation</div>
-              </a>
-            </li>
-          </ul>
+                        <li class="sidebar-item  ">
+                            <a href="form-layout.html" class='sidebar-link'>
+                                <i class="bi bi-file-earmark-medical-fill"></i>
+                                <span>Form Layout</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-pen-fill"></i>
+                                <span>Form Editor</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="form-editor-quill.html">Quill</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-ckeditor.html">CKEditor</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-summernote.html">Summernote</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-tinymce.html">TinyMCE</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="table.html" class='sidebar-link'>
+                                <i class="bi bi-grid-1x2-fill"></i>
+                                <span>Table</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="table-datatable.html" class='sidebar-link'>
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                                <span>Datatable</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-title">Extra UI</li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-pentagon-fill"></i>
+                                <span>Widgets</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-chatbox.html">Chatbox</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-pricing.html">Pricing</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-todolist.html">To-do List</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-egg-fill"></i>
+                                <span>Icons</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-bootstrap-icons.html">Bootstrap Icons </a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-fontawesome.html">Fontawesome</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-dripicons.html">Dripicons</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>Charts</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-chart-chartjs.html">ChartJS</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-chart-apexcharts.html">Apexcharts</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="ui-file-uploader.html" class='sidebar-link'>
+                                <i class="bi bi-cloud-arrow-up-fill"></i>
+                                <span>File Uploader</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-map-fill"></i>
+                                <span>Maps</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-map-google-map.html">Google Map</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-map-jsvectormap.html">JS Vector Map</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-title">Pages</li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-email.html" class='sidebar-link'>
+                                <i class="bi bi-envelope-fill"></i>
+                                <span>Email Application</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-chat.html" class='sidebar-link'>
+                                <i class="bi bi-chat-dots-fill"></i>
+                                <span>Chat Application</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-gallery.html" class='sidebar-link'>
+                                <i class="bi bi-image-fill"></i>
+                                <span>Photo Gallery</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-checkout.html" class='sidebar-link'>
+                                <i class="bi bi-basket-fill"></i>
+                                <span>Checkout Page</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-person-badge-fill"></i>
+                                <span>Authentication</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="auth-login.html">Login</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="auth-register.html">Register</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="auth-forgot-password.html">Forgot Password</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-x-octagon-fill"></i>
+                                <span>Errors</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="error-403.html">403</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="error-404.html">404</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="error-500.html">500</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-title">Raise Support</li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://zuramai.github.io/mazer/docs" class='sidebar-link'>
+                                <i class="bi bi-life-preserver"></i>
+                                <span>Documentation</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://github.com/zuramai/mazer/blob/main/CONTRIBUTING.md" class='sidebar-link'>
+                                <i class="bi bi-puzzle"></i>
+                                <span>Contribute</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://github.com/zuramai/mazer#donate" class='sidebar-link'>
+                                <i class="bi bi-cash"></i>
+                                <span>Donate</span>
+                            </a>
+                        </li>
+
+                    </ul>
