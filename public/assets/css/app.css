@@ -172,7 +172,9 @@
 .avatar.avatar-md img {
     width: 32px;
     height: 32px;
+    border-radius: 10px;
     font-size: .8rem
+    
 }
 
 .avatar.avatar-lg .avatar-content,
@@ -187,6 +189,12 @@
     width: 60px;
     height: 60px;
     font-size: 1.4rem
+}
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .btn .badge {
@@ -315,7 +323,9 @@
 
 .card {
     margin-bottom: 2.2rem;
-    border: none
+    border-radius: var(--border-radius);
+    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
 }
 
 .card.card-statistic {
@@ -919,6 +929,11 @@
     left: -300px
 }
 
+#main {
+    background-color: #f2f7ff !important; /* Warna biru pucat yang sangat lembut */
+    min-height: 100vh;
+}
+
 #sidebar:not(.active)~#main {
     margin-left: 0
 }
@@ -930,7 +945,8 @@
     z-index: 10;
     overflow-y: auto;
     background-color: #fff;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    border-right: 1px solid #e3e9ef;
+    box-shadow: none !important;
     bottom: 0;
     transition: left .5s ease-out
 }
@@ -969,12 +985,14 @@
 
 .sidebar-wrapper .menu .sidebar-link {
     display: block;
-    padding: .5rem 1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    padding: 0.7rem 1rem;
     font-size: 1rem;
     display: flex;
     align-items: center;
     border-radius: .5rem;
-    transition: all .5s;
+    transition: all 0.2s ease;
     text-decoration: none;
     color: #69779d
 }
@@ -1008,7 +1026,8 @@
 }
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link {
-    background-color: #435ebe
+    background-color: #f0f3ff !important;
+    color: var(--primary-color) !important;
 }
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link span {
@@ -1017,8 +1036,8 @@
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link i,
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link svg {
-    fill: #fff;
-    color: #fff
+    color: var(--primary-color) !important;
+    fill: none !important; /* Menghilangkan fill agar lebih clean */
 }
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link.has-sub:after {
@@ -1233,6 +1252,7 @@
 .dataTable-table thead th,
 .table td,
 .table thead th {
+    
     vertical-align: middle
 }
 
@@ -1574,7 +1594,7 @@ a {
 }
 
 .text-gray-600 {
-    color: #6c757d !important
+    color: #6b7280 !important;
 }
 
 .btn-xl {
@@ -1583,4 +1603,24 @@ a {
 
 .icon-mid:before {
     vertical-align: middle
+}
+/* Custom Modern Minimalist */
+:root {
+    --primary-color: #4361ee;
+    --bg-light: #f8f9fa;
+    --border-radius: 12px;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: #4b5563;
+}
+
+/* Navbar Minimalist */
+header.navbar-fixed, 
+header.mb-3 {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(10px); /* Efek kaca modern */
+    border-bottom: 1px solid #edf2f7;
+    box-shadow: none !important;
 }

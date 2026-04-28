@@ -20,4 +20,8 @@ class soal extends Model
     {
         return $this->hasMany(Jawaban::class);
     }
+    public function surveys() 
+    {
+        return $this->belongsToMany(Survey::class, 'survey_soal', 'soal_id', 'survey_id');
+    }
 }

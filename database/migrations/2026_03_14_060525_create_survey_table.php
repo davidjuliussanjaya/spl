@@ -13,21 +13,18 @@ return new class extends Migration
     {
         Schema::create('survey', function (Blueprint $table) {
             $table->id();
+    
+            // Kode unik untuk login perusahaan
+            $table->string('access_code', 10)->unique();
+            
+            // Siapa yang disurvei (Lulusan) & Siapa yang mengisi (Perusahaan)
+            $table->foreignId('lulusan_id')->constrained('lulusan')->cascadeOnDelete();
+            $table->foreignId('pengguna_lulusan_id')->constrained('pengguna_lulusan')->cascadeOnDelete();
 
-            $table->foreignId('lulusan_id')
-                ->constrained('lulusan')
-                ->cascadeOnDelete();
-
-            $table->foreignId('pengguna_lulusan_id')
-                ->constrained('pengguna_lulusan')
-                ->cascadeOnDelete();
-
-            $table->foreignId('jawaban_id')
-                ->constrained('jawaban')
-                ->cascadeOnDelete();
-
-            $table->string('judul');
+            // Informasi Sesi
+            $table->string('judul'); 
             $table->text('deskripsi')->nullable();
+            $table->boolean('is_completed')->default(false); 
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();

@@ -45,4 +45,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')
+                    ->withPivot('is_active')
+                    ->wherePivot('is_active', true);
+    }
+
+    /**
+     * Method bantuan untuk mengecek apakah user memiliki role tertentu
+     */
+    public function hasRole($roleCode)
+    {
+        return $this->roles()->where('code', $roleCode)->exists();
+    }
 }

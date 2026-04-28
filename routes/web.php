@@ -9,31 +9,51 @@ use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('admin.dashboard.index');
+    return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/survey', [SurveyController::class, 'index'])->name('survey');
-Route::get('/addsurvey', [SurveyController::class, 'add'])->name('addsurvey');
-Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
-Route::get('/lulusan', [LulusanController::class, 'index'])->name('lulusan');
-Route::get('/addgrad', [LulusanController::class, 'add'])->name('addgrad');
-Route::get('/penggunalulusan', [PenggunaLulusanController::class, 'index'])->name('penggunalulusan');
-Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
-Route::get('/addquestion', [PertanyaanController::class, 'add'])->name('addquestion');
-Route::get('/pertanyaan/{id}/edit', [PertanyaanController::class, 'edit'])->name('pertanyaan.edit');
-Route::get('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
-Route::put('/pertanyaan/{id}', [PertanyaanController::class, 'update'])->name('pertanyaan.update');
-Route::post('/savequestion', [PertanyaanController::class, 'store'])->name('savequestion');
+Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('survey.access');
+Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('survey.fill');
+Route::post('/submit-survey/{code}', [SurveyController::class, 'submitJawaban'])->name('survey.submit');
 
 Route::middleware('auth')->group(function () {
+    
+    // --- AKSES SEMUA ROLE (Admin & User Reguler) ---
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // --- KHUSUS ROLE ADMIN ---
+    // Ganti 'admin' sesuai dengan 'code' yang ada di tabel roles Anda
+    Route::middleware(['role:admin'])->group(function () {
+        
+        // Survey
+        Route::get('/survey', [SurveyController::class, 'index'])->name('survey');
+        Route::get('/addsurvey', [SurveyController::class, 'add'])->name('addsurvey');
+        Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
+        Route::get('/get-perusahaan/{id}', [SurveyController::class, 'getPerusahaanData']);
+
+        // Lulusan
+        Route::get('/lulusan', [LulusanController::class, 'index'])->name('lulusan');
+        Route::get('/addgrad', [LulusanController::class, 'add'])->name('addgrad');
+        Route::post('/lulusan.store', [LulusanController::class, 'store'])->name('lulusan.store');
+
+        // Pengguna Lulusan
+        Route::get('/penggunalulusan', [PenggunaLulusanController::class, 'index'])->name('penggunalulusan');
+        Route::get('/create', [PenggunaLulusanController::class, 'create'])->name('create');
+        Route::post('/pengguna.store', [PenggunaLulusanController::class, 'store'])->name('pengguna.store');
+
+        // Pertanyaan
+        Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
+        Route::get('/addquestion', [PertanyaanController::class, 'add'])->name('addquestion');
+        Route::get('/pertanyaan/{id}/edit', [PertanyaanController::class, 'edit'])->name('pertanyaan.edit');
+        Route::get('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
+        Route::put('/pertanyaan/{id}', [PertanyaanController::class, 'update'])->name('pertanyaan.update');
+        Route::post('/savequestion', [PertanyaanController::class, 'store'])->name('savequestion');
+        
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -1,3 +1,5 @@
+{{-- Tampilkan Sidebar HANYA jika user sudah login --}}
+@auth
 <div id="sidebar" class="active">
     <div class="sidebar-wrapper active">
         <div class="sidebar-header">
@@ -20,37 +22,40 @@
                     </a>
                 </li>
 
+                @if(auth()->user()->hasRole('admin'))
+                    <li class="sidebar-item {{ request()->routeIs('survey') ? 'active' : '' }}">
+                        <a href="{{ route('survey') }}" class='sidebar-link'>
+                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            <span>Survey</span>
+                        </a>
+                    </li>
 
-                <li class="sidebar-item {{ request()->routeIs('survey') ? 'active' : '' }}">
-                    <a href="{{ route('survey') }}" class='sidebar-link'>
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>Survey</span>
-                    </a>
-                </li>
+                    <li class="sidebar-item {{ request()->routeIs('lulusan') ? 'active' : '' }}">
+                        <a href="{{ route('lulusan') }}" class='sidebar-link'>
+                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            <span>Lulusan</span>
+                        </a>
+                    </li>
 
-                <li class="sidebar-item {{ request()->routeIs('lulusan') ? 'active' : '' }}">
-                    <a href="{{ route('lulusan') }}" class='sidebar-link'>
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>Lulusan</span>
-                    </a>
-                </li>
+                    <li class="sidebar-item {{ request()->routeIs('penggunalulusan') ? 'active' : '' }}">
+                        <a href="{{ route('penggunalulusan') }}" class='sidebar-link'>
+                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            <span>Pengguna Lulusan</span>
+                        </a>
+                    </li>
 
-                <li class="sidebar-item {{ request()->routeIs('penggunalulusan') ? 'active' : '' }}">
-                    <a href="{{ route('penggunalulusan') }}" class='sidebar-link'>
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>Pengguna Lulusan</span>
-                    </a>
-                </li>
-                
-                <li class="sidebar-item {{ request()->routeIs('pertanyaan') ? 'active' : '' }}">
-                    <a href="{{ route('pertanyaan') }}" class='sidebar-link'>
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>Pertanyaan</span>
-                    </a>
-                </li>
-
+                    <li class="sidebar-item {{ request()->routeIs('pertanyaan') ? 'active' : '' }}">
+                        <a href="{{ route('pertanyaan') }}" class='sidebar-link'>
+                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            <span>Pertanyaan</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
     </div>
 </div>
+
+
+@endauth

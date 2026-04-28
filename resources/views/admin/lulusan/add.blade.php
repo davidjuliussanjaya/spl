@@ -12,7 +12,7 @@
     </div>
 
     <section class="section">
-        <form action="{{ route('savequestion') }}" method="POST">
+        <form action="{{ route('lulusan.store') }}" method="POST">
             @csrf
             
             <div class="row">
@@ -65,9 +65,17 @@
                             <h6 class="fw-bold mb-4 text-uppercase small text-muted tracking-wider">Pengaturan Data</h6>
                             
                             <div class="mb-4">
-                                <label class="form-label small fw-bold">ID Pengguna Lulusan</label>
-                                <input type="number" name="pengguna_lulusan_id" class="form-control modern-input" placeholder="Masukkan ID" required>
-                                <small class="text-muted" style="font-size: 0.7rem;">ID Perusahaan/Atasan yang menilai</small>
+                                <label class="form-label small fw-bold">Perusahaan / Pengguna Lulusan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-building text-muted"></i></span>
+                                    <select name="pengguna_lulusan_id" class="form-select modern-input" required>
+                                        <option value="" selected disabled>Pilih Perusahaan</option>
+                                        @foreach($perusahaan as $item)
+                                            <option value="{{ $item->id }}">{{ $item->nama_perusahaan }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.7rem;">Pilih instansi yang menilai lulusan ini</small>
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">

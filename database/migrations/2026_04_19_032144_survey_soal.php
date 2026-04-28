@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('respon_jawaban', function (Blueprint $table) {
+        Schema::create('survey_soal', function (Blueprint $table) {
             $table->id();
-            // Menghubungkan ke sesi survey yang sedang diisi
             $table->foreignId('survey_id')->constrained('survey')->cascadeOnDelete();
-            
             $table->foreignId('soal_id')->constrained('soal')->cascadeOnDelete();
-            $table->foreignId('jawaban_id')->nullable()->constrained('jawaban')->cascadeOnDelete();
-            $table->text('jawaban_text')->nullable();
-            $table->string('responden')->nullable(); 
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_jawaban');
+        Schema::dropIfExists('survey_soal');
     }
 };
