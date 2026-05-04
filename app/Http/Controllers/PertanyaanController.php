@@ -27,17 +27,19 @@ class PertanyaanController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'question' => 'required',
-            'type' => 'required',
-            'jawaban.*' => 'required_if:type,radio'
-        ]);
+{
+    $request->validate([
+        'question'  => 'required|string',
+        'kategori'  => 'required|string', // Tambahan validasi kategori
+        'type'      => 'required',
+        'kode'      => 'nullable|string',
+        'jawaban.*' => 'required_if:type,radio'
+    ]);
 
-        $this->pertanyaanService->storePertanyaan($request->all());
+    $this->pertanyaanService->storePertanyaan($request->all());
 
-        return redirect()->route('pertanyaan')->with('success', 'Soal berhasil disimpan!');
-    }
+    return redirect()->route('pertanyaan')->with('success', 'Soal berhasil disimpan!');
+}
 
     public function edit($id)
     {

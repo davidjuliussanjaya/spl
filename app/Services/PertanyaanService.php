@@ -9,28 +9,29 @@ use Illuminate\Support\Facades\DB;
 class PertanyaanService
 {
     public function storePertanyaan(array $data)
-    {
-        return DB::transaction(function () use ($data) {
-            // 1. Konversi Jenis Soal
-            $jenis = $this->mapJenisSoal($data['type']);
+{
+    return DB::transaction(function () use ($data) {
+        // 1. Konversi Jenis Soal (Sesuai logic Anda sebelumnya)
+        $jenis = $this->mapJenisSoal($data['type']);
 
-            // 2. Simpan Soal
-            $soal = Soal::create([
-                'soal'        => $data['question'],
-                'kode'        => $data['kode'],
-                'jenis_soal'  => $jenis,
-                'is_required' => isset($data['required']),
-                'is_active'   => true
-            ]);
+        // 2. Simpan Soal
+        $soal = Soal::create([
+            'soal'        => $data['question'],
+            'kategori'    => $data['kategori'], // Simpan data kategori ke database
+            'kode'        => $data['kode'] ?? null,
+            'jenis_soal'  => $jenis,
+            'is_required' => isset($data['required']),
+            'is_active'   => true
+        ]);
 
-            // 3. Simpan Jawaban jika Multiple Choice
-            if ($jenis === 'multiple_choice' && isset($data['jawaban'])) {
-                $this->saveJawaban($soal->id, $data['jawaban'], $data['nilai'] ?? []);
-            }
+        // 3. Simpan Jawaban jika Multiple Choice / Radio
+        if ($jenis === 'multiple_choice' && isset($data['jawaban'])) {
+            $this->saveJawaban($soal->id, $data['jawaban'], $data['nilai'] ?? []);
+        }
 
-            return $soal;
-        });
-    }
+        return $soal;
+    });
+}
 
     /**
      * Memperbarui Soal dan Jawaban

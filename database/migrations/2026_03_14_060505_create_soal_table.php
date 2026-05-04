@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('soal'); // isi pertanyaan
             $table->string('kode')->unique(); // kode seperti f101
+            $table->string('kategori'); 
             $table->enum('jenis_soal', ['multiple_choice','essay','rating']);
             $table->boolean('is_required')->default(false);
             $table->boolean('is_active')->default(true);

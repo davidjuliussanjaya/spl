@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/addsurvey', [SurveyController::class, 'add'])->name('addsurvey');
         Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
         Route::get('/get-perusahaan/{id}', [SurveyController::class, 'getPerusahaanData']);
+        Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey.edit');
+        Route::put('/survey/{id}', [SurveyController::class, 'update'])->name('survey.update');
 
         // Lulusan
         Route::get('/lulusan', [LulusanController::class, 'index'])->name('lulusan');

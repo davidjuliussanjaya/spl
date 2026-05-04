@@ -12,6 +12,7 @@ class soal extends Model
         'soal',
         'kode',
         'jenis_soal',
+        'kategori',
         'is_required',
         'is_active'
     ];

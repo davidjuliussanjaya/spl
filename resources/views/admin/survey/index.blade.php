@@ -80,7 +80,7 @@
                                     <td class="fw-bold">{{ $survey->judul }}</td>
                                     
                                     {{-- Mengambil relasi perusahaan --}}
-                                    <td>{{ $survey->pengguna_lulusan->nama_perusahaan ?? '-' }}</td>
+                                    <td>{{ $survey->penggunalulusan->nama_perusahaan ?? '-' }}</td>
                                     
                                     {{-- Mengambil relasi lulusan --}}
                                     <td>{{ $survey->lulusan->nama ?? '-' }}</td>
@@ -102,9 +102,9 @@
                                     <td class="text-center">
                                         {{-- Tombol Detail / Aksi --}}
                                         <div class="d-flex justify-content-center gap-1">
-                                            <a href="#" class="btn btn-sm btn-info text-white" title="Lihat Detail">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                            <a href="{{ route('survey.edit', $survey->id) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail">
+    <i class="bi bi-eye"></i>
+</a>
                                             <a href="#" class="btn btn-sm btn-danger" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </a>
