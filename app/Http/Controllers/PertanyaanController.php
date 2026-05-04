@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PertanyaanStoreRequest;
 use App\Models\soal;
 use App\Services\PertanyaanService;
 use Illuminate\Http\Request;
@@ -26,20 +27,12 @@ class PertanyaanController extends Controller
         return view('admin.pertanyaan.add');
     }
 
-    public function store(Request $request)
-{
-    $request->validate([
-        'question'  => 'required|string',
-        'kategori'  => 'required|string', // Tambahan validasi kategori
-        'type'      => 'required',
-        'kode'      => 'nullable|string',
-        'jawaban.*' => 'required_if:type,radio'
-    ]);
+    public function store(PertanyaanStoreRequest $request)
+    {
+        $this->pertanyaanService->storePertanyaan($request->all());
 
-    $this->pertanyaanService->storePertanyaan($request->all());
-
-    return redirect()->route('pertanyaan')->with('success', 'Soal berhasil disimpan!');
-}
+        return redirect()->route('pertanyaan')->with('success', 'Soal berhasil disimpan!');
+    }
 
     public function edit($id)
     {

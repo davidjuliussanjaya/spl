@@ -22,7 +22,7 @@
     <div id="app">
         @include('layouts.partials.sidebar')
         <div id="main" class='layout-navbar'>
-        @include('layouts.partials.navbar')    
+            @include('layouts.partials.navbar')
             <div id="main-content">
 
                 @yield('content')

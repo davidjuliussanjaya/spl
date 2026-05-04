@@ -17,6 +17,7 @@ class lulusan extends Model
         'nama',
         'nim',
         'program_studi',
+        'fakultas',
         'tahun_lulus',
         'status',
     ];

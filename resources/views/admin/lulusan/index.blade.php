@@ -37,14 +37,24 @@
             
             <div class="card-body">
                 <form action="{{ url()->current() }}" method="GET" class="row mb-4">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-2 mb-3">
                         <label class="form-label small fw-bold">Nama Lulusan</label>
                         <input type="text" name="nama" class="form-control" value="{{ request('nama') }}" placeholder="Cari nama...">
                     </div>
 
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-2 mb-3">
                         <label class="form-label small fw-bold">NIM Lulusan</label>
                         <input type="text" name="nim" class="form-control" value="{{ request('nim') }}" placeholder="Cari NIM...">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label small fw-bold">Fakultas</label>
+                        <select name="fakultas" class="form-select">
+                            <option value="Select">Semua</option>
+                            <option value="Fakultas Teknologi dan Informatika" {{ request('fakultas') == 'Fakultas Teknologi dan Informatika' ? 'selected' : '' }}>Fak. Teknologi & Informatika</option>
+                            <option value="Fakultas Desain dan Industri Kreatif" {{ request('fakultas') == 'Fakultas Desain dan Industri Kreatif' ? 'selected' : '' }}>Fak. Desain & Industri Kreatif</option>
+                            <option value="Fakultas Ekonomi dan Bisnis" {{ request('fakultas') == 'Fakultas Ekonomi dan Bisnis' ? 'selected' : '' }}>Fak. Ekonomi & Bisnis</option>
+                        </select>
                     </div>
 
                     <div class="col-md-2 mb-3">
@@ -86,6 +96,7 @@
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Nim</th>
+                                <th>Fakultas</th>
                                 <th>Prodi</th>
                                 <th>Tahun Lulus</th>
                                 <th>Status</th>
@@ -98,6 +109,7 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $data->nama }}</td>
                                 <td>{{ $data->nim }}</td>
+                                <td>{{ $data->fakultas }}</td>
                                 <td>{{ $data->program_studi }}</td>
                                 <td>{{ $data->tahun_lulus->format('Y') }}</td>
                                 <td>
@@ -113,7 +125,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">Data tidak ditemukan</td>
+                                <td colspan="8" class="text-center">Data tidak ditemukan</td>
                             </tr>
                             @endforelse
                         </tbody>

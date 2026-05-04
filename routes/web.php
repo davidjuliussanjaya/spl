@@ -9,7 +9,7 @@ use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('survey.access');
@@ -17,10 +17,10 @@ Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('surv
 Route::post('/submit-survey/{code}', [SurveyController::class, 'submitJawaban'])->name('survey.submit');
 
 Route::middleware('auth')->group(function () {
-    
+
     // --- AKSES SEMUA ROLE (Admin & User Reguler) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     // --- KHUSUS ROLE ADMIN ---
     // Ganti 'admin' sesuai dengan 'code' yang ada di tabel roles Anda
     Route::middleware(['role:admin'])->group(function () {
-        
+
         // Survey
         Route::get('/survey', [SurveyController::class, 'index'])->name('survey');
         Route::get('/addsurvey', [SurveyController::class, 'add'])->name('addsurvey');
@@ -46,6 +46,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/penggunalulusan', [PenggunaLulusanController::class, 'index'])->name('penggunalulusan');
         Route::get('/create', [PenggunaLulusanController::class, 'create'])->name('create');
         Route::post('/pengguna.store', [PenggunaLulusanController::class, 'store'])->name('pengguna.store');
+        Route::get('/penggunalulusan/{id}/edit', [PenggunaLulusanController::class, 'edit'])->name('penggunalulusan.edit');
+        Route::put('/penggunalulusan/{id}', [PenggunaLulusanController::class, 'update'])->name('penggunalulusan.update');
+        Route::delete('/penggunalulusan/{id}', [PenggunaLulusanController::class, 'destroy'])->name('penggunalulusan.destroy');
 
         // Pertanyaan
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
@@ -54,8 +57,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
         Route::put('/pertanyaan/{id}', [PertanyaanController::class, 'update'])->name('pertanyaan.update');
         Route::post('/savequestion', [PertanyaanController::class, 'store'])->name('savequestion');
-        
+
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -44,6 +44,7 @@ class PertanyaanService
 
             $soal->update([
                 'soal'        => $data['question'],
+                'kategori'    => $data['kategori'], // Simpan kategori yang diupdate
                 'kode'        => $data['kode'],
                 'jenis_soal'  => $jenis,
                 'is_required' => isset($data['required']),

@@ -75,9 +75,17 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="#" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="{{ route('penggunalulusan.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('penggunalulusan.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data instansi ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

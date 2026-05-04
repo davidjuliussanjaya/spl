@@ -11,9 +11,9 @@
                 <div class="ms-auto d-flex align-items-center">
 
                     {{-- Dropdown Notifikasi --}}
-                    <div class="dropdown me-3">
-                        <a class="nav-link text-gray-600" href="#" data-bs-toggle="dropdown">
-                            <i class='bi bi-bell fs-4'></i>
+                    <div class="dropdown me-4">
+                        <a class="nav-link bg-white text-dark d-flex align-items-center justify-content-center shadow-sm" href="#" data-bs-toggle="dropdown" style="width: 45px; height: 45px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                            <i class='bi bi-bell fs-5'></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                             <li>
@@ -25,18 +25,18 @@
 
                     {{-- User Menu --}}
                     <div class="dropdown">
-                        <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="user-menu d-flex align-items-center">
+                        <a href="#" data-bs-toggle="dropdown" aria-expanded="false" class="text-decoration-none">
+                            <div class="user-menu d-flex align-items-center bg-white px-3 py-2 shadow-sm" style="border-radius: 50px; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease;">
                                 <div class="user-name text-end me-3 d-none d-sm-block">
                                     {{-- Nama User dari Auth --}}
-                                    <h6 class="mb-0 text-gray-600 fw-bold">{{ Auth::user()->name }}</h6>
+                                    <h6 class="mb-0 text-dark fw-bold fs-6">{{ Auth::user()->name }}</h6>
                                     {{-- Menampilkan Role User --}}
-                                    <p class="mb-0 text-xs text-muted">
+                                    <p class="mb-0 text-muted" style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
                                         {{ Auth::user()->roles->first()->name ?? 'User' }}
                                     </p>
                                 </div>
-                                <div class="avatar avatar-md">
-                                    <img src="{{ asset('assets/images/faces/1.jpg') }}" alt="Face">
+                                <div class="avatar avatar-md border border-2 border-white shadow-sm">
+                                    <img src="{{ asset('assets/images/faces/1.jpg') }}" alt="Face" style="object-fit: cover;">
                                 </div>
                             </div>
                         </a>

@@ -40,13 +40,25 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Fakultas</label>
+                                    <select name="fakultas" class="form-select modern-input" required>
+                                        <option value="" selected disabled>Pilih Fakultas</option>
+                                        <option value="Fakultas Teknologi dan Informatika">Fakultas Teknologi dan Informatika</option>
+                                        <option value="Fakultas Desain dan Industri Kreatif">Fakultas Desain dan Industri Kreatif</option>
+                                        <option value="Fakultas Ekonomi dan Bisnis">Fakultas Ekonomi dan Bisnis</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Program Studi</label>
                                     <select name="program_studi" class="form-select modern-input" required>
                                         <option value="" selected disabled>Pilih Prodi</option>
                                         <option value="Teknik Informatika">Teknik Informatika</option>
                                         <option value="Sistem Informasi">Sistem Informasi</option>
-                                        </select>
+                                    </select>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Tahun Lulus</label>
                                     <div class="input-group">

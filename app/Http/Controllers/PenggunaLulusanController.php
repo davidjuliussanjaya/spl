@@ -2,39 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PenggunaLulusanStoreRequest;
+use App\Http\Requests\PenggunaLulusanUpdateRequest;
+use App\Models\PenggunaLulusan;
+use App\Services\PenggunaLulusanService;
 use Illuminate\Http\Request;
 
 class PenggunaLulusanController extends Controller
 {
+    protected $penggunaService;
+
+    public function __construct(PenggunaLulusanService $penggunaService)
+    {
+        $this->penggunaService = $penggunaService;
+    }
+
     public function index()
     {
         // Mengambil semua data pengguna lulusan
-        $pengguna = \App\Models\PenggunaLulusan::latest()->get();
+        $pengguna = PenggunaLulusan::latest()->get();
         return view('admin.penggunalulusan.index', compact('pengguna'));
     }
+
     public function create()
     {
         return view('admin.penggunalulusan.add');
     }
 
-    public function store(Request $request)
+    public function store(PenggunaLulusanStoreRequest $request)
     {
-        $validated = $request->validate([
-            'nama_perusahaan' => 'required|string|max:255',
-            'nama_penyelia' => 'required|string|max:255',
-            'email_penyelia' => 'required|email|unique:pengguna_lulusan,email_penyelia',
-            'kontak_penyelia' => 'nullable|string',
-            'jenis_perusahaan' => 'required|in:government,private,startup,nonprofit',
-            'alamat_perusahaan' => 'nullable|string',
-            // tambahkan validasi lainnya sesuai kebutuhan
-        ]);
-
-        // Konversi checkbox ke boolean
-        $validated['cabang_kota'] = $request->has('cabang_kota');
-        $validated['cabang_negara'] = $request->has('cabang_negara');
-
-        \App\Models\PenggunaLulusan::create($validated);
+        $this->penggunaService->storePengguna($request->validated(), $request);
 
         return redirect()->route('penggunalulusan')->with('success', 'Instansi berhasil didaftarkan');
     }
+
+    public function edit($id)
+    {
+        $pengguna = PenggunaLulusan::findOrFail($id);
+        return view('admin.penggunalulusan.edit', compact('pengguna'));
+    }
+
+    public function update(PenggunaLulusanUpdateRequest $request, $id)
+    {
+        $this->penggunaService->updatePengguna($id, $request->validated(), $request);
+
+        return redirect()->route('penggunalulusan')->with('success', 'Instansi berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $this->penggunaService->deletePengguna($id);
+
+        return redirect()->route('penggunalulusan')->with('success', 'Instansi berhasil dihapus');
+    }
 }
+
