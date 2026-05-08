@@ -16,12 +16,13 @@ class PertanyaanService
 
         // 2. Simpan Soal
         $soal = Soal::create([
-            'soal'        => $data['question'],
-            'kategori'    => $data['kategori'], // Simpan data kategori ke database
-            'kode'        => $data['kode'] ?? null,
-            'jenis_soal'  => $jenis,
-            'is_required' => isset($data['required']),
-            'is_active'   => true
+            'soal'                => $data['question'],
+            'kategori_id'         => $data['kategori_id'], // Simpan data kategori ke database
+            'peruntukan_fakultas' => $data['peruntukan_fakultas'],
+            'kode'                => $data['kode'] ?? null,
+            'jenis_soal'          => $jenis,
+            'is_required'         => isset($data['required']),
+            'is_active'           => true
         ]);
 
         // 3. Simpan Jawaban jika Multiple Choice / Radio
@@ -43,11 +44,12 @@ class PertanyaanService
             $jenis = $this->mapJenisSoal($data['type']);
 
             $soal->update([
-                'soal'        => $data['question'],
-                'kategori'    => $data['kategori'], // Simpan kategori yang diupdate
-                'kode'        => $data['kode'],
-                'jenis_soal'  => $jenis,
-                'is_required' => isset($data['required']),
+                'soal'                => $data['question'],
+                'kategori_id'         => $data['kategori_id'], // Simpan kategori yang diupdate
+                'peruntukan_fakultas' => $data['peruntukan_fakultas'],
+                'kode'                => $data['kode'],
+                'jenis_soal'          => $jenis,
+                'is_required'         => isset($data['required']),
             ]);
 
             // Hapus jawaban lama dan simpan yang baru

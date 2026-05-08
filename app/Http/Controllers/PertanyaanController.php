@@ -18,13 +18,14 @@ class PertanyaanController extends Controller
 
     public function index()
     {
-        $soal = Soal::latest()->get();
+        $soal = Soal::with('kategori')->latest()->get();
         return view('admin.pertanyaan.index', compact('soal'));
     }
 
     public function add()
     {
-        return view('admin.pertanyaan.add');
+        $kategoris = \App\Models\Kategori::all();
+        return view('admin.pertanyaan.add', compact('kategoris'));
     }
 
     public function store(PertanyaanStoreRequest $request)
@@ -37,7 +38,8 @@ class PertanyaanController extends Controller
     public function edit($id)
     {
         $soal = Soal::with('jawaban')->findOrFail($id);
-        return view('admin.pertanyaan.edit', compact('soal'));
+        $kategoris = \App\Models\Kategori::all();
+        return view('admin.pertanyaan.edit', compact('soal', 'kategoris'));
     }
 
     public function update(Request $request, $id)

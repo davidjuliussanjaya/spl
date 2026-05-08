@@ -10,6 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --dinamika-maroon: #9A031E; /* Warna khas Universitas Dinamika */
+            --dinamika-maroon-dark: #6C0215;
+            --dinamika-gold: #F4A261;
+            --dinamika-light: #FFF5F5;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f4f7f6;
@@ -32,15 +39,56 @@
 
         /* Header Survey */
         .survey-header {
-            background: linear-gradient(135deg, #435ebe 0%, #384ea1 100%);
+            background: linear-gradient(135deg, var(--dinamika-maroon) 0%, var(--dinamika-maroon-dark) 100%);
             color: #fff;
             padding: 3rem 2rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Aksen kotak-kotak dekoratif ala logo Dinamika */
+        .survey-header::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            transform: rotate(45deg);
+            z-index: 0;
+        }
+        .survey-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            transform: rotate(45deg);
+            z-index: 0;
+        }
+        .survey-header-content {
+            position: relative;
+            z-index: 1;
         }
         .survey-header h2 {
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             letter-spacing: -0.5px;
+        }
+        .univ-badge {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.15);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-transform: uppercase;
         }
 
         /* Info Box */
@@ -64,6 +112,10 @@
             margin-bottom: 1rem;
         }
 
+        /* Utilities */
+        .text-dinamika { color: var(--dinamika-maroon) !important; }
+        .bg-dinamika-subtle { background-color: var(--dinamika-light) !important; color: var(--dinamika-maroon) !important;}
+
         /* Kategori Title */
         .kategori-title {
             font-weight: 700;
@@ -71,7 +123,7 @@
             background-color: #f1f5f9;
             padding: 1rem 1.5rem;
             border-radius: 10px;
-            border-left: 5px solid #435ebe;
+            border-left: 5px solid var(--dinamika-maroon);
         }
 
         /* Form Elements */
@@ -82,8 +134,8 @@
             transition: all 0.2s;
         }
         .form-control:focus {
-            border-color: #435ebe;
-            box-shadow: 0 0 0 4px rgba(67, 94, 190, 0.1);
+            border-color: var(--dinamika-maroon);
+            box-shadow: 0 0 0 4px rgba(154, 3, 30, 0.1);
         }
 
         /* Custom Radio Options (Grid Layout) */
@@ -106,13 +158,13 @@
             background-color: #f8fafc;
         }
         .btn-check:checked + .option-card {
-            border-color: #435ebe;
-            background-color: #eff6ff;
+            border-color: var(--dinamika-maroon);
+            background-color: var(--dinamika-light);
         }
         .btn-check:checked + .option-card .radio-circle {
-            border-color: #435ebe;
-            background-color: #435ebe;
-            box-shadow: inset 0 0 0 3px #eff6ff;
+            border-color: var(--dinamika-maroon);
+            background-color: var(--dinamika-maroon);
+            box-shadow: inset 0 0 0 3px var(--dinamika-light);
         }
         .radio-circle {
             width: 22px;
@@ -131,7 +183,7 @@
 
         /* Button */
         .btn-submit {
-            background-color: #435ebe;
+            background-color: var(--dinamika-maroon);
             color: white;
             border: none;
             border-radius: 10px;
@@ -140,11 +192,14 @@
             font-size: 1.1rem;
             width: 100%;
             transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .btn-submit:hover {
-            background-color: #384ea1;
+            background-color: var(--dinamika-maroon-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(67, 94, 190, 0.2);
+            box-shadow: 0 8px 20px rgba(154, 3, 30, 0.2);
+            color: white;
         }
 
         .border-bottom-dashed { border-bottom: 2px dashed #e2e8f0; }
@@ -162,54 +217,40 @@
 
         <div class="card-custom">
             <div class="survey-header">
-                <h2>{{ $survey->judul }}</h2>
-                <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
+                <div class="survey-header-content">
+                    <div class="univ-badge"><i class="bi bi-mortarboard-fill me-2 text-warning"></i> Universitas Dinamika</div>
+                    <h2>{{ $survey->judul }}</h2>
+                    <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
+                </div>
             </div>
 
             <div class="p-4 p-md-5">
                 @if($survey->deskripsi)
                     <div class="alert alert-light border mb-4 text-secondary" style="line-height: 1.6;">
-                        <i class="bi bi-info-circle-fill text-primary me-2"></i> {{ $survey->deskripsi }}
+                        <i class="bi bi-info-circle-fill text-dinamika me-2"></i> {{ $survey->deskripsi }}
                     </div>
                 @endif
 
-                <h5 class="fw-bold mb-4 text-dark">A. Informasi tentang Institusi / Perusahaan dan Responden</h5>
+                <h5 class="fw-bold mb-4 text-dark">A. Informasi tentang Lulusan Terkait</h5>
 
-                <div class="info-box row g-0">
-                    <div class="col-md-6 pe-md-4 border-md-end">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded me-3">
-                                <i class="bi bi-building fs-5"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold">Identitas Perusahaan</h6>
+                <div class="info-box">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-dinamika-subtle p-2 rounded me-3">
+                            <i class="bi bi-mortarboard fs-5"></i>
                         </div>
-                        <div class="info-label">Nama Perusahaan</div>
-                        <div class="info-value">{{ $survey->penggunalulusan->nama_perusahaan ?? '-' }}</div>
-                        
-                        <div class="info-label">Badan Hukum & Kontak</div>
-                        <div class="info-value">
-                            {{ $survey->penggunalulusan->nomor_badan_hukum ?? '-' }} <br>
-                            <span class="text-muted fw-normal">{{ $survey->penggunalulusan->kontak_perusahaan ?? '-' }}</span>
-                        </div>
-
-                        <div class="info-label">Alamat</div>
-                        <div class="info-value mb-md-0">{{ $survey->penggunalulusan->alamat_perusahaan ?? '-' }}</div>
+                        <h6 class="mb-0 fw-bold">Identitas Lulusan Terkait</h6>
                     </div>
-                    
-                    <div class="col-md-6 ps-md-4 mt-4 mt-md-0">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded me-3">
-                                <i class="bi bi-mortarboard fs-5"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold">Identitas Lulusan Terkait</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-label">Nama Lulusan</div>
+                            <div class="info-value">{{ $survey->lulusan->nama ?? '-' }}</div>
                         </div>
-                        <div class="info-label">Nama Lulusan</div>
-                        <div class="info-value">{{ $survey->lulusan->nama ?? '-' }}</div>
-                        
-                        <div class="info-label">NIM & Program Studi</div>
-                        <div class="info-value mb-0">
-                            {{ $survey->lulusan->nim ?? '-' }} <br>
-                            <span class="text-muted fw-normal">{{ $survey->lulusan->program_studi ?? '-' }}</span>
+                        <div class="col-md-6">
+                            <div class="info-label">NIM & Program Studi</div>
+                            <div class="info-value mb-0">
+                                {{ $survey->lulusan->nim ?? '-' }} <br>
+                                <span class="text-muted fw-normal">{{ $survey->lulusan->program_studi ?? '-' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,6 +261,62 @@
             @csrf
             
             <div class="card-custom p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <label class="form-label fs-5 fw-bold text-dark mb-0">Identitas Perusahaan <span class="text-danger">*</span></label>
+                        <p class="text-muted small mb-0 mt-1">Data institusi/perusahaan Anda sudah terisi dari sistem.</p>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded border mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-building fs-3 text-secondary me-3"></i>
+                        <div>
+                            <div class="fw-bold">{{ $survey->penggunalulusan->nama_perusahaan ?? 'Nama Perusahaan Belum Tersedia' }}</div>
+                            <div class="small text-muted">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerusahaan" aria-expanded="false" aria-controls="collapsePerusahaan">
+                    <i class="bi bi-pencil-square me-1"></i> Ubah Data Perusahaan Jika Tidak Sesuai
+                </button>
+
+                <div class="collapse mt-3" id="collapsePerusahaan">
+                    <div class="row g-3 border-top pt-3 mt-1">
+                        <div class="col-md-12">
+                            <label class="form-label small text-secondary fw-bold mb-1">Nama Perusahaan <span class="text-danger">*</span></label>
+                            <input type="text" name="nama_perusahaan" class="form-control" required placeholder="Nama Perusahaan..." value="{{ $survey->penggunalulusan->nama_perusahaan ?? '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold mb-1">Nomor Badan Hukum</label>
+                            <input type="text" name="nomor_badan_hukum" class="form-control" placeholder="No. Badan Hukum..." value="{{ $survey->penggunalulusan->nomor_badan_hukum ?? '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold mb-1">Jenis Perusahaan</label>
+                            <input type="text" name="jenis_perusahaan" class="form-control" placeholder="BUMN / Swasta / dll..." value="{{ $survey->penggunalulusan->jenis_perusahaan ?? '' }}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-secondary fw-bold mb-1">Alamat Perusahaan</label>
+                            <textarea name="alamat_perusahaan" class="form-control" rows="2" placeholder="Alamat lengkap...">{{ $survey->penggunalulusan->alamat_perusahaan ?? '' }}</textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-bold mb-1">Kontak Perusahaan</label>
+                            <input type="text" name="kontak_perusahaan" class="form-control" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-bold mb-1">Cabang Kota</label>
+                            <input type="text" name="cabang_kota" class="form-control" placeholder="Kota..." value="{{ $survey->penggunalulusan->cabang_kota ?? '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-bold mb-1">Cabang Negara</label>
+                            <input type="text" name="cabang_negara" class="form-control" placeholder="Negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-custom p-4 p-md-5">
                 <div class="mb-2">
                     <label class="form-label fs-5 fw-bold text-dark">Konfirmasi Identitas Responden <span class="text-danger">*</span></label>
                     <p class="text-muted small mb-3">Mohon konfirmasi atau lengkapi data Anda sebagai perwakilan instansi yang mengisi kuesioner ini.</p>
@@ -227,7 +324,7 @@
                 
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label class="form-label small text-secondary fw-bold mb-1">Nama Lengkap</label>
+                        <label class="form-label small text-secondary fw-bold mb-1">Nama Lengkap Penyelia <span class="text-danger">*</span></label>
                         <input type="text" name="nama_pengisi" class="form-control" required placeholder="Nama Anda..." value="{{ $survey->penggunalulusan->nama_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
@@ -256,7 +353,7 @@
                     @foreach($soalGroup as $index => $s)
                         <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
                             <label class="form-label fs-6 mb-3 text-dark fw-bold">
-                                <span class="text-primary me-1">{{ $index + 1 }}.</span> {{ $s->soal }}
+                                <span class="text-dinamika me-1">{{ $index + 1 }}.</span> {{ $s->soal }}
                                 @if($s->is_required) <span class="text-danger">*</span> @endif
                             </label>
 
@@ -301,5 +398,7 @@
         </form>
     </div>
 
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

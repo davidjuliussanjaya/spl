@@ -72,6 +72,7 @@
                                     <th width="5%">No</th>
                                     <th width="30%">Soal</th>
                                     <th width="15%">Kategori</th>
+                                    <th width="10%">Fakultas</th>
                                     <th width="10%">Kode</th>
                                     <th width="10%">Tipe</th>
                                     <th width="10%">Required</th>
@@ -87,7 +88,11 @@
 
                                         {{-- Menampilkan Kategori --}}
                                         <td>
-                                            <span class="badge bg-light text-dark border">{{ $item->kategori ?? '-' }}</span>
+                                            <span class="badge bg-light text-dark border">{{ $item->kategori->nama_kategori ?? '-' }}</span>
+                                        </td>
+                                        
+                                        <td>
+                                            <span class="badge bg-primary">{{ $item->peruntukan_fakultas }}</span>
                                         </td>
 
                                         <td>{{ $item->kode ?? '-' }}</td>
@@ -139,7 +144,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-4 text-muted">Data soal belum tersedia</td>
+                                        <td colspan="9" class="text-center py-4 text-muted">Data soal belum tersedia</td>
                                     </tr>
                                 @endforelse
                             </tbody>

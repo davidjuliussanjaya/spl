@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/penggunalulusan/{id}', [PenggunaLulusanController::class, 'update'])->name('penggunalulusan.update');
         Route::delete('/penggunalulusan/{id}', [PenggunaLulusanController::class, 'destroy'])->name('penggunalulusan.destroy');
 
+        // Kategori
+        Route::resource('kategori', \App\Http\Controllers\KategoriController::class)->except(['show']);
+
         // Pertanyaan
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
         Route::get('/addquestion', [PertanyaanController::class, 'add'])->name('addquestion');

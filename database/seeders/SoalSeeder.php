@@ -80,14 +80,23 @@ class SoalSeeder extends Seeder
         try {
             $now = Carbon::now();
 
-            foreach ($kumpulanSoal as $kategori => $soalArray) {
+            foreach ($kumpulanSoal as $kategoriNama => $soalArray) {
+                
+                // Insert ke tabel kategoris dan ambil ID-nya
+                $kategoriId = DB::table('kategoris')->insertGetId([
+                    'nama_kategori' => $kategoriNama,
+                    'deskripsi'     => null,
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
+                ]);
+
                 foreach ($soalArray as $kode => $teksSoal) {
                     
                     // Insert ke tabel soal dan ambil ID-nya
                     $soalId = DB::table('soal')->insertGetId([
                         'soal'        => $teksSoal,
                         'kode'        => $kode,
-                        'kategori'    => $kategori,
+                        'kategori_id' => $kategoriId,
                         'jenis_soal'  => 'rating',
                         'is_required' => true,
                         'is_active'   => true,

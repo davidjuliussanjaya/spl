@@ -26,10 +26,11 @@ class DashboardService
 
         // 4. Hitung Rata-rata per Kategori
         $kategoriStats = ResponJawaban::join('soal', 'respon_jawaban.soal_id', '=', 'soal.id')
+            ->join('kategoris', 'soal.kategori_id', '=', 'kategoris.id')
             ->join('jawaban', 'respon_jawaban.jawaban_id', '=', 'jawaban.id')
             ->where('soal.jenis_soal', 'rating')
-            ->select('soal.kategori', DB::raw('AVG(jawaban.nilai) as rata_rata'))
-            ->groupBy('soal.kategori')
+            ->select('kategoris.nama_kategori as kategori', DB::raw('AVG(jawaban.nilai) as rata_rata'))
+            ->groupBy('kategoris.nama_kategori')
             ->orderBy('rata_rata', 'desc')
             ->get();
 

@@ -31,7 +31,24 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Kategori Pertanyaan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control modern-input" name="kategori" value="{{ $soal->kategori }}" placeholder="Contoh: Kepemimpinan, Etos Kerja, dll." required>
+                            <select class="form-select modern-input" name="kategori_id" required>
+                                <option value="" disabled>-- Pilih Kategori --</option>
+                                @foreach($kategoris as $kategori)
+                                    <option value="{{ $kategori->id }}" {{ $soal->kategori_id == $kategori->id ? 'selected' : '' }}>
+                                        {{ $kategori->nama_kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Peruntukan Fakultas <span class="text-danger">*</span></label>
+                            <select class="form-select modern-input" name="peruntukan_fakultas" required>
+                                <option value="Umum" {{ $soal->peruntukan_fakultas == 'Umum' ? 'selected' : '' }}>Umum (Semua Fakultas)</option>
+                                <option value="FTI" {{ $soal->peruntukan_fakultas == 'FTI' ? 'selected' : '' }}>Fakultas Teknologi dan Informatika (FTI)</option>
+                                <option value="FDIK" {{ $soal->peruntukan_fakultas == 'FDIK' ? 'selected' : '' }}>Fakultas Desain dan Industri Kreatif (FDIK)</option>
+                                <option value="FEB" {{ $soal->peruntukan_fakultas == 'FEB' ? 'selected' : '' }}>Fakultas Ekonomi dan Bisnis (FEB)</option>
+                            </select>
                         </div>
 
                         <div class="col-md-6">

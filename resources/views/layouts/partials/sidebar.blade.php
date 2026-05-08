@@ -51,8 +51,15 @@
 
                     <li class="sidebar-item {{ request()->routeIs('pertanyaan') ? 'active' : '' }}">
                         <a href="{{ route('pertanyaan') }}" class='sidebar-link'>
-                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                            <i class="bi bi-patch-question-fill"></i>
                             <span>Pertanyaan</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {{ request()->routeIs('kategori.index') || request()->routeIs('kategori.create') || request()->routeIs('kategori.edit') ? 'active' : '' }}">
+                        <a href="{{ route('kategori.index') }}" class='sidebar-link'>
+                            <i class="bi bi-tags-fill"></i>
+                            <span>Kategori</span>
                         </a>
                     </li>
                 @endif

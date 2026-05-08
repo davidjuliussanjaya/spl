@@ -12,10 +12,16 @@ class soal extends Model
         'soal',
         'kode',
         'jenis_soal',
-        'kategori',
+        'kategori_id',
+        'peruntukan_fakultas',
         'is_required',
         'is_active'
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
 
     public function jawaban()
     {

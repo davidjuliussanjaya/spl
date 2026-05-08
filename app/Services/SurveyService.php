@@ -55,9 +55,16 @@ class SurveyService
                 $pengguna = penggunalulusan::find($survey->pengguna_lulusan_id);
                 if ($pengguna) {
                     $pengguna->update([
-                        'nama_penyelia'   => $data['nama_pengisi'],
-                        'kontak_penyelia' => $data['hp_pengisi'] ?? $pengguna->kontak_penyelia,
-                        'email_penyelia'  => $data['email_pengisi'] ?? $pengguna->email_penyelia,
+                        'nama_penyelia'     => $data['nama_pengisi'],
+                        'kontak_penyelia'   => $data['hp_pengisi'] ?? $pengguna->kontak_penyelia,
+                        'email_penyelia'    => $data['email_pengisi'] ?? $pengguna->email_penyelia,
+                        'nama_perusahaan'   => $data['nama_perusahaan'] ?? $pengguna->nama_perusahaan,
+                        'nomor_badan_hukum' => $data['nomor_badan_hukum'] ?? $pengguna->nomor_badan_hukum,
+                        'jenis_perusahaan'  => $data['jenis_perusahaan'] ?? $pengguna->jenis_perusahaan,
+                        'alamat_perusahaan' => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
+                        'kontak_perusahaan' => $data['kontak_perusahaan'] ?? $pengguna->kontak_perusahaan,
+                        'cabang_kota'       => $data['cabang_kota'] ?? $pengguna->cabang_kota,
+                        'cabang_negara'     => $data['cabang_negara'] ?? $pengguna->cabang_negara,
                     ]);
                 }
             }
