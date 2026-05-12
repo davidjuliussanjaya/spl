@@ -4,20 +4,25 @@
 
 @section('content')
 <div class="page-heading">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Pengguna Lulusan</h3>
-                <p class="text-subtitle text-muted">Daftar perusahaan dan instansi penyerap lulusan</p>
+    <div class="page-title mb-4 pb-3 border-bottom">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+
+            <div class="mb-3 mb-md-0">
+                <h3 class="fw-bold mb-1 text-dark">Pengguna Lulusan</h3>
+                <p class="text-muted mb-0 small">Daftar perusahaan dan instansi penyerap lulusan.</p>
             </div>
-            <div class="col-12 col-md-6 order-md-2 order-first">
-                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Pengguna Lulusan</li>
-                    </ol>
-                </nav>
-            </div>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 px-3 py-2 bg-white rounded-pill shadow-sm border">
+                    <li class="breadcrumb-item">
+                        <a href="#" class="text-decoration-none text-primary">
+                            <i class="bi bi-folder2-open me-1"></i> Survey
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active fw-semibold text-secondary" aria-current="page">Pengguna Lulusan</li>
+                </ol>
+            </nav>
+
         </div>
     </div>
 
@@ -55,23 +60,15 @@
                                     <i class="bi bi-telephone small"></i> {{ $item->kontak_penyelia ?? '-' }}
                                 </td>
                                 <td>
-                                    @php
-                                        $badgeClass = [
-                                            'government' => 'bg-info',
-                                            'private' => 'bg-primary',
-                                            'startup' => 'bg-warning',
-                                            'nonprofit' => 'bg-secondary'
-                                        ][$item->jenis_perusahaan] ?? 'bg-light';
-                                    @endphp
-                                    <span class="badge {{ $badgeClass }}">{{ ucfirst($item->jenis_perusahaan) }}</span>
+                                    <span class="badge bg-secondary">{{ $item->jenis_perusahaan ?? '-' }}</span>
                                 </td>
                                 <td>
                                     @if($item->cabang_negara)
-                                        <span class="badge bg-light-info text-info">Internasional</span>
+                                    <span class="badge bg-light-info text-info">Internasional</span>
                                     @elseif($item->cabang_kota)
-                                        <span class="badge bg-light-primary text-primary">Nasional</span>
+                                    <span class="badge bg-light-primary text-primary">Nasional</span>
                                     @else
-                                        <span class="badge bg-light-secondary text-secondary">Lokal</span>
+                                    <span class="badge bg-light-secondary text-secondary">Lokal</span>
                                     @endif
                                 </td>
                                 <td>

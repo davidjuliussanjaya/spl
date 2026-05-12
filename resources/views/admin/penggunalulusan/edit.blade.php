@@ -29,13 +29,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Jenis Perusahaan</label>
-                                    <select name="jenis_perusahaan" class="form-select" required>
-                                        <option value="" disabled>Pilih Jenis</option>
-                                        <option value="government" {{ (old('jenis_perusahaan', $pengguna->jenis_perusahaan) == 'government') ? 'selected' : '' }}>Government (BUMN/Instansi)</option>
-                                        <option value="private" {{ (old('jenis_perusahaan', $pengguna->jenis_perusahaan) == 'private') ? 'selected' : '' }}>Private (Swasta)</option>
-                                        <option value="startup" {{ (old('jenis_perusahaan', $pengguna->jenis_perusahaan) == 'startup') ? 'selected' : '' }}>Startup</option>
-                                        <option value="nonprofit" {{ (old('jenis_perusahaan', $pengguna->jenis_perusahaan) == 'nonprofit') ? 'selected' : '' }}>Non-Profit (Yayasan)</option>
-                                    </select>
+                                    <input type="text" name="jenis_perusahaan" class="form-control" placeholder="Contoh: BUMN, Swasta, Startup, Yayasan, dll." value="{{ old('jenis_perusahaan', $pengguna->jenis_perusahaan) }}" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Nomor Badan Hukum</label>

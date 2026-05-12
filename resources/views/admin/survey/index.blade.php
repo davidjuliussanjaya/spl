@@ -27,9 +27,14 @@
                 <h5 class="mb-0">Daftar Sesi Survey</h5>
 
                 {{-- Pastikan route name sesuai dengan di web.php Anda --}}
-                <a href="{{ route('addsurvey') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-circle"></i> Buat Survey Baru
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('survey.bulk') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-layers"></i> Buat Survey Massal
+                    </a>
+                    <a href="{{ route('addsurvey') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Buat Survey Baru
+                    </a>
+                </div>
             </div>
             <div class="card-body mt-3">
                 {{-- Filter Pencarian (Opsional, disesuaikan untuk konteks survey) --}}

@@ -5,6 +5,7 @@ use App\Http\Controllers\LulusanController;
 use App\Http\Controllers\PenggunaLulusanController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/survey', [SurveyController::class, 'index'])->name('survey');
         Route::get('/addsurvey', [SurveyController::class, 'add'])->name('addsurvey');
         Route::post('/survey/store', [SurveyController::class, 'store'])->name('survey.store');
+        Route::get('/survey/bulk', [SurveyController::class, 'bulkCreate'])->name('survey.bulk');
+        Route::post('/survey/bulk', [SurveyController::class, 'bulkStore'])->name('survey.bulk.store');
+        Route::get('/survey/lulusan-by-tahun', [SurveyController::class, 'getLulusanByTahun'])->name('survey.lulusan-by-tahun');
         Route::get('/get-perusahaan/{id}', [SurveyController::class, 'getPerusahaanData']);
         Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey.edit');
         Route::put('/survey/{id}', [SurveyController::class, 'update'])->name('survey.update');
@@ -52,6 +56,10 @@ Route::middleware('auth')->group(function () {
 
         // Kategori
         Route::resource('kategori', \App\Http\Controllers\KategoriController::class)->except(['show']);
+
+        // Report
+        Route::get('/report', [ReportController::class, 'index'])->name('report');
+        Route::get('/report/download', [ReportController::class, 'download'])->name('report.download');
 
         // Pertanyaan
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');

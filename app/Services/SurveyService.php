@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\lulusan;
 use App\Models\penggunalulusan;
 use App\Models\ResponJawaban;
 use App\Models\soal;
@@ -25,17 +26,29 @@ class SurveyService
                 'alamat_perusahaan' => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
             ]);
 
+            $lulus = lulusan::findOrFail($data['lulusan_id']);
+
             $survey = Survey::create([
                 'judul'               => $data['judul'],
                 'deskripsi'           => $data['deskripsi'] ?? null,
-                'lulusan_id'          => $data['lulusan_id'],
+                'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
                 'access_code'         => strtoupper(Str::random(8)),
                 'is_completed'        => false,
                 'is_active'           => true,
             ]);
 
-            foreach ($data['soal_pilihan'] as $soal_id) {
+            // Hanya simpan soal yang sesuai dengan fakultas lulusan
+            $soalTerpilih = soal::whereIn('id', $data['soal_pilihan'])
+                ->where(function ($q) use ($lulus) {
+                    $q->where('peruntukan_fakultas', 'Umum');
+                    if ($lulus->fakultas) {
+                        $q->orWhere('peruntukan_fakultas', $lulus->fakultas);
+                    }
+                })
+                ->pluck('id');
+
+            foreach ($soalTerpilih as $soal_id) {
                 DB::table('survey_soal')->insert([
                     'survey_id'  => $survey->id,
                     'soal_id'    => $soal_id,
@@ -95,6 +108,57 @@ class SurveyService
         });
     }
 
+    public function createBulkSurveys(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $tahunLulus = $data['tahun_lulus'];
+
+            $lulusanList = lulusan::whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahunLulus])
+                ->whereNotNull('pengguna_lulusan_id')
+                ->get();
+
+            if ($lulusanList->isEmpty()) {
+                throw new \Exception("Tidak ada lulusan dengan tahun lulus {$tahunLulus} yang memiliki data perusahaan.");
+            }
+
+            $surveys = [];
+
+            // Ambil detail soal yang dipilih admin (termasuk peruntukan_fakultas)
+            $soalTerpilih = soal::whereIn('id', $data['soal_pilihan'])->get(['id', 'peruntukan_fakultas']);
+
+            foreach ($lulusanList as $lulus) {
+                // Filter soal: hanya yang Umum atau sesuai fakultas lulusan ini
+                $soalUntukLulusan = $soalTerpilih->filter(function ($s) use ($lulus) {
+                    return $s->peruntukan_fakultas === 'Umum'
+                        || $s->peruntukan_fakultas === $lulus->fakultas;
+                });
+
+                $survey = Survey::create([
+                    'judul'               => $data['judul'],
+                    'deskripsi'           => $data['deskripsi'] ?? null,
+                    'lulusan_id'          => $lulus->id,
+                    'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
+                    'access_code'         => strtoupper(Str::random(8)),
+                    'is_completed'        => false,
+                    'is_active'           => true,
+                ]);
+
+                foreach ($soalUntukLulusan as $s) {
+                    DB::table('survey_soal')->insert([
+                        'survey_id'  => $survey->id,
+                        'soal_id'    => $s->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                $surveys[] = $survey;
+            }
+
+            return $surveys;
+        });
+    }
+
     public function updateSurvey(Survey $survey, array $data)
     {
         return DB::transaction(function () use ($survey, $data) {
@@ -110,14 +174,27 @@ class SurveyService
                 ]);
             }
 
+            $lulus = lulusan::findOrFail($data['lulusan_id']);
+
             $survey->update([
-                'judul' => $data['judul'],
-                'deskripsi' => $data['deskripsi'] ?? null,
-                'lulusan_id' => $data['lulusan_id'],
+                'judul'               => $data['judul'],
+                'deskripsi'           => $data['deskripsi'] ?? null,
+                'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
             ]);
 
-            $survey->soals()->sync($data['soal_pilihan']);
+            // Sync hanya soal yang sesuai dengan fakultas lulusan
+            $soalValid = soal::whereIn('id', $data['soal_pilihan'])
+                ->where(function ($q) use ($lulus) {
+                    $q->where('peruntukan_fakultas', 'Umum');
+                    if ($lulus->fakultas) {
+                        $q->orWhere('peruntukan_fakultas', $lulus->fakultas);
+                    }
+                })
+                ->pluck('id')
+                ->toArray();
+
+            $survey->soals()->sync($soalValid);
 
             return $survey;
         });

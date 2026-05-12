@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SurveyBulkRequest;
 use App\Http\Requests\SurveyStoreRequest;
 use App\Http\Requests\SurveySubmitJawabanRequest;
 use App\Http\Requests\SurveyUpdateRequest;
@@ -82,10 +83,20 @@ public function fill($code)
                     ->where('access_code', $code)
                     ->firstOrFail();
 
-    // Ambil soal hanya yang dipilih admin (lewat tabel pivot survey_soal)
+    $fakultasLulusan = $survey->lulusan->fakultas ?? null;
+
+    // Soal yang dipilih admin, difilter berdasarkan peruntukan fakultas lulusan
     $soal = Soal::whereHas('surveys', function($q) use ($survey) {
         $q->where('survey_id', $survey->id);
-    })->with('jawaban')->get();
+    })
+    ->where(function($q) use ($fakultasLulusan) {
+        $q->where('peruntukan_fakultas', 'Umum');
+        if ($fakultasLulusan) {
+            $q->orWhere('peruntukan_fakultas', $fakultasLulusan);
+        }
+    })
+    ->with(['jawaban', 'kategori'])
+    ->get();
 
     return view('fill_page', compact('survey', 'soal'));
 }
@@ -112,6 +123,43 @@ public function edit($id)
 
     return view('admin.survey.view', compact('survey', 'perusahaan', 'lulusan', 'daftarSoal'));
 }
+
+    public function bulkCreate()
+    {
+        $tahunList = \App\Models\Lulusan::selectRaw('EXTRACT(YEAR FROM tahun_lulus) as tahun')
+            ->whereNotNull('pengguna_lulusan_id')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->pluck('tahun');
+
+        $daftarSoal = \App\Models\Soal::with('jawaban')
+            ->where('is_active', 1)
+            ->get();
+
+        return view('admin.survey.bulk', compact('tahunList', 'daftarSoal'));
+    }
+
+    public function bulkStore(SurveyBulkRequest $request)
+    {
+        try {
+            $surveys = $this->surveyService->createBulkSurveys($request->validated());
+            $count = count($surveys);
+            return redirect()->route('survey')->with('success', "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function getLulusanByTahun(Request $request)
+    {
+        $tahun = $request->tahun;
+        $lulusan = \App\Models\Lulusan::whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahun])
+            ->whereNotNull('pengguna_lulusan_id')
+            ->with('pengguna')
+            ->get(['id', 'nama', 'nim', 'program_studi', 'pengguna_lulusan_id']);
+
+        return response()->json($lulusan);
+    }
 
     public function update(SurveyUpdateRequest $request, $id)
     {

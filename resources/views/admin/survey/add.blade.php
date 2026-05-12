@@ -151,6 +151,9 @@
 
                     <div class="card-body p-4">
                         <div class="table-responsive">
+                            @php
+                                $badgeFakultas = ['Umum'=>'secondary','FTI'=>'primary','FDIK'=>'warning','FEB'=>'success'];
+                            @endphp
                             <table class="table table-hover border">
                                 <thead class="table-light">
                                     <tr>
@@ -158,7 +161,8 @@
                                             <input type="checkbox" id="checkAll" class="form-check-input">
                                         </th>
                                         <th>Pertanyaan</th>
-                                        <th width="150">Tipe Soal</th>
+                                        <th width="110">Tipe Soal</th>
+                                        <th width="100">Peruntukan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -172,6 +176,12 @@
                                             <td>
                                                 <span class="badge {{ $s->jenis_soal == 'essay' ? 'bg-info' : 'bg-success' }}">
                                                     {{ ucfirst($s->jenis_soal) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @php $pf = $s->peruntukan_fakultas ?? 'Umum'; @endphp
+                                                <span class="badge bg-{{ $badgeFakultas[$pf] ?? 'secondary' }}">
+                                                    {{ $pf }}
                                                 </span>
                                             </td>
                                         </tr>

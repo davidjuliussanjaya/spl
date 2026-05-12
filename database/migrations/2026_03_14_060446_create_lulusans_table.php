@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('nim');
             $table->string('program_studi');
+            $table->string('fakultas')->nullable();
             $table->date('tahun_lulus');
             $table->boolean('status')->default(true);
             $table->timestamps();

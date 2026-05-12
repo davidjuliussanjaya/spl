@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('nomor_badan_hukum')->nullable();
             $table->text('alamat_perusahaan')->nullable();
             $table->string('kontak_perusahaan')->nullable();
-            $table->enum('jenis_perusahaan', ['government','private','startup','nonprofit'])->nullable();
+            $table->string('jenis_perusahaan')->nullable();
             $table->boolean('cabang_kota')->default(false);
             $table->boolean('cabang_negara')->default(false);
             $table->timestamps();

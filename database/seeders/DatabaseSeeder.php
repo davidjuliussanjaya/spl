@@ -60,5 +60,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
             'assigned_at' => now()
         ]]);
+
+        $this->call(DemoDataSeeder::class);
     }
 }

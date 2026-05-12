@@ -26,7 +26,7 @@ class PenggunaLulusanStoreRequest extends FormRequest
             'nama_penyelia' => 'required|string|max:255',
             'email_penyelia' => 'required|email|unique:pengguna_lulusan,email_penyelia',
             'kontak_penyelia' => 'nullable|string',
-            'jenis_perusahaan' => 'required|in:government,private,startup,nonprofit',
+            'jenis_perusahaan' => 'required|string|max:255',
             'alamat_perusahaan' => 'nullable|string',
             'cabang_kota' => 'nullable',
             'cabang_negara' => 'nullable',

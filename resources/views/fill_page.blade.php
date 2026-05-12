@@ -116,6 +116,80 @@
         .text-dinamika { color: var(--dinamika-maroon) !important; }
         .bg-dinamika-subtle { background-color: var(--dinamika-light) !important; color: var(--dinamika-maroon) !important;}
 
+        /* Lulusan Card */
+        .lulusan-card {
+            background: linear-gradient(135deg, #fff5f6 0%, #fff 60%);
+            border: 1.5px solid #f5c0c8;
+            border-radius: 14px;
+            padding: 1.75rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .lulusan-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--dinamika-maroon), var(--dinamika-gold));
+        }
+        .lulusan-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--dinamika-maroon), #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 14px rgba(154,3,30,0.25);
+        }
+        .lulusan-avatar i {
+            font-size: 1.75rem;
+            color: #fff;
+        }
+        .lulusan-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        .lulusan-nim {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dinamika-maroon);
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+        .lulusan-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #fff;
+            border: 1px solid #f5c0c8;
+            border-radius: 50px;
+            padding: 0.4rem 1.25rem;
+            font-size: 0.82rem;
+            color: #475569;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .lulusan-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 500;
+        }
+        .lulusan-meta-item i {
+            color: var(--dinamika-maroon);
+            font-size: 0.85rem;
+        }
+        .lulusan-meta-divider {
+            width: 1px;
+            height: 14px;
+            background-color: #f5c0c8;
+        }
+
         /* Kategori Title */
         .kategori-title {
             font-weight: 700;
@@ -138,47 +212,61 @@
             box-shadow: 0 0 0 4px rgba(154, 3, 30, 0.1);
         }
 
-        /* Custom Radio Options (Grid Layout) */
-        .option-card {
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Survey Table */
+        .survey-table {
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .survey-table thead th {
+            background-color: #fce8eb;
+            color: #7a0117;
             text-align: center;
-            height: 100%;
-            background-color: #fff;
+            vertical-align: middle;
+            font-weight: 700;
+            border-color: #f5c0c8;
+            padding: 0.6rem 0.75rem;
         }
-        .option-card:hover {
-            border-color: #94a3b8;
-            background-color: #f8fafc;
-        }
-        .btn-check:checked + .option-card {
-            border-color: var(--dinamika-maroon);
-            background-color: var(--dinamika-light);
-        }
-        .btn-check:checked + .option-card .radio-circle {
-            border-color: var(--dinamika-maroon);
+        .survey-table thead tr:first-child th {
             background-color: var(--dinamika-maroon);
-            box-shadow: inset 0 0 0 3px var(--dinamika-light);
+            color: #fff;
+            font-size: 0.95rem;
+            text-align: left;
+            letter-spacing: 0.3px;
+            border-color: var(--dinamika-maroon-dark);
         }
-        .radio-circle {
-            width: 22px;
-            height: 22px;
-            border: 2px solid #cbd5e1;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            flex-shrink: 0;
-            transition: all 0.2s;
+        .survey-table tbody tr td {
+            vertical-align: middle;
+            border-color: #f5c0c8;
+            padding: 0.6rem 0.75rem;
         }
-        .option-text {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #334155;
+        .survey-table tbody tr:hover td {
+            background-color: #fff5f6;
+        }
+        .survey-table .td-no {
+            text-align: center;
+            font-weight: 600;
+            color: var(--dinamika-maroon);
+            width: 45px;
+        }
+        .survey-table .td-option {
+            text-align: center;
+            width: 65px;
+        }
+        .survey-table .td-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--dinamika-maroon);
+        }
+        .survey-table .th-option {
+            min-width: 60px;
+            line-height: 1.3;
+        }
+        .survey-table .th-option .score-badge {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.75;
         }
 
         /* Button */
@@ -233,24 +321,21 @@
 
                 <h5 class="fw-bold mb-4 text-dark">A. Informasi tentang Lulusan Terkait</h5>
 
-                <div class="info-box">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-dinamika-subtle p-2 rounded me-3">
-                            <i class="bi bi-mortarboard fs-5"></i>
-                        </div>
-                        <h6 class="mb-0 fw-bold">Identitas Lulusan Terkait</h6>
+                <div class="lulusan-card">
+                    <div class="lulusan-avatar">
+                        <i class="bi bi-person-badge-fill"></i>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="info-label">Nama Lulusan</div>
-                            <div class="info-value">{{ $survey->lulusan->nama ?? '-' }}</div>
+                    <div class="lulusan-name">{{ $survey->lulusan->nama ?? '-' }}</div>
+                    <div class="lulusan-nim">{{ $survey->lulusan->nim ?? '-' }}</div>
+                    <div class="lulusan-meta">
+                        <div class="lulusan-meta-item">
+                            <i class="bi bi-building-fill-check"></i>
+                            <span>{{ $survey->lulusan->program_studi ?? '-' }}</span>
                         </div>
-                        <div class="col-md-6">
-                            <div class="info-label">NIM & Program Studi</div>
-                            <div class="info-value mb-0">
-                                {{ $survey->lulusan->nim ?? '-' }} <br>
-                                <span class="text-muted fw-normal">{{ $survey->lulusan->program_studi ?? '-' }}</span>
-                            </div>
+                        <div class="lulusan-meta-divider"></div>
+                        <div class="lulusan-meta-item">
+                            <i class="bi bi-mortarboard-fill"></i>
+                            <span>Lulus {{ $survey->lulusan->tahun_lulus ? \Carbon\Carbon::parse($survey->lulusan->tahun_lulus)->format('Y') : '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -339,49 +424,85 @@
             </div>
 
             @php
-                // Mengelompokkan soal berdasarkan field 'kategori'
-                $groupedSoal = $soal->groupBy('kategori');
+                $groupedSoal = $soal->groupBy(fn($s) => $s->kategori->nama_kategori ?? 'Lainnya');
             @endphp
 
-            @foreach($groupedSoal as $kategori => $soalGroup)
+            @foreach($groupedSoal as $namaKategori => $soalGroup)
+                @php
+                    $mcSoal    = $soalGroup->filter(fn($s) => $s->jenis_soal != 'essay')->values();
+                    $essaySoal = $soalGroup->filter(fn($s) => $s->jenis_soal == 'essay')->values();
+                    $firstMc   = $mcSoal->first();
+                @endphp
+
                 <div class="card-custom p-4 p-md-5">
-                    
-                    <div class="kategori-title mb-4 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ $kategori }}</h5>
-                    </div>
 
-                    @foreach($soalGroup as $index => $s)
-                        <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
-                            <label class="form-label fs-6 mb-3 text-dark fw-bold">
-                                <span class="text-dinamika me-1">{{ $index + 1 }}.</span> {{ $s->soal }}
-                                @if($s->is_required) <span class="text-danger">*</span> @endif
-                            </label>
-
-                            <div class="ps-3 ps-md-4">
-                                @if($s->jenis_soal == 'essay')
-                                    <textarea name="jawaban[{{ $s->id }}]" class="form-control" rows="3" 
-                                              placeholder="Tuliskan umpan balik Anda di sini..." 
-                                              {{ $s->is_required ? 'required' : '' }}></textarea>
-                                @else
-                                    <div class="row g-2">
-                                        @foreach($s->jawaban as $j)
-                                            <div class="col-6 col-md-3">
-                                                <input class="btn-check" type="radio" 
-                                                       name="jawaban[{{ $s->id }}]" 
-                                                       id="opt_{{ $s->id }}_{{ $j->id }}" 
-                                                       value="{{ $j->id }}" {{ $s->is_required ? 'required' : '' }}>
-                                                
-                                                <label class="option-card w-100 m-0" for="opt_{{ $s->id }}_{{ $j->id }}">
-                                                    <div class="radio-circle"></div>
-                                                    <span class="option-text">{{ $j->jawaban }}</span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
+                    @if($mcSoal->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered survey-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th colspan="{{ 2 + ($firstMc ? $firstMc->jawaban->count() : 0) }}">
+                                            {{ $namaKategori }}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="td-no">No</th>
+                                        <th>Pertanyaan</th>
+                                        @if($firstMc)
+                                            @foreach($firstMc->jawaban as $j)
+                                                <th class="th-option">
+                                                    {{ $j->jawaban }}
+                                                    @if($j->nilai)
+                                                        <span class="score-badge">{{ $j->nilai }}</span>
+                                                    @endif
+                                                </th>
+                                            @endforeach
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($mcSoal as $s)
+                                        <tr>
+                                            <td class="td-no">{{ $loop->iteration }}</td>
+                                            <td>
+                                                {{ $s->soal }}
+                                                @if($s->is_required) <span class="text-danger">*</span> @endif
+                                            </td>
+                                            @foreach($s->jawaban as $j)
+                                                <td class="td-option">
+                                                    <input type="radio"
+                                                           name="jawaban[{{ $s->id }}]"
+                                                           value="{{ $j->id }}"
+                                                           {{ $s->is_required ? 'required' : '' }}>
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                    @endforeach
+                    @endif
+
+                    @if($essaySoal->count() > 0)
+                        <div class="{{ $mcSoal->count() > 0 ? 'mt-4 pt-4 border-top' : '' }}">
+                            @if($mcSoal->count() == 0)
+                                <div class="kategori-title mb-4">
+                                    <h5 class="mb-0">{{ $namaKategori }}</h5>
+                                </div>
+                            @endif
+                            @foreach($essaySoal as $s)
+                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
+                                    <label class="form-label fs-6 mb-2 text-dark fw-bold">
+                                        <span class="text-dinamika me-1">{{ $loop->iteration }}.</span> {{ $s->soal }}
+                                        @if($s->is_required) <span class="text-danger">*</span> @endif
+                                    </label>
+                                    <textarea name="jawaban[{{ $s->id }}]" class="form-control" rows="3"
+                                              placeholder="Tuliskan umpan balik Anda di sini..."
+                                              {{ $s->is_required ? 'required' : '' }}></textarea>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                 </div>
             @endforeach

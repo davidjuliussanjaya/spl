@@ -62,6 +62,13 @@
                             <span>Kategori</span>
                         </a>
                     </li>
+
+                    <li class="sidebar-item {{ request()->routeIs('report') ? 'active' : '' }}">
+                        <a href="{{ route('report') }}" class='sidebar-link'>
+                            <i class="bi bi-file-earmark-excel-fill"></i>
+                            <span>Cetak Laporan</span>
+                        </a>
+                    </li>
                 @endif
             </ul>
         </div>
