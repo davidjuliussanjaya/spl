@@ -59,7 +59,7 @@
                     <li class="sidebar-item {{ request()->routeIs('kategori.index') || request()->routeIs('kategori.create') || request()->routeIs('kategori.edit') ? 'active' : '' }}">
                         <a href="{{ route('kategori.index') }}" class='sidebar-link'>
                             <i class="bi bi-tags-fill"></i>
-                            <span>Kategori</span>
+                            <span>Aspek Evaluasi</span>
                         </a>
                     </li>
 

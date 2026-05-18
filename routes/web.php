@@ -10,8 +10,8 @@ use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
-});
+    return view('landing');
+})->name('landing');
 
 Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('survey.access');
 Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('survey.fill');

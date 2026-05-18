@@ -4,7 +4,12 @@
       "Bash(php artisan *)",
       "Bash(php *)",
       "Bash(composer require *)",
-      "Bash(composer dump-autoload *)"
+      "Bash(composer dump-autoload *)",
+      "Bash(grep -E \"GET\\\\s+/$|landing|login\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -Filter \"*.php\")",
+      "Bash(Select-Object Name)",
+      "Bash(Format-Table -AutoSize)",
+      "PowerShell(Test-Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\"; ls \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })"
     ]
   }
 }
