@@ -12,14 +12,14 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --navy:   #1E3A5F;
-            --blue:   #2563EB;
-            --blue-l: #3B82F6;
-            --cyan:   #06B6D4;
+            --navy:   #8B1A2A;
+            --blue:   #8B1A2A;
+            --blue-l: #B91C3A;
+            --cyan:   #C9A227;
             --green:  #22C55E;
             --slate:  #64748B;
             --slate-l:#94A3B8;
-            --bg:     #F8FAFC;
+            --bg:     #FFF5F7;
             --white:  #FFFFFF;
             --radius: 16px;
         }
@@ -49,26 +49,26 @@
         .nav-brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
         .nav-logo {
             width: 36px; height: 36px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--navy), var(--blue-l));
+            background: linear-gradient(135deg, #8B1A2A, #B91C3A);
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-weight: 800; font-size: .95rem; letter-spacing: -.5px;
         }
-        .nav-name { font-weight: 700; font-size: .95rem; color: var(--navy); }
-        .nav-name span { color: var(--blue); }
+        .nav-name { font-weight: 700; font-size: .95rem; color: #8B1A2A; }
+        .nav-name span { color: #B91C3A; }
         .nav-actions { display: flex; align-items: center; gap: .75rem; }
         .btn-nav-outline {
             padding: .42rem 1.1rem; border-radius: 8px; font-size: .82rem; font-weight: 600;
-            border: 1.5px solid var(--blue); color: var(--blue);
+            border: 1.5px solid #8B1A2A; color: #8B1A2A;
             background: transparent; cursor: pointer; text-decoration: none;
             transition: all .15s;
         }
-        .btn-nav-outline:hover { background: var(--blue); color: #fff; }
+        .btn-nav-outline:hover { background: #8B1A2A; color: #fff; }
         .btn-nav-fill {
             padding: .42rem 1.1rem; border-radius: 8px; font-size: .82rem; font-weight: 600;
-            border: none; color: #fff; background: var(--blue);
+            border: none; color: #fff; background: #8B1A2A;
             cursor: pointer; text-decoration: none; transition: background .15s;
         }
-        .btn-nav-fill:hover { background: #1d4ed8; }
+        .btn-nav-fill:hover { background: #6C0215; }
 
         /* ── Hero ── */
         .hero {
@@ -76,7 +76,7 @@
             display: flex; align-items: center;
             position: relative; overflow: hidden;
             padding: 7rem 2rem 4rem;
-            background: linear-gradient(135deg, #0F2240 0%, #1E3A5F 45%, #1B4F8A 100%);
+            background: linear-gradient(135deg, #4A000D 0%, #8B1A2A 45%, #B91C3A 100%);
         }
         .hero-blob {
             position: absolute; border-radius: 50%; filter: blur(80px); opacity: .18; pointer-events: none;
@@ -111,11 +111,11 @@
         .btn-hero-primary {
             display: inline-flex; align-items: center; gap: .45rem;
             padding: .75rem 1.75rem; border-radius: 10px; font-size: .92rem; font-weight: 700;
-            background: var(--blue); color: #fff; text-decoration: none;
+            background: #C9A227; color: #4A000D; text-decoration: none;
             border: none; cursor: pointer; transition: all .2s;
-            box-shadow: 0 4px 20px rgba(37,99,235,.4);
+            box-shadow: 0 4px 20px rgba(201,162,39,.4);
         }
-        .btn-hero-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(37,99,235,.5); color: #fff; }
+        .btn-hero-primary:hover { background: #E8C547; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(201,162,39,.5); color: #4A000D; }
         .btn-hero-secondary {
             display: inline-flex; align-items: center; gap: .45rem;
             padding: .75rem 1.75rem; border-radius: 10px; font-size: .92rem; font-weight: 600;
@@ -160,8 +160,8 @@
         }
         .stats-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: center; flex-wrap: wrap; gap: 3rem; }
         .stat-item { text-align: center; }
-        .stat-num { font-size: 2rem; font-weight: 800; color: var(--navy); line-height: 1; }
-        .stat-num span { color: var(--blue); }
+        .stat-num { font-size: 2rem; font-weight: 800; color: #4A000D; line-height: 1; }
+        .stat-num span { color: #8B1A2A; }
         .stat-lbl { font-size: .78rem; color: var(--slate); font-weight: 500; margin-top: .25rem; }
 
         /* ── Features ── */
@@ -169,7 +169,7 @@
         .section-inner { max-width: 1120px; margin: 0 auto; }
         .section-tag {
             display: inline-block; font-size: .72rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: .8px; color: var(--blue); background: #EFF6FF;
+            letter-spacing: .8px; color: var(--blue); background: #FDE8EC;
             border-radius: 50px; padding: .3rem .9rem; margin-bottom: 1rem;
         }
         .section-title { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; color: var(--navy); margin-bottom: .75rem; }
@@ -193,7 +193,7 @@
         .feat-desc { font-size: .83rem; color: var(--slate); line-height: 1.65; }
 
         /* ── How it works ── */
-        .how-bg { background: linear-gradient(135deg, #F0F7FF, #EFF6FF); }
+        .how-bg { background: linear-gradient(135deg, #FFF0F3, #FDE8EC); }
         .steps { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem; max-width: 640px; }
         .step { display: flex; gap: 1.25rem; align-items: flex-start; }
         .step-num {
@@ -207,7 +207,7 @@
 
         /* ── CTA Banner ── */
         .cta-banner {
-            background: linear-gradient(135deg, var(--navy), #1B4F8A);
+            background: linear-gradient(135deg, #4A000D, #8B1A2A);
             border-radius: 20px; padding: 3rem 2.5rem;
             display: flex; align-items: center; justify-content: space-between;
             gap: 2rem; flex-wrap: wrap;
@@ -218,10 +218,10 @@
 
         /* ── Footer ── */
         footer {
-            background: var(--navy); color: rgba(255,255,255,.5);
+            background: #4A000D; color: rgba(255,255,255,.5);
             padding: 2rem; text-align: center; font-size: .8rem;
         }
-        footer strong { color: rgba(255,255,255,.8); }
+        footer strong { color: rgba(255,255,255,.85); }
 
         /* ── Survey access card ── */
         .survey-card {
@@ -241,10 +241,10 @@
         .survey-input:focus { border-color: var(--cyan); }
         .survey-btn {
             padding: .55rem 1.1rem; border-radius: 8px; border: none;
-            background: var(--cyan); color: var(--navy); font-weight: 700; font-size: .85rem;
+            background: #C9A227; color: #4A000D; font-weight: 700; font-size: .85rem;
             cursor: pointer; transition: background .15s; white-space: nowrap; font-family: inherit;
         }
-        .survey-btn:hover { background: #22D3EE; }
+        .survey-btn:hover { background: #E8C547; }
     </style>
 </head>
 <body>
@@ -252,8 +252,8 @@
     {{-- ── Navbar ── --}}
     <nav class="navbar" id="navbar">
         <a href="{{ url('/') }}" class="nav-brand">
-            <div class="nav-logo">TS</div>
-            <div class="nav-name">Tracer<span>Study</span></div>
+            <div class="nav-logo"><i class="bi bi-mortarboard-fill" style="font-size:.9rem;"></i></div>
+            <div class="nav-name">Undika<span> Tracer Study</span></div>
         </a>
         <div class="nav-actions">
             <a href="#fitur" class="btn-nav-outline" style="border:none;color:var(--slate);background:transparent;font-weight:500;">Fitur</a>
@@ -379,7 +379,7 @@
             </div>
             <div class="feat-grid">
                 <div class="feat-card">
-                    <div class="feat-icon" style="background:#EFF6FF;color:#2563EB;">
+                    <div class="feat-icon" style="background:#FDE8EC;color:#8B1A2A;">
                         <i class="bi bi-send-check-fill"></i>
                     </div>
                     <div class="feat-title">Survey Digital</div>
@@ -414,7 +414,7 @@
                     <div class="feat-desc">Unduh laporan lengkap dalam format Excel dengan distribusi penilaian per soal dan ringkasan per kategori.</div>
                 </div>
                 <div class="feat-card">
-                    <div class="feat-icon" style="background:#EFF6FF;color:#0EA5E9;">
+                    <div class="feat-icon" style="background:#FDE8EC;color:#8B1A2A;">
                         <i class="bi bi-building-check"></i>
                     </div>
                     <div class="feat-title">Multi Fakultas</div>
@@ -484,9 +484,9 @@
                             <div style="font-size:1.2rem;font-weight:800;color:#16A34A;">SB</div>
                             <div style="font-size:.68rem;color:#15803D;font-weight:500;">Sangat Baik</div>
                         </div>
-                        <div style="background:#EFF6FF;border-radius:10px;padding:.85rem;text-align:center;">
-                            <div style="font-size:1.2rem;font-weight:800;color:#2563EB;">B</div>
-                            <div style="font-size:.68rem;color:#1D4ED8;font-weight:500;">Baik</div>
+                        <div style="background:#FDE8EC;border-radius:10px;padding:.85rem;text-align:center;">
+                            <div style="font-size:1.2rem;font-weight:800;color:#8B1A2A;">B</div>
+                            <div style="font-size:.68rem;color:#6C0215;font-weight:500;">Baik</div>
                         </div>
                     </div>
                 </div>

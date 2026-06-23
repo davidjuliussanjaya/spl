@@ -306,7 +306,7 @@
     }
     .line-input:focus {
         box-shadow: none;
-        border-bottom-color: #435ebe;
+        border-bottom-color: #8B1A2A;
     }
     
     /* Styling khusus input disabled agar tidak terlihat mati total */
@@ -327,7 +327,7 @@
     }
     .modern-textarea:focus {
         background-color: #fff;
-        border-color: #435ebe;
+        border-color: #8B1A2A;
         box-shadow: 0 4px 12px rgba(67, 94, 190, 0.08);
     }
 

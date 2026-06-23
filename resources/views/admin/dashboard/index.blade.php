@@ -6,13 +6,13 @@
 <style>
     /* ── Tokens ── */
     :root {
-        --blue-50:  #eff6ff;
-        --blue-100: #dbeafe;
-        --blue-200: #bfdbfe;
-        --blue-500: #3b82f6;
-        --blue-600: #2563eb;
-        --blue-700: #1d4ed8;
-        --blue-900: #1e3a8a;
+        --blue-50:  #FDE8EC;
+        --blue-100: #FBBCCA;
+        --blue-200: #F490A8;
+        --blue-500: #8B1A2A;
+        --blue-600: #8B1A2A;
+        --blue-700: #6C0215;
+        --blue-900: #4A000D;
         --slate-50:  #f8fafc;
         --slate-100: #f1f5f9;
         --slate-200: #e2e8f0;
@@ -613,8 +613,8 @@
         series : [{ name: 'Skor', data: chartData }],
         chart  : { type: 'bar', height: barH, toolbar: { show: false }, fontFamily: 'inherit' },
         plotOptions: { bar: { horizontal: true, borderRadius: 5, barHeight: '52%' } },
-        colors : ['#2563eb'],
-        fill   : { type: 'gradient', gradient: { shade: 'light', type: 'horizontal', gradientToColors: ['#60a5fa'], stops: [0,100] } },
+        colors : ['#8B1A2A'],
+        fill   : { type: 'gradient', gradient: { shade: 'light', type: 'horizontal', gradientToColors: ['#B91C3A'], stops: [0,100] } },
         dataLabels: {
             enabled: true, textAnchor: 'start', offsetX: 4,
             style: { colors: ['#fff'], fontSize: '11px', fontWeight: 600 },

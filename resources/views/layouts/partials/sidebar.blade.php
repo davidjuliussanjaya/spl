@@ -5,11 +5,14 @@
         <div class="sidebar-header pt-4 pb-2">
             <div class="d-flex justify-content-between align-items-center px-2">
                 <div class="logo d-flex align-items-center" style="gap: 10px;">
-                    <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(to right, #435ebe, #5777df);">
-                        <i class="bi bi-layers-fill fs-5"></i>
+                    <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(to right, #8B1A2A, #B91C3A);">
+                        <i class="bi bi-mortarboard-fill fs-5"></i>
                     </div>
                     <a href="{{ route('dashboard') }}" class="text-decoration-none">
-                        <span class="fs-4 fw-bold text-dark" style="letter-spacing: -0.5px;">E-Lulusan</span>
+                        <div style="line-height:1.15;">
+                            <span class="fw-bold text-dark" style="font-size:0.9rem;letter-spacing:-0.3px;">Universitas Dinamika</span>
+                            <div class="text-muted" style="font-size:0.68rem;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Tracer Study</div>
+                        </div>
                     </a>
                 </div>
                 <div class="toggler">
@@ -81,10 +84,10 @@
 <style>
 /* Perbaikan warna item sidebar agar rapi dan modern minimalis */
 .sidebar-menu .sidebar-item.active .sidebar-link {
-    background: linear-gradient(to right, #435ebe, #5777df) !important;
+    background: linear-gradient(to right, #8B1A2A, #B91C3A) !important;
     color: #fff !important;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 10px rgba(67, 94, 190, 0.2);
+    box-shadow: 0 4px 10px rgba(139, 26, 42, 0.25);
 }
 .sidebar-menu .sidebar-item.active .sidebar-link i,
 .sidebar-menu .sidebar-item.active .sidebar-link span {
@@ -97,10 +100,10 @@
     border-radius: 0.75rem;
 }
 .sidebar-menu .sidebar-item:not(.active) .sidebar-link:hover {
-    background-color: #f8f9fa !important;
-    color: #435ebe !important;
+    background-color: #FDE8EC !important;
+    color: #8B1A2A !important;
 }
 .sidebar-menu .sidebar-item:not(.active) .sidebar-link:hover i {
-    color: #435ebe !important;
+    color: #8B1A2A !important;
 }
 </style>

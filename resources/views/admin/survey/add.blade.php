@@ -224,7 +224,7 @@
 
         .line-input:focus {
             box-shadow: none;
-            border-bottom-color: #435ebe;
+            border-bottom-color: #8B1A2A;
         }
 
         /* Textarea Modern */
@@ -238,18 +238,18 @@
 
         .modern-textarea:focus {
             background-color: #fff;
-            border-color: #435ebe;
+            border-color: #8B1A2A;
             box-shadow: 0 4px 12px rgba(67, 94, 190, 0.08);
         }
 
         /* Checkbox & Button */
         .form-check-input:checked {
-            background-color: #435ebe;
-            border-color: #435ebe;
+            background-color: #8B1A2A;
+            border-color: #8B1A2A;
         }
 
         .btn-primary {
-            background-color: #435ebe;
+            background-color: #8B1A2A;
             border: none;
             transition: transform 0.2s;
         }

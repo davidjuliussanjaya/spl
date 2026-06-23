@@ -11,10 +11,10 @@
 
     <style>
         :root {
-            --dinamika-maroon: #9A031E; /* Warna khas Universitas Dinamika */
+            --dinamika-maroon: #8B1A2A; /* Warna khas Universitas Dinamika */
             --dinamika-maroon-dark: #6C0215;
-            --dinamika-gold: #F4A261;
-            --dinamika-light: #FFF5F5;
+            --dinamika-gold: #C9A227;
+            --dinamika-light: #FFF5F7;
         }
 
         body {

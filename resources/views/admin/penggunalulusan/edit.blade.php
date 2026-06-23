@@ -173,7 +173,7 @@
         border: 1px solid #dee2e6;
     }
     .form-control:focus, .form-select:focus {
-        border-color: #435ebe;
+        border-color: #8B1A2A;
         box-shadow: 0 0 0 0.25 row rgba(67, 94, 190, 0.1);
     }
     .tracking-wider { letter-spacing: 0.05em; }

@@ -125,7 +125,7 @@
     }
     .modern-input:focus {
         background-color: #ffffff;
-        border-color: #435ebe;
+        border-color: #8B1A2A;
         box-shadow: 0 0 0 4px rgba(67, 94, 190, 0.1);
     }
 
@@ -136,8 +136,8 @@
         cursor: pointer;
     }
     .form-switch .form-check-input:checked {
-        background-color: #435ebe;
-        border-color: #435ebe;
+        background-color: #8B1A2A;
+        border-color: #8B1A2A;
     }
 
     /* Option Item Animation */

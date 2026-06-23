@@ -219,7 +219,7 @@
     }
     .line-input:focus {
         box-shadow: none;
-        border-bottom-color: #435ebe;
+        border-bottom-color: #8B1A2A;
     }
     .modern-textarea {
         border: 1.5px solid #eee;
@@ -230,11 +230,11 @@
     }
     .modern-textarea:focus {
         background-color: #fff;
-        border-color: #435ebe;
+        border-color: #8B1A2A;
         box-shadow: 0 4px 12px rgba(67,94,190,0.08);
     }
-    .form-check-input:checked { background-color: #435ebe; border-color: #435ebe; }
-    .btn-primary { background-color: #435ebe; border: none; transition: transform 0.2s; }
+    .form-check-input:checked { background-color: #8B1A2A; border-color: #8B1A2A; }
+    .btn-primary { background-color: #8B1A2A; border: none; transition: transform 0.2s; }
     .btn-primary:hover { transform: translateY(-2px); background-color: #384ea1; }
     .btn-primary:disabled { background-color: #9aa7d4; transform: none; cursor: not-allowed; }
 </style>
