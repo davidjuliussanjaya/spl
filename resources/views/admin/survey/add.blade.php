@@ -256,7 +256,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            background-color: #384ea1;
+            background-color: #6C0215;
         }
 
         /* Responsive Utilities */

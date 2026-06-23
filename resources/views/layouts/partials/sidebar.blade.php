@@ -2,21 +2,21 @@
 @auth
 <div id="sidebar" class="active">
     <div class="sidebar-wrapper active">
-        <div class="sidebar-header pt-4 pb-2">
-            <div class="d-flex justify-content-between align-items-center px-2">
-                <div class="logo d-flex align-items-center" style="gap: 10px;">
-                    <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(to right, #8B1A2A, #B91C3A);">
-                        <i class="bi bi-mortarboard-fill fs-5"></i>
+        <div class="sidebar-header pt-3 pb-3" style="border-bottom:1px solid #f0e8ea;">
+            <div class="d-flex justify-content-between align-items-center px-3">
+                <a href="{{ route('dashboard') }}" class="text-decoration-none d-flex align-items-center" style="gap:10px;min-width:0;">
+                    {{-- Logo kotak bertumpuk ala identitas Dinamika --}}
+                    <div class="flex-shrink-0" style="position:relative;width:36px;height:36px;">
+                        <div style="position:absolute;top:0;left:0;width:28px;height:28px;background:#8B1A2A;border-radius:6px;"></div>
+                        <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:#C9A227;border-radius:5px;border:2px solid #fff;"></div>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="text-decoration-none">
-                        <div style="line-height:1.15;">
-                            <span class="fw-bold text-dark" style="font-size:0.9rem;letter-spacing:-0.3px;">Universitas Dinamika</span>
-                            <div class="text-muted" style="font-size:0.68rem;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Tracer Study</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="toggler">
-                    <a href="#" class="sidebar-hide d-xl-none d-block text-secondary"><i class="bi bi-x bi-middle fs-3"></i></a>
+                    <div style="min-width:0;line-height:1.25;">
+                        <div class="fw-bold text-dark" style="font-size:0.8rem;letter-spacing:-0.2px;white-space:nowrap;">Undika</div>
+                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:#8B1A2A;">Tracer Study</div>
+                    </div>
+                </a>
+                <div class="toggler flex-shrink-0">
+                    <a href="#" class="sidebar-hide d-xl-none d-block text-secondary"><i class="bi bi-x fs-4"></i></a>
                 </div>
             </div>
         </div>
@@ -95,7 +95,8 @@
 }
 .sidebar-menu .sidebar-link {
     color: #475569 !important;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.83rem !important;
     transition: all 0.25s ease;
     border-radius: 0.75rem;
 }

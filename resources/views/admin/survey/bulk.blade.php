@@ -235,8 +235,8 @@
     }
     .form-check-input:checked { background-color: #8B1A2A; border-color: #8B1A2A; }
     .btn-primary { background-color: #8B1A2A; border: none; transition: transform 0.2s; }
-    .btn-primary:hover { transform: translateY(-2px); background-color: #384ea1; }
-    .btn-primary:disabled { background-color: #9aa7d4; transform: none; cursor: not-allowed; }
+    .btn-primary:hover { transform: translateY(-2px); background-color: #6C0215; }
+    .btn-primary:disabled { background-color: #c99aa3; transform: none; cursor: not-allowed; }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
