@@ -17,6 +17,7 @@ class penggunalulusan extends Model
     protected $fillable = [
         'nama_perusahaan',
         'nama_penyelia',
+        'jabatan_penyelia',
         'kontak_penyelia',
         'email_penyelia',
         'jumlah_lulusan',

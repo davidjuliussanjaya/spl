@@ -40,11 +40,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/get-perusahaan/{id}', [SurveyController::class, 'getPerusahaanData']);
         Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey.edit');
         Route::put('/survey/{id}', [SurveyController::class, 'update'])->name('survey.update');
+        Route::delete('/survey/{id}', [SurveyController::class, 'destroy'])->name('survey.destroy');
 
         // Lulusan
         Route::get('/lulusan', [LulusanController::class, 'index'])->name('lulusan');
         Route::get('/addgrad', [LulusanController::class, 'add'])->name('addgrad');
         Route::post('/lulusan.store', [LulusanController::class, 'store'])->name('lulusan.store');
+        Route::get('/lulusan/{id}', [LulusanController::class, 'show'])->name('lulusan.show');
 
         // Pengguna Lulusan
         Route::get('/penggunalulusan', [PenggunaLulusanController::class, 'index'])->name('penggunalulusan');

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_perusahaan');
             $table->string('nama_penyelia');
+            $table->string('jabatan_penyelia')->nullable();
             $table->string('kontak_penyelia')->nullable();
             $table->string('email_penyelia')->unique();
             $table->integer('jumlah_lulusan')->nullable();
@@ -23,8 +24,8 @@ return new class extends Migration
             $table->text('alamat_perusahaan')->nullable();
             $table->string('kontak_perusahaan')->nullable();
             $table->string('jenis_perusahaan')->nullable();
-            $table->boolean('cabang_kota')->default(false);
-            $table->boolean('cabang_negara')->default(false);
+            $table->integer('cabang_kota')->default(0);
+            $table->integer('cabang_negara')->default(0);
             $table->timestamps();
         });
     }

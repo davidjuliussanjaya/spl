@@ -1,0 +1,1250 @@
+<mxfile host="Electron" pages="5">
+  <diagram id="RcS3cTCZLupawhDL13NS" name="Page-1">
+    <mxGraphModel dx="2378" dy="1602" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-40" y="-70" width="1640" height="1140" as="geometry" />
+        </mxCell>
+        <mxCell id="r_svc_dash_survey" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=10;" parent="1" source="svc_dashboard" target="survey" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="845" y="720" />
+              <mxPoint x="630" y="720" />
+              <mxPoint x="630" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_svc_model_pengguna" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1.004;entryY=0.659;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="svc_pengguna" target="pengguna_fields" edge="1">
+          <mxGeometry x="-0.011" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="390" />
+              <mxPoint x="620" y="440" />
+              <mxPoint x="300" y="440" />
+              <mxPoint x="300" y="390" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_svc_model_lulusan" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="svc_lulusan" target="lulusan" edge="1">
+          <mxGeometry x="0.4949" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="260" />
+              <mxPoint x="950" y="-10" />
+              <mxPoint x="590" y="-10" />
+              <mxPoint x="590" y="260" />
+              <mxPoint x="590" y="325" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_svc_model_survey" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=20;" parent="1" source="svc_survey" target="survey" edge="1">
+          <mxGeometry x="0.6061" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="100" />
+              <mxPoint x="940" y="10" />
+              <mxPoint x="640" y="10" />
+              <mxPoint x="640" y="540" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="boundary_auth" value="Halaman: Login / Register / Profil" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;verticalAlign=top;opacity=40;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="5" y="-49" width="510" height="225" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_pengguna" value="Halaman: Pengguna Lulusan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;verticalAlign=top;opacity=40;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="5" y="220" width="285" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_lulusan" value="Halaman: Lulusan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;verticalAlign=top;opacity=40;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="305" y="220" width="270" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_kategori" value="Halaman: Kategori" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;verticalAlign=top;dashed=1;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="650" y="26" width="255" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_pertanyaan" value="Halaman: Pertanyaan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;verticalAlign=top;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="650" y="201" width="275" height="425" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_survey" value="Halaman: Survey (Index / Tambah / Edit)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;verticalAlign=top;opacity=40;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="5" y="490" width="290" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary_fillsurvey" value="Halaman: Isi Survey / Report / Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;verticalAlign=top;opacity=40;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="305" y="576" width="280" height="214" as="geometry" />
+        </mxCell>
+        <mxCell id="user" value="User" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="20" y="-19" width="220" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="user_fields" value="- id: bigint&#xa;- name: string&#xa;- email: string&#xa;- password: string&#xa;- email_verified_at: timestamp&#xa;---&#xa;+ hasRole(roleCode): bool&#xa;+ roles(): BelongsToMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="user" vertex="1">
+          <mxGeometry y="26" width="220" height="134" as="geometry" />
+        </mxCell>
+        <mxCell id="role" value="Role" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="280" y="-19" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="role_fields" value="- id: bigint&#xa;- code: string&#xa;- name: string&#xa;---&#xa;+ users(): BelongsToMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="role" vertex="1">
+          <mxGeometry y="26" width="220" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="pengguna" value="PenggunaLulusan" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="20" y="230" width="260" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="pengguna_fields" value="- id: bigint&#xa;- nama_perusahaan: string&#xa;- nama_penyelia: string&#xa;- kontak_penyelia: string&#xa;- email_penyelia: string&#xa;- jumlah_lulusan: integer&#xa;- durasi_lulusan_bekerja: integer&#xa;- nomor_badan_hukum: string&#xa;- alamat_perusahaan: text&#xa;- kontak_perusahaan: string&#xa;- jenis_perusahaan: string&#xa;- cabang_kota: string&#xa;- cabang_negara: string&#xa;---&#xa;+ lulusans(): HasMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="pengguna" vertex="1">
+          <mxGeometry y="26" width="260" height="204" as="geometry" />
+        </mxCell>
+        <mxCell id="lulusan" value="Lulusan" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="320" y="230" width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="lulusan_fields" value="- id: bigint&#xa;- pengguna_lulusan_id: bigint&#xa;- nama: string&#xa;- nim: string&#xa;- program_studi: string&#xa;- fakultas: string&#xa;- tahun_lulus: date&#xa;- status: boolean&#xa;---&#xa;+ pengguna(): BelongsTo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="lulusan" vertex="1">
+          <mxGeometry y="26" width="240" height="154" as="geometry" />
+        </mxCell>
+        <mxCell id="kategori" value="Kategori" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="665" y="56" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="kategori_fields" value="- id: bigint&#xa;- nama_kategori: string&#xa;- deskripsi: text&#xa;---&#xa;+ soal(): HasMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="kategori" vertex="1">
+          <mxGeometry y="26" width="220" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="soal" value="Soal" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="665" y="230" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="soal_fields" value="- id: bigint&#xa;- soal: text&#xa;- kode: string&#xa;- jenis_soal: string&#xa;- kategori_id: bigint&#xa;- peruntukan_fakultas: string&#xa;- is_required: boolean&#xa;- is_active: boolean&#xa;---&#xa;+ kategori(): BelongsTo&#xa;+ jawaban(): HasMany&#xa;+ surveys(): BelongsToMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="soal" vertex="1">
+          <mxGeometry y="26" width="240" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="jawaban" value="Jawaban" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="675" y="460" width="220" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="jawaban_fields" value="- id: bigint&#xa;- soal_id: bigint&#xa;- jawaban: text&#xa;- nilai: integer&#xa;- urutan: integer&#xa;---&#xa;+ soal(): BelongsTo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="jawaban" vertex="1">
+          <mxGeometry y="26" width="220" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="survey" value="Survey" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="20" y="520" width="260" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="survey_fields" value="- id: bigint&#xa;- access_code: string&#xa;- lulusan_id: bigint&#xa;- pengguna_lulusan_id: bigint&#xa;- judul: string&#xa;- deskripsi: text&#xa;- is_completed: boolean&#xa;- is_active: boolean&#xa;---&#xa;+ soals(): BelongsToMany&#xa;+ lulusan(): BelongsTo&#xa;+ penggunaLulusan(): BelongsTo&#xa;+ jawaban(): HasMany" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="survey" vertex="1">
+          <mxGeometry y="26" width="260" height="184" as="geometry" />
+        </mxCell>
+        <mxCell id="respon" value="ResponJawaban" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="320" y="610" width="240" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="respon_fields" value="- id: bigint&#xa;- survey_id: bigint&#xa;- soal_id: bigint&#xa;- jawaban_id: bigint&#xa;- jawaban_text: text&#xa;- responden: string&#xa;---&#xa;+ survey(): BelongsTo&#xa;+ soal(): BelongsTo&#xa;+ jawaban(): BelongsTo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="respon" vertex="1">
+          <mxGeometry y="26" width="240" height="144" as="geometry" />
+        </mxCell>
+        <mxCell id="pivot_userroles" value="&lt;&lt;pivot&gt;&gt;&#xa;user_roles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=2;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="320" y="121" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_survey" value="SurveyService" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+          <mxGeometry x="990" y="20" width="260" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_survey_methods" value="+ createSurvey(array): Survey&#xa;+ submitJawaban(Survey, array): void&#xa;+ createBulkSurveys(array): Collection&#xa;+ updateSurvey(Survey, array): Survey" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="svc_survey" vertex="1">
+          <mxGeometry y="26" width="260" height="134" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_lulusan" value="LulusanService" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+          <mxGeometry x="990" y="210" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_lulusan_methods" value="+ storeLulusan(array): Lulusan&#xa;+ getFilteredLulusan(Request): Collection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="svc_lulusan" vertex="1">
+          <mxGeometry y="26" width="260" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_pengguna" value="PenggunaLulusanService" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+          <mxGeometry x="990" y="340" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_pengguna_methods" value="+ storePengguna(array, Request): PenggunaLulusan&#xa;+ updatePengguna(int, array, Request): void&#xa;+ deletePengguna(int): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="svc_pengguna" vertex="1">
+          <mxGeometry y="26" width="260" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_pertanyaan" value="PertanyaanService" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+          <mxGeometry x="990" y="480" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_pertanyaan_methods" value="+ storePertanyaan(array): Soal&#xa;+ updatePertanyaan(int, array): Soal&#xa;+ toggleStatus(int): void&#xa;+ mapJenisSoal(type): string&#xa;+ saveJawaban(soalId, list, nilai): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="svc_pertanyaan" vertex="1">
+          <mxGeometry y="26" width="260" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_dashboard" value="DashboardService" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" parent="1" vertex="1">
+          <mxGeometry x="990" y="650" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_dashboard_methods" value="+ getDashboardData(filters): array&#xa;+ getFilterOptions(): array&#xa;- baseSurveyQuery(): Builder&#xa;- baseResponQuery(): Builder" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="svc_dashboard" vertex="1">
+          <mxGeometry y="26" width="260" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_survey" value="SurveyController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_survey_methods" value="+ index(): View&#xa;+ add(): View&#xa;+ store(Request): Redirect&#xa;+ verifyCode(Request): Redirect&#xa;+ fill(code): View&#xa;+ submitJawaban(Request): Redirect&#xa;+ edit(id): View&#xa;+ update(Request, id): Redirect&#xa;+ bulkCreate(): View&#xa;+ bulkStore(Request): Redirect&#xa;+ getLulusanByTahun(): JSON&#xa;+ getPerusahaanData(): JSON" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_survey" vertex="1">
+          <mxGeometry y="26" width="260" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_dashboard" value="DashboardController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="220" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_dashboard_methods" value="+ index(): View" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_dashboard" vertex="1">
+          <mxGeometry y="26" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_lulusan" value="LulusanController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="320" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_lulusan_methods" value="+ index(): View&#xa;+ add(): View&#xa;+ create(): View&#xa;+ store(Request): Redirect" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_lulusan" vertex="1">
+          <mxGeometry y="26" width="260" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_pengguna" value="PenggunaLulusanController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="440" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_pengguna_methods" value="+ index(): View&#xa;+ create(): View&#xa;+ store(Request): Redirect&#xa;+ edit(id): View&#xa;+ update(Request, id): Redirect&#xa;+ destroy(id): Redirect" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_pengguna" vertex="1">
+          <mxGeometry y="26" width="260" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_kategori" value="KategoriController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="570" width="260" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_kategori_methods" value="+ index(): View&#xa;+ create(): View&#xa;+ store(Request): Redirect&#xa;+ show(id): View&#xa;+ edit(id): View&#xa;+ update(Request, id): Redirect&#xa;+ destroy(id): Redirect" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_kategori" vertex="1">
+          <mxGeometry y="26" width="260" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_pertanyaan" value="PertanyaanController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="710" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_pertanyaan_methods" value="+ index(): View&#xa;+ add(): View&#xa;+ store(Request): Redirect&#xa;+ edit(id): View&#xa;+ update(Request, id): Redirect&#xa;+ switch(id): Redirect" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_pertanyaan" vertex="1">
+          <mxGeometry y="26" width="260" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_report" value="ReportController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="840" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_report_methods" value="+ index(): View&#xa;+ download(Request): Download" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_report" vertex="1">
+          <mxGeometry y="26" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_profile" value="ProfileController" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="940" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_profile_methods" value="+ edit(Request): View&#xa;+ update(Request): Redirect&#xa;+ destroy(Request): Redirect" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" parent="ctrl_profile" vertex="1">
+          <mxGeometry y="26" width="260" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="Legend" style="swimlane;fontStyle=1;align=center;startSize=26;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="20" y="750" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_content" value="" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry y="26" width="240" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_model" value="" style="rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="36" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_model_txt" value="Authentication Models" style="text;strokeColor=none;fillColor=none;align=left;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry x="36" y="34" width="180" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_green" value="" style="rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="58" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_green_txt" value="Graduate Models" style="text;strokeColor=none;fillColor=none;align=left;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry x="36" y="56" width="180" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_yellow" value="" style="rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="80" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_yellow_txt" value="Survey Question Models" style="text;strokeColor=none;fillColor=none;align=left;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry x="36" y="78" width="180" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_red" value="" style="rounded=0;fillColor=#f8cecc;strokeColor=#b85450;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="102" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_red_txt" value="Survey Response Models" style="text;strokeColor=none;fillColor=none;align=left;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry x="36" y="100" width="180" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_orange" value="" style="rounded=0;fillColor=#f0a30a;strokeColor=#BD7000;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="124" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_orange_txt" value="Services" style="text;strokeColor=none;fillColor=none;align=left;fontSize=11;" parent="legend" vertex="1">
+          <mxGeometry x="36" y="122" width="180" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="r_user_pivot" value="" style="endArrow=ERmany;startArrow=ERmany;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="user" target="pivot_userroles" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_role_pivot" value="" style="endArrow=ERmany;startArrow=ERmany;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="role" target="pivot_userroles" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="141" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_pengguna_lulusan" value="1" style="endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="pengguna" target="lulusan" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_lulusan_survey" value="1" style="endArrow=ERmany;startArrow=ERone;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=0.13;exitY=0.993;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="boundary_lulusan" target="survey" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="520" />
+            </Array>
+            <mxPoint x="340" y="430" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_pengguna_survey" value="" style="endArrow=ERmany;startArrow=ERone;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.003;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="pengguna" target="survey" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="10" y="345" />
+              <mxPoint x="-10" y="345" />
+              <mxPoint x="-10" y="541" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_kat_soal" value="1" style="endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="kategori" target="soal" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_soal_jawaban" value="1" style="endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="soal" target="jawaban" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_survey_pivot2" value="" style="endArrow=ERmany;startArrow=ERmany;exitX=0.996;exitY=0.134;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280.00000000000006" y="560.6560000000002" as="sourcePoint" />
+            <mxPoint x="441.04" y="470" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="361.04" y="560" />
+              <mxPoint x="360" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_soal_pivot2" value="" style="endArrow=ERmany;startArrow=ERmany;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="soal" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="450" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="580" y="330" />
+              <mxPoint x="580" y="430" />
+              <mxPoint x="545" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_survey_respon" value="1" style="endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="survey" target="respon" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_soal_respon" value="" style="endArrow=ERmany;startArrow=ERone;exitX=0.006;exitY=0.584;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.002;entryY=0.122;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="soal_fields" target="respon_fields" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="610" y="352" />
+              <mxPoint x="610" y="654" />
+            </Array>
+            <mxPoint x="610" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_jawaban_respon" value="" style="endArrow=ERmany;startArrow=ERone;exitX=-0.004;exitY=0.556;exitDx=0;exitDy=0;entryX=0.999;entryY=0.14;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" parent="1" source="jawaban_fields" target="respon" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="550" />
+              <mxPoint x="590" y="634" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_ctrl_svc_survey" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ctrl_survey" target="svc_survey" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_ctrl_svc_dash" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ctrl_dashboard" target="svc_dashboard" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_ctrl_svc_lulusan" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ctrl_lulusan" target="svc_lulusan" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_ctrl_svc_pengguna" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ctrl_pengguna" target="svc_pengguna" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_ctrl_svc_pertanyaan" value="uses" style="endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ctrl_pertanyaan" target="svc_pertanyaan" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_svc_model_soal" value="uses" style="endArrow=open;endFill=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="svc_pertanyaan" target="soal" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="550" />
+              <mxPoint x="950" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pivot_surveysoal" value="&lt;&lt;pivot&gt;&gt;&#xa;survey_soal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=2;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="440" y="450" width="140" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sd2" name="SD - Isi Survey">
+    <mxGraphModel dx="2158" dy="1610" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tt" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=16;fontStyle=1;" value="Sequence Diagram: Isi Survey" vertex="1">
+          <mxGeometry height="30" width="500" x="350" y="-40" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=16;" value="User / Browser" vertex="1">
+          <mxGeometry height="40" width="140" x="10" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;fontStyle=1;fontSize=16;" value="SurveyController" vertex="1">
+          <mxGeometry height="40" width="140" x="190" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;fontStyle=1;fontSize=16;" value="SurveyService" vertex="1">
+          <mxGeometry height="40" width="140" x="370" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=16;" value="DB: Survey" vertex="1">
+          <mxGeometry height="40" width="130" x="550" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=16;" value="DB: Soal" vertex="1">
+          <mxGeometry height="40" width="130" x="720" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=16;" value="DB: PenggunaLulusan" vertex="1">
+          <mxGeometry height="40" width="160" x="890" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=16;" value="DB: ResponJawaban" vertex="1">
+          <mxGeometry height="40" width="150" x="1090" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="50" as="sourcePoint" />
+            <mxPoint x="80" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="50" as="sourcePoint" />
+            <mxPoint x="260" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="50" as="sourcePoint" />
+            <mxPoint x="440" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="50" as="sourcePoint" />
+            <mxPoint x="615" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="785" y="50" as="sourcePoint" />
+            <mxPoint x="785" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="50" as="sourcePoint" />
+            <mxPoint x="970" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l7" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;fontSize=16;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1165" y="50" as="sourcePoint" />
+            <mxPoint x="1165" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s1" parent="1" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=16;align=left;" value="[1] Verifikasi Kode Akses" vertex="1">
+          <mxGeometry height="20" width="200" x="6" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="POST /access-survey {code}">
+          <mxGeometry relative="1" x="-0.0111" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="80" y="141" as="sourcePoint" />
+            <mxPoint x="260" y="141" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="Survey::where(access_code).where(is_completed,false).first()">
+          <mxGeometry relative="1" x="-0.0028" y="12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="249" as="sourcePoint" />
+            <mxPoint x="611" y="249" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;strokeColor=#666666;" value="Survey | null">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="611" y="274" as="sourcePoint" />
+            <mxPoint x="256" y="274" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;strokeColor=#b85450;align=left;" value="back() with error &#39;Kode tidak valid / sudah selesai&#39;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="256" y="306" as="sourcePoint" />
+            <mxPoint x="76" y="306" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;" value="redirect /fill-survey/{code}">
+          <mxGeometry relative="1" x="0.0222" y="-14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="347" as="sourcePoint" />
+            <mxPoint x="76" y="347" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s2" parent="1" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=16;align=left;" value="[2] Tampil Form Isi Survey" vertex="1">
+          <mxGeometry height="20" width="200" x="6" y="364" as="geometry" />
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="GET /fill-survey/{code}">
+          <mxGeometry relative="1" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="76" y="394" as="sourcePoint" />
+            <mxPoint x="256" y="394" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="with(lulusan,penggunalulusan).where(access_code).firstOrFail()">
+          <mxGeometry relative="1" x="0.0028" y="12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="434" as="sourcePoint" />
+            <mxPoint x="611" y="434" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;strokeColor=#666666;" value="Survey">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="611" y="459" as="sourcePoint" />
+            <mxPoint x="256" y="459" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="whereHas(surveys, id).where(peruntukan_fakultas).with([jawaban,kategori]).get()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="256" y="494" as="sourcePoint" />
+            <mxPoint x="781" y="494" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;strokeColor=#666666;" value="Soal[]">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="781" y="519" as="sourcePoint" />
+            <mxPoint x="256" y="519" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;" value="return view(&#39;fill_page&#39;, survey, soal)">
+          <mxGeometry relative="1" x="0.0111" y="-11" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="554" as="sourcePoint" />
+            <mxPoint x="76" y="554" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3" parent="1" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=16;align=left;" value="[3] Submit Jawaban" vertex="1">
+          <mxGeometry height="20" width="200" x="6" y="574" as="geometry" />
+        </mxCell>
+        <mxCell id="m12" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="POST /submit-survey/{code} {jawaban[], data_perusahaan}">
+          <mxGeometry relative="1" x="-0.0111" y="15" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="76" y="627" as="sourcePoint" />
+            <mxPoint x="256" y="627" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="submitJawaban(survey, validated)">
+          <mxGeometry relative="1" x="-0.0111" y="15" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="658" as="sourcePoint" />
+            <mxPoint x="436" y="658" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="find(id) → update(nama_penyelia, kontak, email, alamat, ...)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="436" y="684" as="sourcePoint" />
+            <mxPoint x="966" y="684" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="foreach jawaban[] → new ResponJawaban()-&amp;gt;save()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="436" y="724" as="sourcePoint" />
+            <mxPoint x="1161" y="724" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" edge="1" parent="1" style="endArrow=block;endFill=1;fontSize=16;html=1;" value="survey.update([&#39;is_completed&#39; =&amp;gt; true])">
+          <mxGeometry relative="1" x="-0.0057" y="14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="436" y="764" as="sourcePoint" />
+            <mxPoint x="611" y="764" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m17" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;strokeColor=#666666;" value="return survey">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="436" y="804" as="sourcePoint" />
+            <mxPoint x="256" y="804" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;fontSize=16;html=1;" value="redirect(&#39;/&#39;) + &#39;Terima kasih, kuesioner berhasil terkirim!&#39;">
+          <mxGeometry relative="1" y="-12" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="256" y="849" as="sourcePoint" />
+            <mxPoint x="76" y="849" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sd3" name="SD - Kelola Survey">
+    <mxGraphModel dx="1034" dy="1788" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tt" value="Sequence Diagram: Kelola Survey (Admin)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=16;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="350" y="-40" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="10" y="10" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="SurveyController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="170" y="10" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="SurveyService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="350" y="10" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="DB: Survey" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="530" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="DB: Lulusan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="700" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="DB: PenggunaLulusan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="870" y="10" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" value="DB: Soal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="1070" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="50" as="sourcePoint" />
+            <mxPoint x="70" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="50" as="sourcePoint" />
+            <mxPoint x="240" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="50" as="sourcePoint" />
+            <mxPoint x="420" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="50" as="sourcePoint" />
+            <mxPoint x="595" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="765" y="50" as="sourcePoint" />
+            <mxPoint x="765" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="50" as="sourcePoint" />
+            <mxPoint x="950" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l7" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1135" y="50" as="sourcePoint" />
+            <mxPoint x="1135" y="1060" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s1" value="[1] Lihat Daftar Survey" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="60" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="GET /survey" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="90" as="sourcePoint" />
+            <mxPoint x="240" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="Survey::with(lulusan,penggunalulusan).latest().get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="130" as="sourcePoint" />
+            <mxPoint x="595" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="Survey[]" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="158" as="sourcePoint" />
+            <mxPoint x="240" y="158" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="view(&#39;survey.index&#39;, surveys)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="186" as="sourcePoint" />
+            <mxPoint x="70" y="186" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s2" value="[2] Tambah Survey Baru" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="210" width="180" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" value="GET /addsurvey" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="240" as="sourcePoint" />
+            <mxPoint x="240" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="PenggunaLulusan::all()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="278" as="sourcePoint" />
+            <mxPoint x="950" y="278" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="Soal::where(is_active,1).with(jawaban).get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="313" as="sourcePoint" />
+            <mxPoint x="1135" y="313" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="Lulusan::all()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="348" as="sourcePoint" />
+            <mxPoint x="765" y="348" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="view(&#39;survey.add&#39;, perusahaan, daftarSoal, lulusan)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry y="-13" relative="1" as="geometry">
+            <mxPoint x="240" y="383" as="sourcePoint" />
+            <mxPoint x="70" y="383" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="POST /survey/store {judul, lulusan_id, soal_pilihan[], ...}" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0118" y="12" relative="1" as="geometry">
+            <mxPoint x="70" y="423" as="sourcePoint" />
+            <mxPoint x="240" y="423" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="createSurvey(validated)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="463" as="sourcePoint" />
+            <mxPoint x="420" y="463" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="findOrFail(id) → update(data penyelia &amp; perusahaan)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="500" as="sourcePoint" />
+            <mxPoint x="950" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" value="Lulusan::findOrFail(lulusan_id)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="535" as="sourcePoint" />
+            <mxPoint x="765" y="535" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" value="Survey::create({judul, lulusan_id, pengguna_lulusan_id, access_code=random(8)})" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0057" y="10" relative="1" as="geometry">
+            <mxPoint x="420" y="570" as="sourcePoint" />
+            <mxPoint x="595" y="570" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="filter soal by peruntukan_fakultas lulusan → pluck(id)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="605" as="sourcePoint" />
+            <mxPoint x="1135" y="605" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" value="foreach soalTerpilih → DB::insert(&#39;survey_soal&#39;, {survey_id, soal_id})" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0057" y="11" relative="1" as="geometry">
+            <mxPoint x="420" y="640" as="sourcePoint" />
+            <mxPoint x="595" y="640" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m17" value="return Survey" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="675" as="sourcePoint" />
+            <mxPoint x="240" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18" value="redirect /survey + &#39;Survey berhasil dibuat!&#39;" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry y="-12" relative="1" as="geometry">
+            <mxPoint x="240" y="710" as="sourcePoint" />
+            <mxPoint x="70" y="710" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3" value="[3] Bulk Create Survey per Tahun" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="735" width="220" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m19" value="GET /survey/bulk" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="765" as="sourcePoint" />
+            <mxPoint x="240" y="765" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m20" value="Lulusan::selectRaw(EXTRACT YEAR FROM tahun_lulus).distinct().pluck()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="803" as="sourcePoint" />
+            <mxPoint x="765" y="803" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m21" value="Soal::where(is_active,1).get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="838" as="sourcePoint" />
+            <mxPoint x="1135" y="838" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m22" value="view(&#39;survey.bulk&#39;, tahunList, daftarSoal)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry y="-12" relative="1" as="geometry">
+            <mxPoint x="240" y="873" as="sourcePoint" />
+            <mxPoint x="70" y="873" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m23" value="POST /survey/bulk {tahun_lulus, soal_pilihan[], judul, ...}" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry y="12" relative="1" as="geometry">
+            <mxPoint x="70" y="913" as="sourcePoint" />
+            <mxPoint x="240" y="913" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m24" value="createBulkSurveys(validated)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="950" as="sourcePoint" />
+            <mxPoint x="420" y="950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m25" value="Lulusan::where(tahun_lulus).whereNotNull(pengguna_lulusan_id).get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="988" as="sourcePoint" />
+            <mxPoint x="765" y="988" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m26" value="foreach lulusan: filter soal by fakultas → Survey::create() + insert survey_soal" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0057" y="11" relative="1" as="geometry">
+            <mxPoint x="420" y="1020" as="sourcePoint" />
+            <mxPoint x="595" y="1020" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m27" value="return Survey[] (N surveys dibuat)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="1048" as="sourcePoint" />
+            <mxPoint x="240" y="1048" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m28" value="redirect /survey + &#39;Berhasil membuat N survey&#39;" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry y="-12" relative="1" as="geometry">
+            <mxPoint x="240" y="1075" as="sourcePoint" />
+            <mxPoint x="70" y="1075" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sd4" name="SD - Kelola Pertanyaan">
+    <mxGraphModel dx="1448" dy="2035" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tt" value="Sequence Diagram: Kelola Pertanyaan (Admin)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=16;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="250" y="-40" width="550" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="10" y="10" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="PertanyaanController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="170" y="10" width="155" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="PertanyaanService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="365" y="10" width="145" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="DB: Kategori" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="550" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="DB: Soal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="720" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="DB: Jawaban" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="890" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="50" as="sourcePoint" />
+            <mxPoint x="70" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="50" as="sourcePoint" />
+            <mxPoint x="247" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="50" as="sourcePoint" />
+            <mxPoint x="437" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="50" as="sourcePoint" />
+            <mxPoint x="615" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="785" y="50" as="sourcePoint" />
+            <mxPoint x="785" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="955" y="50" as="sourcePoint" />
+            <mxPoint x="955" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s1" value="[1] Lihat Daftar Pertanyaan" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="60" width="190" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="GET /pertanyaan" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="90" as="sourcePoint" />
+            <mxPoint x="247" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="Soal::with(&#39;kategori&#39;).latest().get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="128" as="sourcePoint" />
+            <mxPoint x="785" y="128" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="Soal[]" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="785" y="155" as="sourcePoint" />
+            <mxPoint x="247" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="view(&#39;pertanyaan.index&#39;, soal)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="183" as="sourcePoint" />
+            <mxPoint x="70" y="183" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s2" value="[2] Tambah Pertanyaan Baru" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="208" width="190" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" value="GET /addquestion" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="238" as="sourcePoint" />
+            <mxPoint x="247" y="238" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="Kategori::all()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="275" as="sourcePoint" />
+            <mxPoint x="615" y="275" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="Kategori[]" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="300" as="sourcePoint" />
+            <mxPoint x="247" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="view(&#39;pertanyaan.add&#39;, kategoris)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="328" as="sourcePoint" />
+            <mxPoint x="70" y="328" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="POST /savequestion {question, type, kategori_id, jawaban[], nilai[]}" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0395" y="14" relative="1" as="geometry">
+            <mxPoint x="70" y="368" as="sourcePoint" />
+            <mxPoint x="247" y="368" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="storePertanyaan(data)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="408" as="sourcePoint" />
+            <mxPoint x="437" y="408" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="mapJenisSoal(type) → &#39;multiple_choice&#39; | &#39;essay&#39; | &#39;rating&#39;" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#999999;" parent="1" edge="1">
+          <mxGeometry y="112" relative="1" as="geometry">
+            <mxPoint x="437" y="438" as="sourcePoint" />
+            <mxPoint x="437" y="438" as="targetPoint">
+              <Array as="points">
+                <mxPoint x="530" y="438" />
+                <mxPoint x="530" y="438" />
+              </Array>
+            </mxPoint>
+            <mxPoint x="111" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11b" value="mapJenisSoal(type)" style="endArrow=block;endFill=1;fontSize=10;html=1;exitX=1;exitY=0.5;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="443" as="sourcePoint" />
+            <mxPoint x="617" y="444" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11c" value="jenis soal" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#999999;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="458" as="sourcePoint" />
+            <mxPoint x="437" y="458" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="Soal::create({soal, kategori_id, jenis_soal, peruntukan_fakultas, kode, is_active})" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0057" y="-3" relative="1" as="geometry">
+            <mxPoint x="437" y="490" as="sourcePoint" />
+            <mxPoint x="785" y="490" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" value="Soal" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="785" y="515" as="sourcePoint" />
+            <mxPoint x="437" y="515" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="alt2" value="opt  [jenis = multiple_choice]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=4;fontSize=10;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="330" y="523" width="640" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="m14" value="saveJawaban(): foreach jawaban[] → Jawaban::create({soal_id, jawaban, nilai, urutan})" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="548" as="sourcePoint" />
+            <mxPoint x="955" y="548" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="return Soal" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="590" as="sourcePoint" />
+            <mxPoint x="247" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" value="redirect /pertanyaan + &#39;Soal berhasil disimpan!&#39;" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0056" y="-11" relative="1" as="geometry">
+            <mxPoint x="247" y="625" as="sourcePoint" />
+            <mxPoint x="70" y="625" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3" value="[3] Toggle Status Aktif Soal" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="650" width="190" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m17" value="GET /pertanyaan/{id}/switch" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="680" as="sourcePoint" />
+            <mxPoint x="247" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18" value="toggleStatus(id)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="718" as="sourcePoint" />
+            <mxPoint x="437" y="718" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m19" value="Soal::findOrFail(id) → is_active = !is_active → save()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="755" as="sourcePoint" />
+            <mxPoint x="785" y="755" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m20" value="return Soal" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="790" as="sourcePoint" />
+            <mxPoint x="247" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m21" value="redirect back + &#39;Status berhasil diperbarui!&#39;" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="828" as="sourcePoint" />
+            <mxPoint x="70" y="828" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="sd5" name="SD - Dashboard &amp; Report">
+    <mxGraphModel dx="499" dy="1468" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tt" value="Sequence Diagram: Dashboard &amp; Report (Admin)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=16;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="300" y="-40" width="600" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="10" y="10" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="DashboardController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="170" y="10" width="155" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="DashboardService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="365" y="10" width="145" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="DB: Survey" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="550" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="DB: ResponJawaban" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="720" y="10" width="145" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="DB: Lulusan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="905" y="10" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="50" as="sourcePoint" />
+            <mxPoint x="70" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="50" as="sourcePoint" />
+            <mxPoint x="247" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="50" as="sourcePoint" />
+            <mxPoint x="437" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="50" as="sourcePoint" />
+            <mxPoint x="615" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="792" y="50" as="sourcePoint" />
+            <mxPoint x="792" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="50" as="sourcePoint" />
+            <mxPoint x="970" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s1" value="[1] Lihat Dashboard" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="60" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="GET /dashboard" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="90" as="sourcePoint" />
+            <mxPoint x="247" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="getDashboardData(filters)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="128" as="sourcePoint" />
+            <mxPoint x="437" y="128" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="baseSurveyQuery().count() → totalSurvey" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0112" y="11" relative="1" as="geometry">
+            <mxPoint x="437" y="165" as="sourcePoint" />
+            <mxPoint x="615" y="165" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="baseSurveyQuery().distinct().count(lulusan_id) → totalLulusan" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0112" y="13" relative="1" as="geometry">
+            <mxPoint x="437" y="198" as="sourcePoint" />
+            <mxPoint x="615" y="198" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="baseResponQuery().avg(jawaban.nilai) → rataKeseluruhan" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="233" as="sourcePoint" />
+            <mxPoint x="792" y="233" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="baseResponQuery().join(kategoris).groupBy(kategori).avg(nilai) → kategoriStats" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0085" y="11" relative="1" as="geometry">
+            <mxPoint x="437" y="268" as="sourcePoint" />
+            <mxPoint x="792" y="268" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="baseResponQuery().join(kategoris).groupBy().COUNT(nilai=4,3,2,1) → kepuasanPerKategori" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="0.0085" y="13" relative="1" as="geometry">
+            <mxPoint x="437" y="303" as="sourcePoint" />
+            <mxPoint x="792" y="303" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="Lulusan::latest().take(10).get() → daftarLulusan" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="338" as="sourcePoint" />
+            <mxPoint x="970" y="338" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="join(respon_jawaban).where(jenis_soal=essay).limit(5) → komentarTerbaru" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="437" y="373" as="sourcePoint" />
+            <mxPoint x="792" y="373" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="getFilterOptions(): tahunList, fakultasList, prodiList, jenisPerusahaanList" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry x="-0.0112" y="10" relative="1" as="geometry">
+            <mxPoint x="437" y="408" as="sourcePoint" />
+            <mxPoint x="615" y="408" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="return compact(totalSurvey, totalLulusan, rataKeseluruhan, kategoriStats, kepuasan, ...)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#666666;" parent="1" edge="1">
+          <mxGeometry x="0.0105" y="-11" relative="1" as="geometry">
+            <mxPoint x="437" y="450" as="sourcePoint" />
+            <mxPoint x="247" y="450" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="view(&#39;dashboard.index&#39;, data)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="488" as="sourcePoint" />
+            <mxPoint x="70" y="488" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s2" value="[2] Lihat &amp; Download Report" style="text;html=1;strokeColor=none;fillColor=#e0e0e0;fontStyle=1;fontSize=10;align=left;" parent="1" vertex="1">
+          <mxGeometry x="10" y="515" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" value="ReportController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="170" y="510" width="155" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="l7" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#aaaaaa;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="545" as="sourcePoint" />
+            <mxPoint x="247" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" value="GET /report" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="555" as="sourcePoint" />
+            <mxPoint x="247" y="555" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" value="Survey::with(lulusan,penggunalulusan,soals,jawaban).where(filters).get()" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="593" as="sourcePoint" />
+            <mxPoint x="615" y="593" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="view(&#39;report.index&#39;, surveys)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="628" as="sourcePoint" />
+            <mxPoint x="70" y="628" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" value="GET /report/download {filters}" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="70" y="668" as="sourcePoint" />
+            <mxPoint x="247" y="668" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m17" value="query survey + respon_jawaban with filters" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="705" as="sourcePoint" />
+            <mxPoint x="792" y="705" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18" value="generate Excel / PDF (maatwebsite/excel atau dompdf)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#999999;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="743" as="sourcePoint" />
+            <mxPoint x="247" y="743" as="targetPoint">
+              <Array as="points">
+                <mxPoint x="350" y="743" />
+                <mxPoint x="350" y="743" />
+              </Array>
+            </mxPoint>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18b" value="generate file (Excel/PDF)" style="endArrow=block;endFill=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="748" as="sourcePoint" />
+            <mxPoint x="350" y="748" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m18c" value="file" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;strokeColor=#999999;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="763" as="sourcePoint" />
+            <mxPoint x="247" y="763" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m19" value="return download(file)" style="endArrow=open;endFill=0;dashed=1;fontSize=10;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="247" y="808" as="sourcePoint" />
+            <mxPoint x="70" y="808" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

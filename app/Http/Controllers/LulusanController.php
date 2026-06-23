@@ -37,6 +37,13 @@ class LulusanController extends Controller
         return view('lulusan.create', compact('perusahaan'));
     }
 
+    public function show($id)
+    {
+        $lulusan = \App\Models\lulusan::with('pengguna')->findOrFail($id);
+
+        return view('admin.lulusan.show', compact('lulusan'));
+    }
+
     public function store(LulusanStoreRequest $request)
     {
         try {

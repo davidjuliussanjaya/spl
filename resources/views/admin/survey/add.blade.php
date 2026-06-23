@@ -174,9 +174,13 @@
                                             </td>
                                             <td>{{ $s->soal }}</td>
                                             <td>
-                                                <span class="badge {{ $s->jenis_soal == 'essay' ? 'bg-info' : 'bg-success' }}">
-                                                    {{ ucfirst($s->jenis_soal) }}
-                                                </span>
+                                                @if($s->jenis_soal === 'rating')
+                                                    <span class="badge bg-success">Rating</span>
+                                                @elseif($s->jenis_soal === 'multiple_choice')
+                                                    <span class="badge bg-primary">Multiple Choice</span>
+                                                @else
+                                                    <span class="badge bg-info">Essay</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 @php $pf = $s->peruntukan_fakultas ?? 'Umum'; @endphp

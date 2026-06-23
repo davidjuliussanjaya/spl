@@ -9,7 +9,11 @@
       "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -Filter \"*.php\")",
       "Bash(Select-Object Name)",
       "Bash(Format-Table -AutoSize)",
-      "PowerShell(Test-Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\"; ls \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })"
+      "PowerShell(Test-Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\"; ls \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })",
+      "Bash(rm \"c:/laragon/www/spl/database/seeders/PenggunaLulusanSeeder.php\" \"c:/laragon/www/spl/database/seeders/DemoDataSeeder.php\" \"c:/laragon/www/spl/database/seeders/SoalSeeder.php\" \"c:/laragon/www/spl/database/seeders/ExcelDataSeeder.php\")"
+    ],
+    "additionalDirectories": [
+      "c:\\laragon\\www\\spl\\database\\seeders"
     ]
   }
 }

@@ -43,6 +43,7 @@
                                 <th>Penyelia (Atasan)</th>
                                 <th>Kontak/Email</th>
                                 <th>Jenis</th>
+                                <th>Jumlah Lulusan</th>
                                 <th>Cakupan</th>
                                 <th>Aksi</th>
                             </tr>
@@ -54,13 +55,27 @@
                                     <span class="fw-bold text-primary">{{ $item->nama_perusahaan }}</span><br>
                                     <small class="text-muted">{{ Str::limit($item->alamat_perusahaan, 40) }}</small>
                                 </td>
-                                <td>{{ $item->nama_penyelia }}</td>
+                                <td>
+                                    {{ $item->nama_penyelia }}
+                                    @if($item->jabatan_penyelia)
+                                    <br><small class="text-muted">{{ $item->jabatan_penyelia }}</small>
+                                    @endif
+                                </td>
                                 <td>
                                     <i class="bi bi-envelope small"></i> {{ $item->email_penyelia }}<br>
                                     <i class="bi bi-telephone small"></i> {{ $item->kontak_penyelia ?? '-' }}
                                 </td>
                                 <td>
                                     <span class="badge bg-secondary">{{ $item->jenis_perusahaan ?? '-' }}</span>
+                                </td>
+                                <td class="text-center">
+                                    @php
+                                        $jumlahTampil = $item->jumlah_lulusan ?? $item->lulusans_count;
+                                    @endphp
+                                    <span class="fw-bold text-primary">{{ $jumlahTampil }}</span>
+                                    @if($item->jumlah_lulusan && $item->jumlah_lulusan != $item->lulusans_count)
+                                    <br><small class="text-muted">(sistem: {{ $item->lulusans_count }})</small>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($item->cabang_negara)

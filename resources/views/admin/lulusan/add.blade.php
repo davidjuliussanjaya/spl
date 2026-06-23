@@ -43,9 +43,9 @@
                                     <label class="form-label small fw-bold">Fakultas</label>
                                     <select name="fakultas" class="form-select modern-input" required>
                                         <option value="" selected disabled>Pilih Fakultas</option>
-                                        <option value="Fakultas Teknologi dan Informatika">Fakultas Teknologi dan Informatika</option>
-                                        <option value="Fakultas Desain dan Industri Kreatif">Fakultas Desain dan Industri Kreatif</option>
-                                        <option value="Fakultas Ekonomi dan Bisnis">Fakultas Ekonomi dan Bisnis</option>
+                                        <option value="FTI">Fakultas Teknologi dan Informatika</option>
+                                        <option value="FDIK">Fakultas Desain dan Industri Kreatif</option>
+                                        <option value="FEB">Fakultas Ekonomi dan Bisnis</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">

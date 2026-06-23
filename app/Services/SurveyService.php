@@ -68,35 +68,82 @@ class SurveyService
                 $pengguna = penggunalulusan::find($survey->pengguna_lulusan_id);
                 if ($pengguna) {
                     $pengguna->update([
-                        'nama_penyelia'     => $data['nama_pengisi'],
-                        'kontak_penyelia'   => $data['hp_pengisi'] ?? $pengguna->kontak_penyelia,
-                        'email_penyelia'    => $data['email_pengisi'] ?? $pengguna->email_penyelia,
-                        'nama_perusahaan'   => $data['nama_perusahaan'] ?? $pengguna->nama_perusahaan,
-                        'nomor_badan_hukum' => $data['nomor_badan_hukum'] ?? $pengguna->nomor_badan_hukum,
-                        'jenis_perusahaan'  => $data['jenis_perusahaan'] ?? $pengguna->jenis_perusahaan,
-                        'alamat_perusahaan' => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
-                        'kontak_perusahaan' => $data['kontak_perusahaan'] ?? $pengguna->kontak_perusahaan,
-                        'cabang_kota'       => $data['cabang_kota'] ?? $pengguna->cabang_kota,
-                        'cabang_negara'     => $data['cabang_negara'] ?? $pengguna->cabang_negara,
+                        'nama_penyelia'         => $data['nama_pengisi'],
+                        'jabatan_penyelia'      => $data['jabatan_pengisi'] ?? $pengguna->jabatan_penyelia,
+                        'kontak_penyelia'       => $data['hp_pengisi'] ?? $pengguna->kontak_penyelia,
+                        'email_penyelia'        => $data['email_pengisi'] ?? $pengguna->email_penyelia,
+                        'nama_perusahaan'       => $data['nama_perusahaan'] ?? $pengguna->nama_perusahaan,
+                        'nomor_badan_hukum'     => $data['nomor_badan_hukum'] ?? $pengguna->nomor_badan_hukum,
+                        'jenis_perusahaan'      => $data['jenis_perusahaan'] ?? $pengguna->jenis_perusahaan,
+                        'alamat_perusahaan'     => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
+                        'kontak_perusahaan'     => $data['kontak_perusahaan'] ?? $pengguna->kontak_perusahaan,
+                        'cabang_kota'           => $data['cabang_kota'] ?? $pengguna->cabang_kota,
+                        'cabang_negara'         => $data['cabang_negara'] ?? $pengguna->cabang_negara,
+                        'jumlah_lulusan'        => $data['jumlah_lulusan_bekerja'] ?? $pengguna->jumlah_lulusan,
                     ]);
                 }
             }
 
-            foreach ($data['jawaban'] as $soal_id => $isi_jawaban) {
-                $soal = soal::find($soal_id);
-                if (!$soal) continue;
+            $isFirstRecord = true;
+
+            // Rating & Essay
+            foreach ($data['jawaban'] ?? [] as $soal_id => $isi_jawaban) {
+                $soalModel = soal::find($soal_id);
+                if (!$soalModel) continue;
 
                 $respon = new ResponJawaban();
                 $respon->survey_id = $survey->id;
                 $respon->soal_id   = $soal_id;
                 $respon->responden = $data['nama_pengisi'];
 
-                if ($soal->jenis_soal == 'essay') {
+                if ($isFirstRecord) {
+                    $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
+                    $isFirstRecord = false;
+                }
+
+                if ($soalModel->jenis_soal === 'essay') {
                     $respon->jawaban_text = $isi_jawaban;
                     $respon->jawaban_id   = null;
                 } else {
-                    $respon->jawaban_id   = $isi_jawaban; 
+                    $respon->jawaban_id   = $isi_jawaban;
                     $respon->jawaban_text = null;
+                }
+
+                $respon->save();
+            }
+
+            // Multiple Choice: simpan satu baris per jawaban yang dicentang
+            foreach ($data['mc'] ?? [] as $soal_id => $jawaban_ids) {
+                foreach ($jawaban_ids as $jawaban_id) {
+                    $respon = new ResponJawaban();
+                    $respon->survey_id  = $survey->id;
+                    $respon->soal_id    = $soal_id;
+                    $respon->responden  = $data['nama_pengisi'];
+                    $respon->jawaban_id = $jawaban_id;
+
+                    if ($isFirstRecord) {
+                        $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
+                        $isFirstRecord = false;
+                    }
+
+                    $respon->save();
+                }
+            }
+
+            // Multiple Choice: simpan teks "Lainnya" jika diisi
+            foreach ($data['mc_custom'] ?? [] as $soal_id => $custom_text) {
+                if (empty(trim($custom_text ?? ''))) continue;
+
+                $respon = new ResponJawaban();
+                $respon->survey_id    = $survey->id;
+                $respon->soal_id      = $soal_id;
+                $respon->responden    = $data['nama_pengisi'];
+                $respon->jawaban_id   = null;
+                $respon->jawaban_text = trim($custom_text);
+
+                if ($isFirstRecord) {
+                    $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
+                    $isFirstRecord = false;
                 }
 
                 $respon->save();

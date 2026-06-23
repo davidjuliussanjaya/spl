@@ -13,7 +13,8 @@ class ResponJawaban extends Model
         'soal_id',
         'jawaban_id',
         'jawaban_text',
-        'responden'
+        'responden',
+        'jumlah_lulusan_bekerja',
     ];
 
     // Relasi ke Survey (sesi pengisian)

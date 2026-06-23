@@ -114,14 +114,17 @@ public function fill($code)
     }
 public function edit($id)
 {
-    // Ambil survey berserta relasinya
-    $survey = Survey::with(['lulusan', 'penggunalulusan', 'soals'])->findOrFail($id);
-    
+    $survey = Survey::with(['lulusan', 'penggunalulusan', 'soals.kategori', 'soals.jawaban'])->findOrFail($id);
+
     $perusahaan = PenggunaLulusan::all();
-    $lulusan = lulusan::all();
+    $lulusan    = lulusan::all();
     $daftarSoal = Soal::where('is_active', 1)->get();
 
-    return view('admin.survey.view', compact('survey', 'perusahaan', 'lulusan', 'daftarSoal'));
+    $responGrouped = $survey->is_completed
+        ? ResponJawaban::with('jawaban')->where('survey_id', $id)->get()->groupBy('soal_id')
+        : collect();
+
+    return view('admin.survey.view', compact('survey', 'perusahaan', 'lulusan', 'daftarSoal', 'responGrouped'));
 }
 
     public function bulkCreate()
@@ -175,6 +178,23 @@ public function edit($id)
             return redirect()->route('survey.index')->with('success', 'Data Survey berhasil diperbarui.');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function destroy($id)
+    {
+        $survey = Survey::findOrFail($id);
+
+        try {
+            DB::transaction(function () use ($survey) {
+                ResponJawaban::where('survey_id', $survey->id)->delete();
+                $survey->soals()->detach();
+                $survey->delete();
+            });
+
+            return redirect()->route('survey')->with('success', 'Survey berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus survey: ' . $e->getMessage());
         }
     }
 }

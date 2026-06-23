@@ -20,7 +20,7 @@ class PenggunaLulusanController extends Controller
     public function index()
     {
         // Mengambil semua data pengguna lulusan
-        $pengguna = PenggunaLulusan::latest()->get();
+        $pengguna = PenggunaLulusan::withCount('lulusans')->latest()->get();
         return view('admin.penggunalulusan.index', compact('pengguna'));
     }
 

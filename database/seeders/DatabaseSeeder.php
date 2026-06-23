@@ -61,6 +61,9 @@ class DatabaseSeeder extends Seeder
             'assigned_at' => now()
         ]]);
 
-        $this->call(DemoDataSeeder::class);
+        $this->call([
+            PenggunaLulusanSeeder::class,
+            LulusanSeeder::class,
+        ]);
     }
 }

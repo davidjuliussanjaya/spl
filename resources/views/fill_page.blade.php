@@ -269,6 +269,35 @@
             opacity: 0.75;
         }
 
+        /* Multiple Choice */
+        .mc-option .form-check-input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--dinamika-maroon);
+        }
+        .mc-option .form-check-label {
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding-top: 1px;
+        }
+        .mc-other-input {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .mc-other-input:focus {
+            border-color: var(--dinamika-maroon);
+            box-shadow: 0 0 0 3px rgba(154, 3, 30, 0.1);
+            outline: none;
+        }
+        .mc-other-input:disabled {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+        }
+
         /* Button */
         .btn-submit {
             background-color: var(--dinamika-maroon);
@@ -353,14 +382,43 @@
                     </div>
                 </div>
 
+                @php
+                    $autoJumlah = $survey->penggunalulusan->lulusans->count();
+                    $storedJumlah = $survey->penggunalulusan->jumlah_lulusan;
+                    $defaultJumlah = $storedJumlah ?? $autoJumlah;
+                @endphp
+
                 <div class="p-3 bg-light rounded border mb-3">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-building fs-3 text-secondary me-3"></i>
-                        <div>
+                        <div class="flex-grow-1">
                             <div class="fw-bold">{{ $survey->penggunalulusan->nama_perusahaan ?? 'Nama Perusahaan Belum Tersedia' }}</div>
                             <div class="small text-muted">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
                         </div>
+                        <div class="text-end ms-3">
+                            <div class="fw-bold text-primary fs-4">{{ $defaultJumlah }}</div>
+                            <div class="small text-muted">lulusan tercatat</div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="mb-3 p-3 border rounded bg-white">
+                    <label class="form-label small text-secondary fw-bold mb-1">
+                        <i class="bi bi-people-fill me-1 text-primary"></i>
+                        Jumlah Lulusan yang Pernah Bekerja di Instansi Ini
+                    </label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" name="jumlah_lulusan_bekerja" class="form-control"
+                               style="max-width: 160px"
+                               min="0" value="{{ $defaultJumlah }}"
+                               placeholder="Jumlah orang...">
+                        @if($autoJumlah > 0)
+                        <span class="text-muted small">
+                            (sistem mencatat <strong>{{ $autoJumlah }}</strong> lulusan)
+                        </span>
+                        @endif
+                    </div>
+                    <div class="form-text">Ubah jika jumlah sebenarnya berbeda dari data sistem.</div>
                 </div>
 
                 <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerusahaan" aria-expanded="false" aria-controls="collapsePerusahaan">
@@ -379,8 +437,55 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary fw-bold mb-1">Jenis Perusahaan</label>
-                            <input type="text" name="jenis_perusahaan" class="form-control" placeholder="BUMN / Swasta / dll..." value="{{ $survey->penggunalulusan->jenis_perusahaan ?? '' }}">
+                            @php
+                                $jenisOptions = [
+                                    'Teknologi Informasi / Software / Digital',
+                                    'Keuangan / Perbankan / Bisnis',
+                                    'Manufaktur / Industri',
+                                    'Perdagangan / Retail / E-Commerce',
+                                    'Media / Kreatif / Desain',
+                                    'Jasa (konsultan, pendidikan, dll)',
+                                    'Pemerintahan',
+                                    'BUMN / BUMD',
+                                ];
+                                $currentJenis = $survey->penggunalulusan->jenis_perusahaan ?? '';
+                                $isLainnya = $currentJenis !== '' && !in_array($currentJenis, $jenisOptions);
+                            @endphp
+                            <select name="jenis_perusahaan" id="fill_jenis_select" class="form-control"
+                                    onchange="document.getElementById('fill_jenis_lainnya_wrap').classList.toggle('d-none',this.value!=='_lainnya_')">
+                                <option value="" disabled {{ !$currentJenis ? 'selected' : '' }}>Pilih Jenis Perusahaan</option>
+                                <option value="Teknologi Informasi / Software / Digital" {{ $currentJenis === 'Teknologi Informasi / Software / Digital' ? 'selected' : '' }}>Teknologi Informasi / Software / Digital</option>
+                                <option value="Keuangan / Perbankan / Bisnis" {{ $currentJenis === 'Keuangan / Perbankan / Bisnis' ? 'selected' : '' }}>Keuangan / Perbankan / Bisnis</option>
+                                <option value="Manufaktur / Industri" {{ $currentJenis === 'Manufaktur / Industri' ? 'selected' : '' }}>Manufaktur / Industri</option>
+                                <option value="Perdagangan / Retail / E-Commerce" {{ $currentJenis === 'Perdagangan / Retail / E-Commerce' ? 'selected' : '' }}>Perdagangan / Retail / E-Commerce</option>
+                                <option value="Media / Kreatif / Desain" {{ $currentJenis === 'Media / Kreatif / Desain' ? 'selected' : '' }}>Media / Kreatif / Desain</option>
+                                <option value="Jasa (konsultan, pendidikan, dll)" {{ $currentJenis === 'Jasa (konsultan, pendidikan, dll)' ? 'selected' : '' }}>Jasa (konsultan, pendidikan, dll)</option>
+                                <option value="Pemerintahan" {{ $currentJenis === 'Pemerintahan' ? 'selected' : '' }}>Pemerintahan</option>
+                                <option value="BUMN / BUMD" {{ $currentJenis === 'BUMN / BUMD' ? 'selected' : '' }}>BUMN / BUMD</option>
+                                <option value="_lainnya_" {{ $isLainnya ? 'selected' : '' }}>Lainnya...</option>
+                            </select>
+                            <div id="fill_jenis_lainnya_wrap" class="mt-1 {{ $isLainnya ? '' : 'd-none' }}">
+                                <input type="text" id="fill_jenis_lainnya_text" class="form-control form-control-sm"
+                                       placeholder="Sebutkan jenis perusahaan..."
+                                       value="{{ $isLainnya ? $currentJenis : '' }}"
+                                       oninput="document.getElementById('fill_jenis_select').value='_lainnya_'">
+                            </div>
                         </div>
+                        <script>
+                        document.querySelector('form').addEventListener('submit', function(e) {
+                            var sel = document.getElementById('fill_jenis_select');
+                            var text = document.getElementById('fill_jenis_lainnya_text');
+                            if (sel && sel.value === '_lainnya_') {
+                                if (!text.value.trim()) {
+                                    e.preventDefault();
+                                    text.focus();
+                                    text.classList.add('is-invalid');
+                                    return;
+                                }
+                                sel.value = text.value.trim();
+                            }
+                        });
+                        </script>
                         <div class="col-md-12">
                             <label class="form-label small text-secondary fw-bold mb-1">Alamat Perusahaan</label>
                             <textarea name="alamat_perusahaan" class="form-control" rows="2" placeholder="Alamat lengkap...">{{ $survey->penggunalulusan->alamat_perusahaan ?? '' }}</textarea>
@@ -390,12 +495,12 @@
                             <input type="text" name="kontak_perusahaan" class="form-control" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small text-secondary fw-bold mb-1">Cabang Kota</label>
-                            <input type="text" name="cabang_kota" class="form-control" placeholder="Kota..." value="{{ $survey->penggunalulusan->cabang_kota ?? '' }}">
+                            <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Nasional</label>
+                            <input type="number" name="cabang_kota" class="form-control" min="0" placeholder="Jumlah cabang..." value="{{ $survey->penggunalulusan->cabang_kota ?? 0 }}">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small text-secondary fw-bold mb-1">Cabang Negara</label>
-                            <input type="text" name="cabang_negara" class="form-control" placeholder="Negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? '' }}">
+                            <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Luar Negeri</label>
+                            <input type="number" name="cabang_negara" class="form-control" min="0" placeholder="Jumlah negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? 0 }}">
                         </div>
                     </div>
                 </div>
@@ -408,9 +513,13 @@
                 </div>
                 
                 <div class="row g-3">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Nama Lengkap Penyelia <span class="text-danger">*</span></label>
                         <input type="text" name="nama_pengisi" class="form-control" required placeholder="Nama Anda..." value="{{ $survey->penggunalulusan->nama_penyelia ?? '' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-secondary fw-bold mb-1">Jabatan / Posisi</label>
+                        <input type="text" name="jabatan_pengisi" class="form-control" placeholder="Contoh: HRD Manager, Direktur..." value="{{ $survey->penggunalulusan->jabatan_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Nomor HP</label>
@@ -429,27 +538,29 @@
 
             @foreach($groupedSoal as $namaKategori => $soalGroup)
                 @php
-                    $mcSoal    = $soalGroup->filter(fn($s) => $s->jenis_soal != 'essay')->values();
-                    $essaySoal = $soalGroup->filter(fn($s) => $s->jenis_soal == 'essay')->values();
-                    $firstMc   = $mcSoal->first();
+                    $ratingSoal      = $soalGroup->filter(fn($s) => $s->jenis_soal === 'rating')->values();
+                    $multiChoiceSoal = $soalGroup->filter(fn($s) => $s->jenis_soal === 'multiple_choice')->values();
+                    $essaySoal       = $soalGroup->filter(fn($s) => $s->jenis_soal === 'essay')->values();
+                    $firstRating     = $ratingSoal->first();
                 @endphp
 
                 <div class="card-custom p-4 p-md-5">
 
-                    @if($mcSoal->count() > 0)
+                    {{-- RATING: tabel radio button, pilih salah satu --}}
+                    @if($ratingSoal->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-bordered survey-table mb-0">
                                 <thead>
                                     <tr>
-                                        <th colspan="{{ 2 + ($firstMc ? $firstMc->jawaban->count() : 0) }}">
+                                        <th colspan="{{ 2 + ($firstRating ? $firstRating->jawaban->count() : 0) }}">
                                             {{ $namaKategori }}
                                         </th>
                                     </tr>
                                     <tr>
                                         <th class="td-no">No</th>
                                         <th>Pertanyaan</th>
-                                        @if($firstMc)
-                                            @foreach($firstMc->jawaban as $j)
+                                        @if($firstRating)
+                                            @foreach($firstRating->jawaban as $j)
                                                 <th class="th-option">
                                                     {{ $j->jawaban }}
                                                     @if($j->nilai)
@@ -461,7 +572,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($mcSoal as $s)
+                                    @foreach($ratingSoal as $s)
                                         <tr>
                                             <td class="td-no">{{ $loop->iteration }}</td>
                                             <td>
@@ -483,9 +594,69 @@
                         </div>
                     @endif
 
+                    {{-- MULTIPLE CHOICE: checkbox beberapa pilihan + kolom "Lainnya" teks bebas --}}
+                    @if($multiChoiceSoal->count() > 0)
+                        <div class="{{ $ratingSoal->count() > 0 ? 'mt-4 pt-4 border-top' : '' }}">
+                            @if($ratingSoal->count() == 0)
+                                <div class="kategori-title mb-4">
+                                    <h5 class="mb-0">{{ $namaKategori }}</h5>
+                                </div>
+                            @endif
+
+                            @foreach($multiChoiceSoal as $s)
+                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
+                                    <p class="fw-bold text-dark mb-3">
+                                        <span class="text-dinamika me-1">{{ $loop->iteration }}.</span>
+                                        {{ $s->soal }}
+                                        @if($s->is_required) <span class="text-danger">*</span> @endif
+                                    </p>
+                                    <div class="ps-2">
+                                        @foreach($s->jawaban as $j)
+                                            <div class="form-check mc-option mb-2">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="mc[{{ $s->id }}][]"
+                                                       value="{{ $j->id }}"
+                                                       id="mc_{{ $s->id }}_{{ $j->id }}">
+                                                <label class="form-check-label" for="mc_{{ $s->id }}_{{ $j->id }}">
+                                                    {{ $j->jawaban }}
+                                                    @if($j->nilai)
+                                                        <span class="text-muted small">({{ $j->nilai }})</span>
+                                                    @endif
+                                                </label>
+                                            </div>
+                                        @endforeach
+
+                                        <div class="form-check mc-option mb-2">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="mc_other_check_{{ $s->id }}"
+                                                   onchange="
+                                                       var txt = document.getElementById('mc_other_text_{{ $s->id }}');
+                                                       txt.disabled = !this.checked;
+                                                       if (this.checked) txt.focus();
+                                                       else txt.value = '';
+                                                   ">
+                                            <label class="form-check-label" for="mc_other_check_{{ $s->id }}">
+                                                Lainnya (tuliskan):
+                                            </label>
+                                        </div>
+                                        <input type="text"
+                                               name="mc_custom[{{ $s->id }}]"
+                                               id="mc_other_text_{{ $s->id }}"
+                                               class="mc-other-input ms-4 d-block"
+                                               style="max-width: 420px"
+                                               placeholder="Tuliskan jawaban Anda..."
+                                               disabled>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- ESSAY: textarea teks bebas --}}
                     @if($essaySoal->count() > 0)
-                        <div class="{{ $mcSoal->count() > 0 ? 'mt-4 pt-4 border-top' : '' }}">
-                            @if($mcSoal->count() == 0)
+                        @php $hasSectionAbove = $ratingSoal->count() > 0 || $multiChoiceSoal->count() > 0; @endphp
+                        <div class="{{ $hasSectionAbove ? 'mt-4 pt-4 border-top' : '' }}">
+                            @if(!$hasSectionAbove)
                                 <div class="kategori-title mb-4">
                                     <h5 class="mb-0">{{ $namaKategori }}</h5>
                                 </div>

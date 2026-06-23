@@ -13,6 +13,8 @@ class LulusanService
     public function storeLulusan(array $data): lulusan
     {
         return DB::transaction(function () use ($data) {
+            $data['fakultas'] = $this->normalizeFakultas($data['fakultas']);
+
             // Logika tambahan: pastikan status menjadi boolean false jika tidak dicentang
             $data['status'] = isset($data['status']) ? true : false;
 
@@ -59,5 +61,14 @@ class LulusanService
         }
 
         return $query->latest()->get();
+    }
+
+    private function normalizeFakultas(string $fakultas): string
+    {
+        return [
+            'Fakultas Teknologi dan Informatika' => 'FTI',
+            'Fakultas Desain dan Industri Kreatif' => 'FDIK',
+            'Fakultas Ekonomi dan Bisnis' => 'FEB',
+        ][$fakultas] ?? $fakultas;
     }
 }

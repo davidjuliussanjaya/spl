@@ -28,14 +28,40 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Jenis Perusahaan</label>
-                                    <select name="jenis_perusahaan" class="form-select" required>
-                                        <option value="" selected disabled>Pilih Jenis</option>
-                                        <option value="government">Government (BUMN/Instansi)</option>
-                                        <option value="private">Private (Swasta)</option>
-                                        <option value="startup">Startup</option>
-                                        <option value="nonprofit">Non-Profit (Yayasan)</option>
+                                    <select name="jenis_perusahaan" id="add_jenis_select" class="form-select" required
+                                            onchange="document.getElementById('add_jenis_lainnya_wrap').style.display=(this.value==='_lainnya_'?'block':'none')">
+                                        <option value="" selected disabled>Pilih Jenis Perusahaan</option>
+                                        <option value="Teknologi Informasi / Software / Digital">Teknologi Informasi / Software / Digital</option>
+                                        <option value="Keuangan / Perbankan / Bisnis">Keuangan / Perbankan / Bisnis</option>
+                                        <option value="Manufaktur / Industri">Manufaktur / Industri</option>
+                                        <option value="Perdagangan / Retail / E-Commerce">Perdagangan / Retail / E-Commerce</option>
+                                        <option value="Media / Kreatif / Desain">Media / Kreatif / Desain</option>
+                                        <option value="Jasa (konsultan, pendidikan, dll)">Jasa (konsultan, pendidikan, dll)</option>
+                                        <option value="Pemerintahan">Pemerintahan</option>
+                                        <option value="BUMN / BUMD">BUMN / BUMD</option>
+                                        <option value="_lainnya_">Lainnya...</option>
                                     </select>
+                                    <div id="add_jenis_lainnya_wrap" class="mt-2" style="display:none">
+                                        <input type="text" id="add_jenis_lainnya_text" class="form-control"
+                                               placeholder="Sebutkan jenis perusahaan..."
+                                               oninput="document.getElementById('add_jenis_select').value='_lainnya_'">
+                                    </div>
                                 </div>
+                                <script>
+                                document.querySelector('form').addEventListener('submit', function(e) {
+                                    var sel = document.getElementById('add_jenis_select');
+                                    var text = document.getElementById('add_jenis_lainnya_text');
+                                    if (sel.value === '_lainnya_') {
+                                        if (!text.value.trim()) {
+                                            e.preventDefault();
+                                            text.focus();
+                                            text.classList.add('is-invalid');
+                                            return;
+                                        }
+                                        sel.value = text.value.trim();
+                                    }
+                                });
+                                </script>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Nomor Badan Hukum</label>
                                     <input type="text" name="nomor_badan_hukum" class="form-control" placeholder="No. AHU / NIB">
@@ -58,6 +84,10 @@
                                     <input type="text" name="nama_penyelia" class="form-control" placeholder="Nama Atasan" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Jabatan Penyelia</label>
+                                    <input type="text" name="jabatan_penyelia" class="form-control" placeholder="Contoh: HRD Manager, Direktur...">
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Email Penyelia</label>
                                     <input type="email" name="email_penyelia" class="form-control" placeholder="email@perusahaan.com" required>
                                 </div>
@@ -75,21 +105,27 @@
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-4 text-uppercase small text-muted tracking-wider">Cakupan Wilayah</h6>
                             
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" name="cabang_kota" id="kota" value="1">
-                                <label class="form-check-label ms-2" for="kota">Memiliki Cabang Nasional</label>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Jumlah Cabang Nasional</label>
+                                <input type="number" name="cabang_kota" class="form-control" min="0" value="0" placeholder="Contoh: 3">
                             </div>
 
-                            <div class="form-check form-switch mb-4">
-                                <input class="form-check-input" type="checkbox" name="cabang_negara" id="negara" value="1">
-                                <label class="form-check-label ms-2" for="negara">Memiliki Cabang Luar Negeri</label>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold">Jumlah Cabang Luar Negeri</label>
+                                <input type="number" name="cabang_negara" class="form-control" min="0" value="0" placeholder="Contoh: 2">
                             </div>
 
                             <hr>
 
                             <div class="mb-3">
+                                <label class="form-label small fw-bold">Jumlah Lulusan yang Pernah Bekerja</label>
+                                <input type="number" name="jumlah_lulusan" class="form-control" min="0" placeholder="Contoh: 5">
+                                <div class="form-text">Dapat diisi oleh sistem secara otomatis saat survey disubmit.</div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold">Durasi Rata-rata Bekerja (Bulan)</label>
-                                <input type="number" name="durasi_lulusan_bekerja" class="form-control" placeholder="Contoh: 12">
+                                <input type="number" name="durasi_lulusan_bekerja" class="form-control" min="0" placeholder="Contoh: 12">
                             </div>
 
                             <div class="d-grid mt-4">

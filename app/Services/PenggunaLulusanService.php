@@ -11,9 +11,8 @@ class PenggunaLulusanService
      */
     public function storePengguna(array $data, \Illuminate\Http\Request $request)
     {
-        // Konversi checkbox ke boolean
-        $data['cabang_kota'] = $request->has('cabang_kota');
-        $data['cabang_negara'] = $request->has('cabang_negara');
+        $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
+        $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
 
         return penggunalulusan::create($data);
     }
@@ -25,8 +24,8 @@ class PenggunaLulusanService
     {
         $pengguna = penggunalulusan::findOrFail($id);
         
-        $data['cabang_kota'] = $request->has('cabang_kota');
-        $data['cabang_negara'] = $request->has('cabang_negara');
+        $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
+        $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
 
         $pengguna->update($data);
         

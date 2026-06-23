@@ -4,6 +4,14 @@
 
 @section('content')
 <div class="page-heading">
+    @php
+        $namaFakultas = [
+            'FTI' => 'Fakultas Teknologi dan Informatika',
+            'FDIK' => 'Fakultas Desain dan Industri Kreatif',
+            'FEB' => 'Fakultas Ekonomi dan Bisnis',
+        ];
+    @endphp
+
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
@@ -51,9 +59,9 @@
                         <label class="form-label small fw-bold">Fakultas</label>
                         <select name="fakultas" class="form-select">
                             <option value="Select">Semua</option>
-                            <option value="Fakultas Teknologi dan Informatika" {{ request('fakultas') == 'Fakultas Teknologi dan Informatika' ? 'selected' : '' }}>Fak. Teknologi & Informatika</option>
-                            <option value="Fakultas Desain dan Industri Kreatif" {{ request('fakultas') == 'Fakultas Desain dan Industri Kreatif' ? 'selected' : '' }}>Fak. Desain & Industri Kreatif</option>
-                            <option value="Fakultas Ekonomi dan Bisnis" {{ request('fakultas') == 'Fakultas Ekonomi dan Bisnis' ? 'selected' : '' }}>Fak. Ekonomi & Bisnis</option>
+                            <option value="FTI" {{ request('fakultas') == 'FTI' ? 'selected' : '' }}>Fak. Teknologi & Informatika</option>
+                            <option value="FDIK" {{ request('fakultas') == 'FDIK' ? 'selected' : '' }}>Fak. Desain & Industri Kreatif</option>
+                            <option value="FEB" {{ request('fakultas') == 'FEB' ? 'selected' : '' }}>Fak. Ekonomi & Bisnis</option>
                         </select>
                     </div>
 
@@ -109,7 +117,7 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $data->nama }}</td>
                                 <td>{{ $data->nim }}</td>
-                                <td>{{ $data->fakultas }}</td>
+                                <td>{{ $namaFakultas[$data->fakultas] ?? $data->fakultas }}</td>
                                 <td>{{ $data->program_studi }}</td>
                                 <td>{{ $data->tahun_lulus->format('Y') }}</td>
                                 <td>
@@ -120,7 +128,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i></button>
+                                    <a href="{{ route('lulusan.show', $data->id) }}" class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i></a>
                                 </td>
                             </tr>
                             @empty

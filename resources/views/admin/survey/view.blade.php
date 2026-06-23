@@ -164,9 +164,13 @@
                                     </td>
                                     <td>{{ $s->soal }}</td>
                                     <td>
-                                        <span class="badge {{ $s->jenis_soal == 'essay' ? 'bg-info' : 'bg-success' }}">
-                                            {{ ucfirst($s->jenis_soal) }}
-                                        </span>
+                                        @if($s->jenis_soal === 'rating')
+                                            <span class="badge bg-success">Rating</span>
+                                        @elseif($s->jenis_soal === 'multiple_choice')
+                                            <span class="badge bg-primary">Multiple Choice</span>
+                                        @else
+                                            <span class="badge bg-info">Essay</span>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -190,6 +194,100 @@
             </div>
 
         </form>
+
+        {{-- SECTION D: Hasil Jawaban Responden (hanya tampil jika survey sudah selesai) --}}
+        @if($isLocked && isset($responGrouped) && $responGrouped->isNotEmpty())
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white pt-4 px-4 border-0">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width: 40px; height: 40px;">
+                        <span class="fw-bold">D</span>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold m-0">Hasil Jawaban Responden</h5>
+                        <p class="text-muted small mb-0 mt-1">Jawaban yang telah diisi oleh perusahaan / instansi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+
+                @php
+                    $soalDipakai = $survey->soals->sortBy(fn($s) => $s->kode ?? $s->id);
+                    $groupedByKategori = $soalDipakai->groupBy(fn($s) => $s->kategori->nama_kategori ?? 'Lainnya');
+                @endphp
+
+                @foreach($groupedByKategori as $namaKategori => $soalGroup)
+                    <div class="mb-4">
+                        <div class="fw-bold text-uppercase small text-muted mb-3 pb-1 border-bottom"
+                             style="letter-spacing: 1px;">
+                            {{ $namaKategori }}
+                        </div>
+
+                        @foreach($soalGroup as $s)
+                            @php $responses = $responGrouped->get($s->id, collect()); @endphp
+                            <div class="d-flex gap-3 mb-3 pb-3 {{ !$loop->last ? 'border-bottom' : '' }}">
+                                <span class="badge bg-secondary text-white flex-shrink-0 mt-1"
+                                      style="min-width: 40px; height: fit-content;">
+                                    {{ $s->kode ?? '#' }}
+                                </span>
+                                <div class="flex-grow-1">
+                                    <p class="fw-semibold text-dark mb-2 small">{{ $s->soal }}</p>
+
+                                    @if($responses->isEmpty())
+                                        <span class="text-muted fst-italic small">Tidak dijawab</span>
+
+                                    @elseif($s->jenis_soal === 'rating')
+                                        @php $r = $responses->first(); @endphp
+                                        @if($r->jawaban)
+                                            @php
+                                                $n = (int) $r->jawaban->nilai;
+                                                $nilaiColor = $n === 4 ? 'bg-success'
+                                                    : ($n === 3 ? 'bg-primary'
+                                                    : ($n === 2 ? 'bg-warning text-dark'
+                                                    : ($n === 1 ? 'bg-danger' : 'bg-secondary')));
+                                            @endphp
+                                            <span class="badge {{ $nilaiColor }}">
+                                                {{ $r->jawaban->jawaban }} ({{ $r->jawaban->nilai }})
+                                            </span>
+                                        @else
+                                            <span class="text-muted fst-italic small">-</span>
+                                        @endif
+
+                                    @elseif($s->jenis_soal === 'multiple_choice')
+                                        <ul class="mb-0 ps-3 small">
+                                            @foreach($responses as $r)
+                                                @if($r->jawaban_id && $r->jawaban)
+                                                    <li>
+                                                        {{ $r->jawaban->jawaban }}
+                                                        @if($r->jawaban->nilai)
+                                                            <span class="text-muted">({{ $r->jawaban->nilai }})</span>
+                                                        @endif
+                                                    </li>
+                                                @elseif($r->jawaban_text)
+                                                    <li class="fst-italic text-secondary">
+                                                        Lainnya: {{ $r->jawaban_text }}
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+
+                                    @elseif($s->jenis_soal === 'essay')
+                                        @php $r = $responses->first(); @endphp
+                                        <div class="bg-light border rounded p-2 small text-secondary"
+                                             style="white-space: pre-line;">{{ $r->jawaban_text ?? '-' }}</div>
+
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+        @endif
+
     </section>
 </div>
 

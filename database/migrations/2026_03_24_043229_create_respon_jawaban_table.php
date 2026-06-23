@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('jawaban_id')->nullable()->constrained('jawaban')->cascadeOnDelete();
             $table->text('jawaban_text')->nullable();
             $table->string('responden')->nullable(); 
+            $table->integer('jumlah_lulusan_bekerja')->nullable();
             $table->timestamps();
         });
     }

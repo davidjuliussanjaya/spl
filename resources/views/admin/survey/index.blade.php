@@ -110,9 +110,13 @@
                                             <a href="{{ route('survey.edit', $survey->id) }}" class="btn btn-sm btn-info text-white" title="Lihat Detail">
     <i class="bi bi-eye"></i>
 </a>
-                                            <a href="#" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
+                                            <form action="{{ route('survey.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus survey ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
