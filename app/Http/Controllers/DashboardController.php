@@ -14,9 +14,13 @@ class DashboardController extends Controller
         $this->dashboardService = $dashboardService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = $this->dashboardService->getDashboardData();
+        $data = $this->dashboardService->getDashboardData($request->only([
+            'periode',
+            'fakultas',
+            'program_studi',
+        ]));
 
         return view('admin.dashboard.index', $data);
     }

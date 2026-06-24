@@ -13,9 +13,10 @@ class Survey extends Model
         'lulusan_id',
         'pengguna_lulusan_id',
         'judul',
+        'tahun',
         'deskripsi',
         'is_completed',
-        'is_active'
+        'is_active',
     ];
 
     /**

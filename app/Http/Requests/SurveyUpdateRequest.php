@@ -14,10 +14,11 @@ class SurveyUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'judul' => 'required',
-            'lulusan_id' => 'required',
+            'judul'               => 'required|string|max:255',
+            'tahun'               => 'required|digits:4|integer',
+            'lulusan_id'          => 'required',
             'pengguna_lulusan_id' => 'required',
-            'soal_pilihan' => 'required|array|min:1',
+            'soal_pilihan'        => 'required|array|min:1',
             'nama'                => 'nullable|string|max:255',
             'hp'                  => 'nullable|string|max:50',
             'email'               => 'nullable|email|max:255',

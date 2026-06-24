@@ -14,10 +14,11 @@ class SurveyBulkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'judul'        => 'required|string|max:255',
-            'deskripsi'    => 'nullable|string',
-            'tahun_lulus'  => 'required|digits:4|integer',
-            'soal_pilihan' => 'required|array|min:1',
+            'judul'          => 'required|string|max:255',
+            'tahun'          => 'required|digits:4|integer',
+            'deskripsi'      => 'nullable|string',
+            'tahun_lulus'    => 'required|digits:4|integer',
+            'soal_pilihan'   => 'required|array|min:1',
             'soal_pilihan.*' => 'exists:soal,id',
         ];
     }

@@ -11,7 +11,9 @@ class ResponJawaban extends Model
     protected $fillable = [
         'survey_id',
         'soal_id',
+        'soal_text_snapshot',
         'jawaban_id',
+        'jawaban_text_snapshot',
         'jawaban_text',
         'responden',
         'jumlah_lulusan_bekerja',

@@ -10,9 +10,29 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('jawaban')->delete();
-        DB::table('soal')->delete();
-        DB::table('kategoris')->delete();
+        $tahun = 2026;
+
+        // Tolak jika instrumen tahun ini sudah ada — agar data yang sudah diisi tidak terhapus
+        if (DB::table('instrumen')->where('tahun', $tahun)->exists()) {
+            $this->command->warn("Instrumen tahun {$tahun} sudah ada. Seeder dilewati untuk mencegah penghapusan data.");
+            return;
+        }
+
+        // Hanya hapus soal/jawaban yang belum terhubung ke survey manapun (belum ada respon)
+        $soalAman = DB::table('soal')
+            ->whereNull('instrumen_id')
+            ->whereNotIn('id', DB::table('survey_soal')->pluck('soal_id'))
+            ->pluck('id');
+
+        if ($soalAman->isNotEmpty()) {
+            DB::table('jawaban')->whereIn('soal_id', $soalAman)->delete();
+            DB::table('soal')->whereIn('id', $soalAman)->delete();
+        }
+
+        // Hapus kategori yang tidak lagi punya soal
+        DB::table('kategoris')
+            ->whereNotIn('id', DB::table('soal')->pluck('kategori_id')->filter())
+            ->delete();
 
         $likert = [
             ['jawaban' => 'Sangat Baik', 'nilai' => 4, 'urutan' => 1],
@@ -151,6 +171,16 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
         try {
             $now = Carbon::now();
 
+            // Buat record instrumen untuk tahun ini
+            $instrumenId = DB::table('instrumen')->insertGetId([
+                'tahun'      => $tahun,
+                'judul'      => "Instrumen Evaluasi Pengguna Lulusan {$tahun}",
+                'deskripsi'  => 'Draft instrumen evaluasi lulusan oleh pengguna lulusan (perusahaan/instansi).',
+                'is_active'  => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
             foreach ($instrument as $kategoriNama => $kategoriData) {
 
                 $kategoriId = DB::table('kategoris')->insertGetId([
@@ -163,6 +193,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                 foreach ($kategoriData['soal'] as $kode => $soalData) {
 
                     $soalId = DB::table('soal')->insertGetId([
+                        'instrumen_id'        => $instrumenId,
                         'soal'                => $soalData['teks'],
                         'kode'                => $kode,
                         'kategori_id'         => $kategoriId,
@@ -192,7 +223,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
             }
 
             DB::commit();
-            $this->command->info('Draft Instrumen Universitas 2026 berhasil di-seed!');
+            $this->command->info("Instrumen tahun {$tahun} (id={$instrumenId}) berhasil di-seed!");
 
         } catch (\Exception $e) {
             DB::rollBack();

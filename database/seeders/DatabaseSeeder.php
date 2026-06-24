@@ -64,6 +64,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PenggunaLulusanSeeder::class,
             LulusanSeeder::class,
+            DraftInstrumenUniversitas2026Seeder::class,
+            // SurveyBulkCreateSeeder::class,
+            // SurveyResponseSeeder::class,
         ]);
     }
 }

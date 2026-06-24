@@ -65,6 +65,7 @@
                             <span>Aspek Evaluasi</span>
                         </a>
                     </li>
+                @endif
 
                     <li class="sidebar-item {{ request()->routeIs('report') ? 'active' : '' }}">
                         <a href="{{ route('report') }}" class='sidebar-link'>
@@ -72,7 +73,14 @@
                             <span>Cetak Laporan</span>
                         </a>
                     </li>
-                @endif
+
+                    <li class="sidebar-item {{ request()->routeIs('report.arsip') || request()->routeIs('report.arsip.detail') ? 'active' : '' }}">
+                        <a href="{{ route('report.arsip') }}" class='sidebar-link'>
+                            <i class="bi bi-archive-fill"></i>
+                            <span>Arsip Survey</span>
+                        </a>
+                    </li>
+                
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

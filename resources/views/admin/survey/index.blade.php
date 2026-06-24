@@ -71,6 +71,7 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Judul Survey</th>
+                                <th class="text-center" width="7%">Tahun</th>
                                 <th>Perusahaan</th>
                                 <th>Lulusan Terkait</th>
                                 <th>Kode Akses</th>
@@ -83,19 +84,29 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td class="fw-bold">{{ $survey->judul }}</td>
-                                    
+
+                                    <td class="text-center">
+                                        @if($survey->tahun)
+                                            <span class="badge" style="background:#FFF5D6;color:#92660A;font-size:0.78rem;font-weight:700;">
+                                                {{ $survey->tahun }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+
                                     {{-- Mengambil relasi perusahaan --}}
                                     <td>{{ $survey->penggunalulusan->nama_perusahaan ?? '-' }}</td>
-                                    
+
                                     {{-- Mengambil relasi lulusan --}}
                                     <td>{{ $survey->lulusan->nama ?? '-' }}</td>
-                                    
+
                                     <td>
                                         <span class="badge bg-light text-dark border" style="letter-spacing: 2px;">
                                             {{ $survey->access_code }}
                                         </span>
                                     </td>
-                                    
+
                                     <td>
                                         @if($survey->is_completed)
                                             <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Selesai</span>
@@ -122,7 +133,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
+                                    <td colspan="8" class="text-center text-muted py-4">
                                         Belum ada data survey yang dibuat.
                                     </td>
                                 </tr>

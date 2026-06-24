@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
-use App\Models\ResponJawaban;
-use App\Models\soal;
+use App\Models\Instrumen;
 use App\Models\Survey;
+use App\Models\SurveyArsip;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +16,7 @@ class SurveyResponseSeeder extends Seeder
         'Rendra Pratama', 'Oktavia Lestari', 'Hendra Wijaya', 'Joko Susilo',
     ];
 
-    private array $jabatan = [
+    private array $jabatanList = [
         'HRD Manager', 'Direktur SDM', 'Kepala Divisi', 'Supervisor',
         'Manajer Operasional', 'General Manager', 'Staff Pengembangan SDM',
     ];
@@ -36,7 +34,7 @@ class SurveyResponseSeeder extends Seeder
 
     public function run(): void
     {
-        $surveys = Survey::with(['lulusan', 'penggunaLulusan', 'soals.jawaban'])
+        $surveys = Survey::with(['lulusan', 'penggunaLulusan', 'soals.jawaban', 'soals.kategori', 'soals.instrumen'])
             ->where('is_completed', false)
             ->where('is_active', true)
             ->get();
@@ -70,129 +68,174 @@ class SurveyResponseSeeder extends Seeder
     private function isiSurvey(Survey $survey): void
     {
         $pengguna    = $survey->penggunaLulusan;
-        $namaPengisi = $pengguna?->nama_penyelia ?? $this->namaPengisi();
+        $namaPengisi = $pengguna?->nama_penyelia ?? $this->acak($this->namaPenyelia);
+        $jabatan     = $pengguna?->jabatan_penyelia ?? $this->acak($this->jabatanList);
+        $jumlahBekerja = rand(1, 5);
         $now         = Carbon::now();
         $isFirst     = true;
 
-        // Soal yang harus diisi: filter sesuai fakultas lulusan
         $fakultas = $survey->lulusan->fakultas ?? null;
 
-        $soals = $survey->soals->filter(function ($soal) use ($fakultas) {
-            return $soal->peruntukan_fakultas === 'Umum'
-                || ($fakultas && $soal->peruntukan_fakultas === $fakultas);
-        });
+        $soals = $survey->soals->filter(fn($s) =>
+            $s->peruntukan_fakultas === 'Umum' || ($fakultas && $s->peruntukan_fakultas === $fakultas)
+        );
+
+        // Rekam pilihan jawaban untuk arsip
+        $jawabanArsip = [];
 
         foreach ($soals as $soalItem) {
             $jawabanList = $soalItem->jawaban;
+            $pilihanUntukArsip = null;
 
-            match ($soalItem->jenis_soal) {
-                'rating' => $this->simpanRating(
-                    $survey, $soalItem, $jawabanList, $namaPengisi, $isFirst, $now
-                ),
-                'essay'  => $this->simpanEssay(
-                    $survey, $soalItem, $namaPengisi, $isFirst, $now
-                ),
-                'multiple_choice' => $this->simpanMultipleChoice(
-                    $survey, $soalItem, $jawabanList, $namaPengisi, $isFirst, $now
-                ),
-                default => null,
-            };
+            switch ($soalItem->jenis_soal) {
+                case 'rating':
+                    $pilihan = $this->pilihRatingBerbobot($jawabanList);
+                    if ($pilihan) {
+                        DB::table('respon_jawaban')->insert([
+                            'survey_id'              => $survey->id,
+                            'soal_id'                => $soalItem->id,
+                            'soal_text_snapshot'     => $soalItem->soal,
+                            'jawaban_id'             => $pilihan->id,
+                            'jawaban_text_snapshot'  => $pilihan->jawaban,
+                            'jawaban_text'           => null,
+                            'responden'              => $namaPengisi,
+                            'jumlah_lulusan_bekerja' => $isFirst ? $jumlahBekerja : null,
+                            'created_at'             => $now,
+                            'updated_at'             => $now,
+                        ]);
+                        $pilihanUntukArsip = ['teks' => $pilihan->jawaban, 'nilai' => $pilihan->nilai];
+                    }
+                    break;
+
+                case 'essay':
+                    $esai = $this->acak($this->esaiMasukan);
+                    DB::table('respon_jawaban')->insert([
+                        'survey_id'              => $survey->id,
+                        'soal_id'                => $soalItem->id,
+                        'soal_text_snapshot'     => $soalItem->soal,
+                        'jawaban_id'             => null,
+                        'jawaban_text_snapshot'  => null,
+                        'jawaban_text'           => $esai,
+                        'responden'              => $namaPengisi,
+                        'jumlah_lulusan_bekerja' => $isFirst ? $jumlahBekerja : null,
+                        'created_at'             => $now,
+                        'updated_at'             => $now,
+                    ]);
+                    $pilihanUntukArsip = $esai;
+                    break;
+
+                case 'multiple_choice':
+                    $dipilih = $jawabanList->whereNotIn('jawaban', ['Lainnya'])
+                        ->shuffle()->take(rand(1, min(3, $jawabanList->count())));
+                    $firstRow = true;
+                    $teksArr  = [];
+                    foreach ($dipilih as $jw) {
+                        DB::table('respon_jawaban')->insert([
+                            'survey_id'              => $survey->id,
+                            'soal_id'                => $soalItem->id,
+                            'soal_text_snapshot'     => $soalItem->soal,
+                            'jawaban_id'             => $jw->id,
+                            'jawaban_text_snapshot'  => $jw->jawaban,
+                            'jawaban_text'           => null,
+                            'responden'              => $namaPengisi,
+                            'jumlah_lulusan_bekerja' => ($isFirst && $firstRow) ? $jumlahBekerja : null,
+                            'created_at'             => $now,
+                            'updated_at'             => $now,
+                        ]);
+                        $teksArr[] = $jw->jawaban;
+                        $firstRow  = false;
+                    }
+                    $pilihanUntukArsip = $teksArr;
+                    break;
+            }
+
+            $jawabanArsip[$soalItem->kode] = [
+                'kode'     => $soalItem->kode,
+                'kategori' => $soalItem->kategori?->nama_kategori,
+                'soal'     => $soalItem->soal,
+                'jenis'    => $soalItem->jenis_soal,
+                'jawaban'  => is_array($pilihanUntukArsip)
+                    ? (isset($pilihanUntukArsip['teks']) ? $pilihanUntukArsip['teks'] : $pilihanUntukArsip)
+                    : $pilihanUntukArsip,
+                'nilai'    => is_array($pilihanUntukArsip) && isset($pilihanUntukArsip['nilai'])
+                    ? $pilihanUntukArsip['nilai']
+                    : null,
+            ];
 
             $isFirst = false;
         }
 
-        // Update data penyelia perusahaan
+        // Update data penyelia
         if ($pengguna) {
             $pengguna->update([
                 'nama_penyelia'    => $namaPengisi,
-                'jabatan_penyelia' => $pengguna->jabatan_penyelia ?? $this->randomJabatan(),
-                'jumlah_lulusan'   => $pengguna->jumlah_lulusan ?? rand(1, 5),
+                'jabatan_penyelia' => $jabatan,
+                'jumlah_lulusan'   => $pengguna->jumlah_lulusan ?? $jumlahBekerja,
             ]);
         }
 
         $survey->update(['is_completed' => true]);
+
+        // Tulis arsip permanen — tidak ada FK, data tidak bisa hilang
+        ksort($jawabanArsip);
+        $lulus = $survey->lulusan;
+
+        $tahunInstrumen = $soals->first()?->instrumen?->tahun ?? $survey->tahun;
+
+        SurveyArsip::create([
+            'survey_id'       => $survey->id,
+            'access_code'     => $survey->access_code,
+            'judul'           => $survey->judul,
+            'submitted_at'    => $now,
+            'tahun_instrumen' => $tahunInstrumen,
+
+            'lulusan_nama'          => $lulus?->nama,
+            'lulusan_nim'           => $lulus?->nim,
+            'lulusan_program_studi' => $lulus?->program_studi,
+            'lulusan_fakultas'      => $lulus?->fakultas,
+            'lulusan_tahun_lulus'   => $lulus?->tahun_lulus
+                ? Carbon::parse($lulus->tahun_lulus)->format('Y')
+                : null,
+
+            'perusahaan_nama'              => $pengguna?->nama_perusahaan,
+            'perusahaan_jenis'             => $pengguna?->jenis_perusahaan,
+            'perusahaan_alamat'            => $pengguna?->alamat_perusahaan,
+            'perusahaan_kontak'            => $pengguna?->kontak_perusahaan,
+            'perusahaan_nomor_badan_hukum' => $pengguna?->nomor_badan_hukum,
+            'perusahaan_cabang_kota'       => $pengguna?->cabang_kota,
+            'perusahaan_cabang_negara'     => $pengguna?->cabang_negara,
+
+            'penyelia_nama'          => $namaPengisi,
+            'penyelia_jabatan'       => $jabatan,
+            'penyelia_email'         => $pengguna?->email_penyelia,
+            'penyelia_kontak'        => $pengguna?->kontak_penyelia,
+            'jumlah_lulusan_bekerja' => (string) $jumlahBekerja,
+
+            'jawaban_json' => array_values($jawabanArsip),
+        ]);
     }
 
-    private function simpanRating(Survey $survey, $soal, $jawabanList, string $namaPengisi, bool $isFirst, Carbon $now): void
+    private function pilihRatingBerbobot($jawabanList)
     {
-        if ($jawabanList->isEmpty()) return;
+        if ($jawabanList->isEmpty()) return null;
 
-        // Cenderung pilih jawaban yang lebih baik (nilai 3-4)
-        $bobot    = $jawabanList->mapWithKeys(fn($j) => [$j->id => max(1, $j->nilai)]);
-        $total    = $bobot->sum();
-        $rand     = rand(1, $total);
+        $bobot     = $jawabanList->mapWithKeys(fn($j) => [$j->id => max(1, $j->nilai)]);
+        $total     = $bobot->sum();
+        $rand      = rand(1, $total);
         $kumulatif = 0;
-        $pilihan  = $jawabanList->first();
 
         foreach ($bobot as $id => $b) {
             $kumulatif += $b;
             if ($rand <= $kumulatif) {
-                $pilihan = $jawabanList->firstWhere('id', $id);
-                break;
+                return $jawabanList->firstWhere('id', $id);
             }
         }
 
-        DB::table('respon_jawaban')->insert([
-            'survey_id'              => $survey->id,
-            'soal_id'                => $soal->id,
-            'jawaban_id'             => $pilihan->id,
-            'jawaban_text'           => null,
-            'responden'              => $namaPengisi,
-            'jumlah_lulusan_bekerja' => $isFirst ? rand(1, 5) : null,
-            'created_at'             => $now,
-            'updated_at'             => $now,
-        ]);
+        return $jawabanList->first();
     }
 
-    private function simpanEssay(Survey $survey, $soal, string $namaPengisi, bool $isFirst, Carbon $now): void
+    private function acak(array $arr): string
     {
-        DB::table('respon_jawaban')->insert([
-            'survey_id'              => $survey->id,
-            'soal_id'                => $soal->id,
-            'jawaban_id'             => null,
-            'jawaban_text'           => $this->randomEsai(),
-            'responden'              => $namaPengisi,
-            'jumlah_lulusan_bekerja' => $isFirst ? rand(1, 5) : null,
-            'created_at'             => $now,
-            'updated_at'             => $now,
-        ]);
-    }
-
-    private function simpanMultipleChoice(Survey $survey, $soal, $jawabanList, string $namaPengisi, bool $isFirst, Carbon $now): void
-    {
-        if ($jawabanList->isEmpty()) return;
-
-        // Pilih 1-3 jawaban secara acak (tapi bukan "Lainnya" agar tidak perlu mc_custom)
-        $pilihan  = $jawabanList->whereNotIn('jawaban', ['Lainnya'])->shuffle()->take(rand(1, min(3, $jawabanList->count())));
-        $firstRow = true;
-
-        foreach ($pilihan as $jawaban) {
-            DB::table('respon_jawaban')->insert([
-                'survey_id'              => $survey->id,
-                'soal_id'                => $soal->id,
-                'jawaban_id'             => $jawaban->id,
-                'jawaban_text'           => null,
-                'responden'              => $namaPengisi,
-                'jumlah_lulusan_bekerja' => ($isFirst && $firstRow) ? rand(1, 5) : null,
-                'created_at'             => $now,
-                'updated_at'             => $now,
-            ]);
-            $firstRow = false;
-        }
-    }
-
-    private function namaPengisi(): string
-    {
-        return $this->namaPenyelia[array_rand($this->namaPenyelia)];
-    }
-
-    private function randomJabatan(): string
-    {
-        return $this->jabatan[array_rand($this->jabatan)];
-    }
-
-    private function randomEsai(): string
-    {
-        return $this->esaiMasukan[array_rand($this->esaiMasukan)];
+        return $arr[array_rand($arr)];
     }
 }

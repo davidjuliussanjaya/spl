@@ -9,14 +9,20 @@ class soal extends Model
     protected $table = 'soal';
 
     protected $fillable = [
+        'instrumen_id',
         'soal',
         'kode',
         'jenis_soal',
         'kategori_id',
         'peruntukan_fakultas',
         'is_required',
-        'is_active'
+        'is_active',
     ];
+
+    public function instrumen()
+    {
+        return $this->belongsTo(Instrumen::class);
+    }
 
     public function kategori()
     {

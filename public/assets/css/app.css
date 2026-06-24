@@ -1730,3 +1730,25 @@ header.mb-3 nav.navbar {
     text-transform: uppercase;
     padding: 0.4rem 0.75rem 0.2rem !important;
 }
+
+/* Pagination — sesuaikan warna ke tema kampus */
+.pagination .page-link {
+    color: #8B1A2A !important;
+    border-color: #e8c5cb !important;
+    border-radius: 6px !important;
+    margin: 0 2px;
+    font-size: 0.8rem;
+}
+.pagination .page-link:hover {
+    background-color: #FDE8EC !important;
+    color: #8B1A2A !important;
+}
+.pagination .page-item.active .page-link {
+    background-color: #8B1A2A !important;
+    border-color: #8B1A2A !important;
+    color: #fff !important;
+}
+.pagination .page-item.disabled .page-link {
+    color: #c0b0b3 !important;
+    border-color: #f0e0e4 !important;
+}

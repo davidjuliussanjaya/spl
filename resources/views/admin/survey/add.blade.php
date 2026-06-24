@@ -23,12 +23,24 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-12 mb-4">
+                            <div class="col-md-9 mb-4">
                                 <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Judul Survey
                                     <span class="text-danger">*</span></label>
                                 <input type="text" name="judul" class="form-control line-input fs-5"
                                     placeholder="Contoh: Survey Kepuasan Pengguna Lulusan 2026" required
                                     value="{{ old('judul') }}">
+                            </div>
+
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Tahun Survey
+                                    <span class="text-danger">*</span></label>
+                                <select name="tahun" class="form-select line-input fs-5" required>
+                                    @for($y = now()->year + 1; $y >= 2020; $y--)
+                                        <option value="{{ $y }}" {{ old('tahun', now()->year) == $y ? 'selected' : '' }}>
+                                            {{ $y }}
+                                        </option>
+                                    @endfor
+                                </select>
                             </div>
 
                             <div class="col-md-12 mb-2">

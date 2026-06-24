@@ -26,6 +26,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Report
+        Route::get('/report', [ReportController::class, 'index'])->name('report');
+        Route::get('/report/download', [ReportController::class, 'download'])->name('report.download');
+        Route::get('/report/arsip', [ReportController::class, 'arsip'])->name('report.arsip');
+        Route::get('/report/arsip/{id}', [ReportController::class, 'arsipDetail'])->name('report.arsip.detail');
+
     // --- KHUSUS ROLE ADMIN ---
     // Ganti 'admin' sesuai dengan 'code' yang ada di tabel roles Anda
     Route::middleware(['role:admin'])->group(function () {
@@ -59,9 +65,7 @@ Route::middleware('auth')->group(function () {
         // Kategori
         Route::resource('kategori', \App\Http\Controllers\KategoriController::class)->except(['show']);
 
-        // Report
-        Route::get('/report', [ReportController::class, 'index'])->name('report');
-        Route::get('/report/download', [ReportController::class, 'download'])->name('report.download');
+        
 
         // Pertanyaan
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');

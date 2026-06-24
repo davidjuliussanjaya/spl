@@ -10,7 +10,9 @@
       "Bash(Select-Object Name)",
       "Bash(Format-Table -AutoSize)",
       "PowerShell(Test-Path \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\"; ls \"C:\\\\laragon\\\\www\\\\spl\\\\database\\\\migrations\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })",
-      "Bash(rm \"c:/laragon/www/spl/database/seeders/PenggunaLulusanSeeder.php\" \"c:/laragon/www/spl/database/seeders/DemoDataSeeder.php\" \"c:/laragon/www/spl/database/seeders/SoalSeeder.php\" \"c:/laragon/www/spl/database/seeders/ExcelDataSeeder.php\")"
+      "Bash(rm \"c:/laragon/www/spl/database/seeders/PenggunaLulusanSeeder.php\" \"c:/laragon/www/spl/database/seeders/DemoDataSeeder.php\" \"c:/laragon/www/spl/database/seeders/SoalSeeder.php\" \"c:/laragon/www/spl/database/seeders/ExcelDataSeeder.php\")",
+      "PowerShell(php \"C:\\\\Users\\\\TUF\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--laragon-www-spl\\\\eb3c2e3a-fce6-4b38-a70f-3fb2f1470482\\\\scratchpad\\\\check_fk.php\" 2>&1)",
+      "PowerShell(cd c:\\\\laragon\\\\www\\\\spl; php -r \"require 'vendor/autoload.php'; \\\\$app = require 'bootstrap/app.php'; \\\\$app->make\\('Illuminate\\\\Contracts\\\\Console\\\\Kernel'\\)->bootstrap\\(\\); \\\\$rows = DB::select\\(\\\\\"SELECT constraint_name FROM user_constraints WHERE table_name = 'RESPON_JAWABAN' AND constraint_type = 'R'\\\\\"\\); foreach\\(\\\\$rows as \\\\$r\\) echo \\\\$r->constraint_name . PHP_EOL;\" 2>&1)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\www\\spl\\database\\seeders"

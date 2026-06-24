@@ -7,6 +7,7 @@ use App\Models\penggunalulusan;
 use App\Models\ResponJawaban;
 use App\Models\soal;
 use App\Models\Survey;
+use App\Models\SurveyArsip;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -30,6 +31,7 @@ class SurveyService
 
             $survey = Survey::create([
                 'judul'               => $data['judul'],
+                'tahun'               => $data['tahun'] ?? now()->year,
                 'deskripsi'           => $data['deskripsi'] ?? null,
                 'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
@@ -86,15 +88,21 @@ class SurveyService
 
             $isFirstRecord = true;
 
+            // Pre-load semua soal dan jawaban yang relevan untuk efisiensi query
+            $soalIds    = array_keys(array_merge($data['jawaban'] ?? [], $data['mc'] ?? [], $data['mc_custom'] ?? []));
+            $soalCache  = soal::whereIn('id', $soalIds)->get()->keyBy('id');
+            $jawabanCache = \App\Models\Jawaban::whereIn('soal_id', $soalIds)->get()->keyBy('id');
+
             // Rating & Essay
             foreach ($data['jawaban'] ?? [] as $soal_id => $isi_jawaban) {
-                $soalModel = soal::find($soal_id);
+                $soalModel = $soalCache->get($soal_id);
                 if (!$soalModel) continue;
 
                 $respon = new ResponJawaban();
-                $respon->survey_id = $survey->id;
-                $respon->soal_id   = $soal_id;
-                $respon->responden = $data['nama_pengisi'];
+                $respon->survey_id          = $survey->id;
+                $respon->soal_id            = $soal_id;
+                $respon->soal_text_snapshot = $soalModel->soal;
+                $respon->responden          = $data['nama_pengisi'];
 
                 if ($isFirstRecord) {
                     $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
@@ -102,11 +110,14 @@ class SurveyService
                 }
 
                 if ($soalModel->jenis_soal === 'essay') {
-                    $respon->jawaban_text = $isi_jawaban;
-                    $respon->jawaban_id   = null;
+                    $respon->jawaban_text          = $isi_jawaban;
+                    $respon->jawaban_id            = null;
+                    $respon->jawaban_text_snapshot = null;
                 } else {
-                    $respon->jawaban_id   = $isi_jawaban;
-                    $respon->jawaban_text = null;
+                    $jawabanModel                  = $jawabanCache->get($isi_jawaban);
+                    $respon->jawaban_id            = $isi_jawaban;
+                    $respon->jawaban_text_snapshot = $jawabanModel?->jawaban;
+                    $respon->jawaban_text          = null;
                 }
 
                 $respon->save();
@@ -114,12 +125,18 @@ class SurveyService
 
             // Multiple Choice: simpan satu baris per jawaban yang dicentang
             foreach ($data['mc'] ?? [] as $soal_id => $jawaban_ids) {
+                $soalModel = $soalCache->get($soal_id);
+
                 foreach ($jawaban_ids as $jawaban_id) {
+                    $jawabanModel = $jawabanCache->get($jawaban_id);
+
                     $respon = new ResponJawaban();
-                    $respon->survey_id  = $survey->id;
-                    $respon->soal_id    = $soal_id;
-                    $respon->responden  = $data['nama_pengisi'];
-                    $respon->jawaban_id = $jawaban_id;
+                    $respon->survey_id             = $survey->id;
+                    $respon->soal_id               = $soal_id;
+                    $respon->soal_text_snapshot    = $soalModel?->soal;
+                    $respon->responden             = $data['nama_pengisi'];
+                    $respon->jawaban_id            = $jawaban_id;
+                    $respon->jawaban_text_snapshot = $jawabanModel?->jawaban;
 
                     if ($isFirstRecord) {
                         $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
@@ -134,12 +151,15 @@ class SurveyService
             foreach ($data['mc_custom'] ?? [] as $soal_id => $custom_text) {
                 if (empty(trim($custom_text ?? ''))) continue;
 
+                $soalModel = $soalCache->get($soal_id);
+
                 $respon = new ResponJawaban();
-                $respon->survey_id    = $survey->id;
-                $respon->soal_id      = $soal_id;
-                $respon->responden    = $data['nama_pengisi'];
-                $respon->jawaban_id   = null;
-                $respon->jawaban_text = trim($custom_text);
+                $respon->survey_id          = $survey->id;
+                $respon->soal_id            = $soal_id;
+                $respon->soal_text_snapshot = $soalModel?->soal;
+                $respon->responden          = $data['nama_pengisi'];
+                $respon->jawaban_id         = null;
+                $respon->jawaban_text       = trim($custom_text);
 
                 if ($isFirstRecord) {
                     $respon->jumlah_lulusan_bekerja = $data['jumlah_lulusan_bekerja'] ?? null;
@@ -151,8 +171,108 @@ class SurveyService
 
             $survey->update(['is_completed' => true]);
 
+            // Tulis arsip permanen — tidak bergantung FK apapun
+            $this->buatArsip($survey->fresh(['lulusan', 'penggunaLulusan']), $data);
+
             return $survey;
         });
+    }
+
+    private function buatArsip(Survey $survey, array $data): void
+    {
+        $lulus    = $survey->lulusan;
+        $pengguna = $survey->penggunaLulusan;
+
+        // Kumpulkan semua soal yang ada di survey ini beserta relasi jawaban & kategori
+        $soals = $survey->soals()->with(['jawaban', 'kategori'])->get()->keyBy('id');
+
+        // Bangun array jawaban terurut berdasarkan kode soal
+        $jawabanArr = [];
+
+        // Rating & Essay (dari $data['jawaban'])
+        foreach ($data['jawaban'] ?? [] as $soal_id => $isi) {
+            $s = $soals->get($soal_id);
+            if (!$s) continue;
+
+            $entry = [
+                'kode'     => $s->kode,
+                'kategori' => $s->kategori?->nama_kategori,
+                'soal'     => $s->soal,
+                'jenis'    => $s->jenis_soal,
+                'nilai'    => null,
+            ];
+
+            if ($s->jenis_soal === 'essay') {
+                $entry['jawaban'] = $isi;
+            } else {
+                $pil = $s->jawaban->firstWhere('id', $isi);
+                $entry['jawaban'] = $pil?->jawaban;
+                $entry['nilai']   = $pil?->nilai;
+            }
+
+            $jawabanArr[$s->kode] = $entry;
+        }
+
+        // Multiple Choice
+        foreach ($data['mc'] ?? [] as $soal_id => $jawaban_ids) {
+            $s = $soals->get($soal_id);
+            if (!$s) continue;
+
+            $pilihan = $s->jawaban->whereIn('id', $jawaban_ids)->pluck('jawaban')->toArray();
+            $jawabanArr[$s->kode] = [
+                'kode'     => $s->kode,
+                'kategori' => $s->kategori?->nama_kategori,
+                'soal'     => $s->soal,
+                'jenis'    => $s->jenis_soal,
+                'jawaban'  => $pilihan,
+                'nilai'    => null,
+            ];
+        }
+
+        // Teks "Lainnya" pada multiple choice
+        foreach ($data['mc_custom'] ?? [] as $soal_id => $custom_text) {
+            if (empty(trim($custom_text ?? ''))) continue;
+            if (isset($jawabanArr[$soals->get($soal_id)?->kode])) {
+                $jawabanArr[$soals->get($soal_id)->kode]['jawaban'][] = trim($custom_text);
+            }
+        }
+
+        // Urutkan berdasarkan kode soal (B1, B2, C1, ...)
+        ksort($jawabanArr);
+
+        SurveyArsip::create([
+            'survey_id'     => $survey->id,
+            'access_code'   => $survey->access_code,
+            'judul'         => $survey->judul,
+            'submitted_at'  => now(),
+            'tahun_instrumen' => $survey->soals->first()?->instrumen_id
+                ? \App\Models\Instrumen::find($survey->soals->first()->instrumen_id)?->tahun
+                : null,
+
+            'lulusan_nama'          => $lulus?->nama,
+            'lulusan_nim'           => $lulus?->nim,
+            'lulusan_program_studi' => $lulus?->program_studi,
+            'lulusan_fakultas'      => $lulus?->fakultas,
+            'lulusan_tahun_lulus'   => $lulus?->tahun_lulus
+                ? \Carbon\Carbon::parse($lulus->tahun_lulus)->format('Y')
+                : null,
+
+            'perusahaan_nama'              => $pengguna?->nama_perusahaan,
+            'perusahaan_jenis'             => $pengguna?->jenis_perusahaan,
+            'perusahaan_alamat'            => $pengguna?->alamat_perusahaan,
+            'perusahaan_kontak'            => $pengguna?->kontak_perusahaan,
+            'perusahaan_nomor_badan_hukum' => $pengguna?->nomor_badan_hukum,
+            'perusahaan_cabang_kota'       => $pengguna?->cabang_kota,
+            'perusahaan_cabang_negara'     => $pengguna?->cabang_negara,
+
+            'penyelia_nama'           => $data['nama_pengisi'],
+            'penyelia_jabatan'        => $data['jabatan_pengisi'] ?? $pengguna?->jabatan_penyelia,
+            'penyelia_email'          => $data['email_pengisi'] ?? $pengguna?->email_penyelia,
+            'penyelia_kontak'         => $data['hp_pengisi'] ?? $pengguna?->kontak_penyelia,
+            'jumlah_lulusan_bekerja'  => (string) ($data['jumlah_lulusan_bekerja'] ?? null),
+
+            'jawaban_json' => array_values($jawabanArr),
+        ]);
     }
 
     public function createBulkSurveys(array $data): array
@@ -182,6 +302,7 @@ class SurveyService
 
                 $survey = Survey::create([
                     'judul'               => $data['judul'],
+                    'tahun'               => $data['tahun'] ?? now()->year,
                     'deskripsi'           => $data['deskripsi'] ?? null,
                     'lulusan_id'          => $lulus->id,
                     'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
@@ -225,6 +346,7 @@ class SurveyService
 
             $survey->update([
                 'judul'               => $data['judul'],
+                'tahun'               => $data['tahun'] ?? $survey->tahun ?? now()->year,
                 'deskripsi'           => $data['deskripsi'] ?? null,
                 'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
