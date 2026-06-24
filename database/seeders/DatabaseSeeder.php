@@ -65,8 +65,8 @@ class DatabaseSeeder extends Seeder
             PenggunaLulusanSeeder::class,
             LulusanSeeder::class,
             DraftInstrumenUniversitas2026Seeder::class,
-            // SurveyBulkCreateSeeder::class,
-            // SurveyResponseSeeder::class,
+            SurveyBulkCreateSeeder::class,
+            SurveyResponseSeeder::class,
         ]);
     }
 }
