@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <title>User Manual Role User Biasa - Sistem Tracer Study</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1f2937;
+            background: #ffffff;
+            font-size: 11pt;
+            line-height: 1.48;
+        }
+
+        .cover {
+            min-height: 250mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-left: 10px solid #8b1a2a;
+            padding-left: 28px;
+            page-break-after: always;
+        }
+
+        .brand-mark {
+            width: 54px;
+            height: 54px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .brand-mark .one {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 42px;
+            height: 42px;
+            background: #8b1a2a;
+            border-radius: 8px;
+        }
+
+        .brand-mark .two {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 32px;
+            height: 32px;
+            background: #c9a227;
+            border: 4px solid #ffffff;
+            border-radius: 7px;
+        }
+
+        .eyebrow {
+            color: #8b1a2a;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-size: 10pt;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30pt;
+            line-height: 1.1;
+            color: #111827;
+        }
+
+        .subtitle {
+            margin-top: 14px;
+            font-size: 13pt;
+            color: #4b5563;
+            max-width: 520px;
+        }
+
+        .meta {
+            margin-top: 38px;
+            color: #6b7280;
+            font-size: 10.5pt;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #8b1a2a;
+            color: #111827;
+            font-size: 17pt;
+        }
+
+        h3 {
+            margin: 18px 0 7px;
+            color: #8b1a2a;
+            font-size: 12.8pt;
+        }
+
+        p {
+            margin: 0 0 9px;
+        }
+
+        ul, ol {
+            margin: 6px 0 12px 22px;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .section {
+            page-break-inside: avoid;
+            margin-bottom: 18px;
+        }
+
+        .note {
+            border-left: 4px solid #c9a227;
+            background: #fffbeb;
+            padding: 10px 12px;
+            margin: 10px 0 14px;
+        }
+
+        .warning {
+            border-left: 4px solid #dc2626;
+            background: #fef2f2;
+            padding: 10px 12px;
+            margin: 10px 0 14px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 14px;
+            page-break-inside: avoid;
+        }
+
+        .table th {
+            background: #8b1a2a;
+            color: #ffffff;
+            text-align: left;
+            font-size: 10pt;
+            padding: 8px;
+        }
+
+        .table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .table tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding-left: 32px;
+            margin-bottom: 9px;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            border-radius: 50%;
+            background: #8b1a2a;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 9pt;
+        }
+
+        .footer {
+            margin-top: 26px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 9.5pt;
+        }
+    </style>
+</head>
+<body>
+    <section class="cover">
+        <div class="brand-mark">
+            <div class="one"></div>
+            <div class="two"></div>
+        </div>
+        <div class="eyebrow">Universitas Dinamika</div>
+        <h1>User Manual<br>Role User Biasa</h1>
+        <p class="subtitle">Panduan penggunaan Sistem Tracer Study untuk memahami menu, dashboard, profil akun, dan akses pengisian survey.</p>
+        <div class="meta">
+            <p><strong>Aplikasi:</strong> Sistem Tracer Study dan Evaluasi Lulusan</p>
+            <p><strong>Role:</strong> Regular User / User Biasa</p>
+            <p><strong>Versi Dokumen:</strong> 1.0</p>
+            <p><strong>Tanggal:</strong> 25 Juni 2026</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>1. Tujuan Manual</h2>
+        <p>Manual ini dibuat untuk membantu pengguna dengan role user biasa memahami fungsi yang dapat diakses pada Sistem Tracer Study. Role user biasa memiliki akses terbatas dibanding admin, sehingga fokus penggunaannya adalah melihat ringkasan dashboard, mengelola profil akun, keluar dari sistem, dan memahami alur akses survey melalui kode.</p>
+    </section>
+
+    <section class="section">
+        <h2>2. Ruang Lingkup Role User Biasa</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fungsi</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dashboard</td>
+                    <td>Melihat ringkasan hasil evaluasi lulusan, statistik, grafik, feedback, dan tabel tingkat kepuasan.</td>
+                </tr>
+                <tr>
+                    <td>Filter Dashboard</td>
+                    <td>Menyaring data berdasarkan periode, fakultas, dan program studi.</td>
+                </tr>
+                <tr>
+                    <td>Profil Saya</td>
+                    <td>Memperbarui nama, email, password, dan melihat informasi role akun.</td>
+                </tr>
+                <tr>
+                    <td>Keluar</td>
+                    <td>Mengakhiri sesi login dengan aman.</td>
+                </tr>
+                <tr>
+                    <td>Akses Survey</td>
+                    <td>Mengisi survey menggunakan kode akses yang diberikan, tanpa perlu masuk sebagai admin.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            <strong>Catatan:</strong> Menu seperti Survey, Lulusan, Pengguna Lulusan, Pertanyaan, Aspek Evaluasi, Cetak Laporan, dan Arsip Survey hanya tampil untuk role admin.
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>3. Login ke Sistem</h2>
+        <ol class="steps">
+            <li>Buka halaman login Sistem Tracer Study.</li>
+            <li>Pilih tab <strong>Login Admin</strong> pada halaman awal.</li>
+            <li>Masukkan email dan password akun user biasa.</li>
+            <li>Centang <strong>Ingat Saya</strong> jika menggunakan perangkat pribadi.</li>
+            <li>Klik tombol <strong>Masuk ke Dashboard</strong>.</li>
+        </ol>
+        <div class="warning">
+            <strong>Keamanan:</strong> Jangan menggunakan fitur Ingat Saya pada komputer umum atau perangkat yang dipakai bersama.
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>4. Mengenal Tampilan Utama</h2>
+        <h3>4.1 Sidebar</h3>
+        <p>Sidebar berada di sisi kiri halaman. Untuk user biasa, menu utama yang ditampilkan adalah <strong>Dashboard</strong>. Pada layar kecil, sidebar dapat dibuka atau ditutup melalui ikon menu di bagian atas.</p>
+
+        <h3>4.2 Navbar</h3>
+        <p>Navbar berada di bagian atas halaman. Area ini memuat ikon notifikasi, nama pengguna, role akun, menu profil, dan tombol keluar.</p>
+
+        <h3>4.3 Menu Akun</h3>
+        <p>Klik area nama atau avatar pengguna di kanan atas untuk membuka menu akun. Dari menu ini pengguna dapat membuka <strong>Profil Saya</strong> atau memilih <strong>Keluar</strong>.</p>
+    </section>
+
+    <section class="section">
+        <h2>5. Menggunakan Dashboard</h2>
+        <p>Dashboard menampilkan ringkasan performa dan kualitas lulusan berdasarkan data survey yang sudah terarsip.</p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Komponen Dashboard</th>
+                    <th>Fungsi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lulusan Dinilai</td>
+                    <td>Menampilkan jumlah lulusan yang sudah memiliki data penilaian.</td>
+                </tr>
+                <tr>
+                    <td>Indeks Kepuasan</td>
+                    <td>Menampilkan rata-rata skor kepuasan pengguna lulusan dari skala 4.00.</td>
+                </tr>
+                <tr>
+                    <td>Kategori Terbaik</td>
+                    <td>Menunjukkan kategori kompetensi dengan skor tertinggi.</td>
+                </tr>
+                <tr>
+                    <td>Kategori Terendah</td>
+                    <td>Menunjukkan kategori kompetensi dengan skor terendah untuk bahan evaluasi.</td>
+                </tr>
+                <tr>
+                    <td>Grafik Program Studi</td>
+                    <td>Menampilkan jumlah responden berdasarkan program studi.</td>
+                </tr>
+                <tr>
+                    <td>Grafik Penilaian per Kategori</td>
+                    <td>Menampilkan rata-rata penilaian tiap kategori kompetensi.</td>
+                </tr>
+                <tr>
+                    <td>Umpan Balik Terbaru</td>
+                    <td>Menampilkan komentar atau masukan terbaru dari pengisi survey.</td>
+                </tr>
+                <tr>
+                    <td>Tingkat Kepuasan Pengguna</td>
+                    <td>Menampilkan persentase penilaian Sangat Baik, Baik, Kurang, dan Sangat Kurang.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>6. Menggunakan Filter Dashboard</h2>
+        <ol class="steps">
+            <li>Pada bagian atas dashboard, cari area <strong>Filter</strong>.</li>
+            <li>Pilih satu atau beberapa <strong>Periode</strong> yang ingin ditampilkan.</li>
+            <li>Pilih <strong>Fakultas</strong> jika ingin membatasi data pada fakultas tertentu.</li>
+            <li>Pilih <strong>Program Studi</strong> jika ingin melihat data yang lebih spesifik.</li>
+            <li>Klik tombol <strong>Terapkan</strong> untuk menampilkan hasil filter.</li>
+            <li>Gunakan tombol reset berbentuk tanda silang jika ingin kembali ke semua data.</li>
+        </ol>
+        <p>Filter yang sedang aktif akan ditampilkan sebagai label kecil di bawah area filter. Ini membantu pengguna mengetahui data apa yang sedang dibaca.</p>
+    </section>
+
+    <section class="section">
+        <h2>7. Membaca Grafik dan Feedback</h2>
+        <h3>7.1 Grafik Ringkas</h3>
+        <p>Dashboard hanya menampilkan beberapa data teratas agar tampilan tetap ringkas. Klik <strong>Lihat Selengkapnya</strong> untuk membuka grafik dalam tampilan lebih besar.</p>
+
+        <h3>7.2 Umpan Balik</h3>
+        <p>Bagian <strong>Umpan Balik Terbaru</strong> menampilkan tiga komentar terbaru. Klik <strong>Lihat Semua</strong> untuk melihat seluruh feedback yang tersedia.</p>
+    </section>
+
+    <section class="section">
+        <h2>8. Mengelola Profil Saya</h2>
+        <ol class="steps">
+            <li>Klik nama atau avatar pengguna di kanan atas.</li>
+            <li>Pilih menu <strong>Profil Saya</strong>.</li>
+            <li>Pada bagian <strong>Informasi Profil</strong>, ubah nama lengkap atau alamat email jika diperlukan.</li>
+            <li>Klik <strong>Simpan Perubahan</strong>.</li>
+            <li>Pada bagian <strong>Ubah Password</strong>, isi password saat ini, password baru, dan konfirmasi password baru.</li>
+            <li>Klik <strong>Perbarui Password</strong> untuk menyimpan password baru.</li>
+        </ol>
+        <div class="warning">
+            <strong>Perhatian:</strong> Fitur Hapus Akun bersifat permanen. Gunakan hanya jika benar-benar diperlukan dan sudah memahami risikonya.
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>9. Mengisi Survey dengan Kode Akses</h2>
+        <p>Selain login sebagai user biasa, halaman awal sistem menyediakan tab <strong>Akses Survey</strong>. Fitur ini digunakan oleh responden yang menerima kode akses survey.</p>
+        <ol class="steps">
+            <li>Buka halaman awal Sistem Tracer Study.</li>
+            <li>Pilih tab <strong>Akses Survey</strong>.</li>
+            <li>Masukkan kode akses yang diberikan oleh pengelola survey.</li>
+            <li>Klik <strong>Mulai Survey Sekarang</strong>.</li>
+            <li>Periksa informasi lulusan dan data perusahaan yang tampil.</li>
+            <li>Lengkapi data perusahaan, data pengisi, dan jawaban survey.</li>
+            <li>Kirim survey setelah semua pertanyaan wajib sudah terisi.</li>
+        </ol>
+        <div class="note">
+            <strong>Catatan:</strong> Kode akses hanya berlaku untuk survey yang aktif dan belum selesai diisi. Jika kode tidak valid, hubungi pengelola sistem.
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>10. Keluar dari Sistem</h2>
+        <ol class="steps">
+            <li>Klik nama atau avatar pengguna di kanan atas.</li>
+            <li>Pilih menu <strong>Keluar</strong>.</li>
+            <li>Pastikan halaman kembali ke halaman awal atau halaman login.</li>
+        </ol>
+        <p>Selalu keluar dari sistem setelah selesai menggunakan aplikasi, terutama jika memakai perangkat bersama.</p>
+    </section>
+
+    <section class="section">
+        <h2>11. Kendala yang Sering Terjadi</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kendala</th>
+                    <th>Penyebab Umum</th>
+                    <th>Solusi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tidak bisa login</td>
+                    <td>Email atau password salah.</td>
+                    <td>Periksa kembali email dan password. Jika masih gagal, hubungi admin.</td>
+                </tr>
+                <tr>
+                    <td>Menu admin tidak muncul</td>
+                    <td>Akun menggunakan role user biasa.</td>
+                    <td>Ini normal. Menu pengelolaan data hanya tersedia untuk admin.</td>
+                </tr>
+                <tr>
+                    <td>Dashboard kosong</td>
+                    <td>Belum ada data survey sesuai filter.</td>
+                    <td>Reset filter atau pilih periode/fakultas/program studi lain.</td>
+                </tr>
+                <tr>
+                    <td>Kode survey tidak valid</td>
+                    <td>Kode salah, survey tidak aktif, atau survey sudah selesai.</td>
+                    <td>Periksa kode akses dan hubungi pengelola survey.</td>
+                </tr>
+                <tr>
+                    <td>Gagal ubah password</td>
+                    <td>Password saat ini salah atau konfirmasi password baru tidak sama.</td>
+                    <td>Isi ulang password dengan benar dan pastikan konfirmasi sesuai.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>12. Ringkasan Hak Akses</h2>
+        <p>Role user biasa digunakan untuk membaca informasi dan melakukan pengelolaan akun pribadi. Pengguna tidak dapat menambah, mengubah, atau menghapus data master seperti survey, lulusan, pengguna lulusan, pertanyaan, kategori, laporan, atau arsip survey.</p>
+        <div class="footer">
+            Dokumen ini disusun berdasarkan menu dan route aplikasi pada Sistem Tracer Study Universitas Dinamika.
+        </div>
+    </section>
+</body>
+</html>

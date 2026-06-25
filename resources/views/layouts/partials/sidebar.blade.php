@@ -65,7 +65,6 @@
                             <span>Aspek Evaluasi</span>
                         </a>
                     </li>
-                @endif
 
                     <li class="sidebar-item {{ request()->routeIs('report') ? 'active' : '' }}">
                         <a href="{{ route('report') }}" class='sidebar-link'>
@@ -80,7 +79,7 @@
                             <span>Arsip Survey</span>
                         </a>
                     </li>
-                
+                @endif              
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

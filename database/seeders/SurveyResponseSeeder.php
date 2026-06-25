@@ -71,7 +71,9 @@ class SurveyResponseSeeder extends Seeder
         $namaPengisi = $pengguna?->nama_penyelia ?? $this->acak($this->namaPenyelia);
         $jabatan     = $pengguna?->jabatan_penyelia ?? $this->acak($this->jabatanList);
         $jumlahBekerja = rand(1, 5);
-        $now         = Carbon::now();
+        $now = $survey->lulusan?->tahun_lulus
+            ? Carbon::parse($survey->lulusan->tahun_lulus)->addYear()
+            : Carbon::create($survey->tahun ?? Carbon::now()->year, 1, 1);
         $isFirst     = true;
 
         $fakultas = $survey->lulusan->fakultas ?? null;
@@ -180,14 +182,12 @@ class SurveyResponseSeeder extends Seeder
         ksort($jawabanArsip);
         $lulus = $survey->lulusan;
 
-        $tahunInstrumen = $soals->first()?->instrumen?->tahun ?? $survey->tahun;
-
         SurveyArsip::create([
             'survey_id'       => $survey->id,
             'access_code'     => $survey->access_code,
             'judul'           => $survey->judul,
             'submitted_at'    => $now,
-            'tahun_instrumen' => $tahunInstrumen,
+            'tahun_instrumen' => $survey->tahun,
 
             'lulusan_nama'          => $lulus?->nama,
             'lulusan_nim'           => $lulus?->nim,

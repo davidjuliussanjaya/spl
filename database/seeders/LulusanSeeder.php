@@ -16,12 +16,14 @@ class LulusanSeeder extends Seeder
                 ['nama' => 'Andi Firmansyah',   'nim' => '2019001001', 'program_studi' => 'Teknik Informatika',    'fakultas' => 'FTI',  'tahun_lulus' => '2022-08-10'],
                 ['nama' => 'Bella Ramadhani',    'nim' => '2019001002', 'program_studi' => 'Sistem Informasi',      'fakultas' => 'FTI',  'tahun_lulus' => '2022-09-05'],
                 ['nama' => 'Chandra Wijaya',     'nim' => '2019001003', 'program_studi' => 'Manajemen Informatika', 'fakultas' => 'FTI',  'tahun_lulus' => '2022-07-20'],
+                ['nama' => 'Aditya Pranata',     'nim' => '2022001004', 'program_studi' => 'Teknik Informatika',    'fakultas' => 'FTI',  'tahun_lulus' => '2025-08-12'],
             ],
             // CV. Kreasi Media Inovasi → FDIK
             'dewi.hartono@kmi.id' => [
                 ['nama' => 'Dina Fitriani',      'nim' => '2020002001', 'program_studi' => 'Desain Komunikasi Visual', 'fakultas' => 'FDIK', 'tahun_lulus' => '2023-08-15'],
                 ['nama' => 'Eko Prasetyo',        'nim' => '2020002002', 'program_studi' => 'Ilmu Komunikasi',          'fakultas' => 'FDIK', 'tahun_lulus' => '2023-09-01'],
                 ['nama' => 'Farida Yusuf',        'nim' => '2020002003', 'program_studi' => 'Jurnalistik',              'fakultas' => 'FDIK', 'tahun_lulus' => '2023-07-30'],
+                ['nama' => 'Citra Lestari',       'nim' => '2022002004', 'program_studi' => 'Desain Komunikasi Visual', 'fakultas' => 'FDIK', 'tahun_lulus' => '2025-09-03'],
             ],
             // Dinas Kominfo Kota Surabaya → FTI
             'gunawan@kominfo-sby.go.id' => [
@@ -34,6 +36,7 @@ class LulusanSeeder extends Seeder
                 ['nama' => 'Lina Marlina',        'nim' => '2021004002', 'program_studi' => 'Manajemen',              'fakultas' => 'FEB',  'tahun_lulus' => '2024-09-15'],
                 ['nama' => 'Mario Tanaka',        'nim' => '2021004003', 'program_studi' => 'Ekonomi Pembangunan',   'fakultas' => 'FEB',  'tahun_lulus' => '2024-07-25'],
                 ['nama' => 'Nina Agustina',       'nim' => '2021004004', 'program_studi' => 'Akuntansi',              'fakultas' => 'FEB',  'tahun_lulus' => '2024-10-05'],
+                ['nama' => 'Dimas Prakoso',       'nim' => '2022004005', 'program_studi' => 'Manajemen',              'fakultas' => 'FEB',  'tahun_lulus' => '2025-07-28'],
             ],
             // Yayasan Pendidikan Cerdas Bangsa → FTI
             'oktavia@cerdas-bangsa.org' => [
@@ -81,8 +84,8 @@ class LulusanSeeder extends Seeder
             }
         }
 
-        $this->command->info('Lulusan: 21 data berhasil di-seed.');
-        $this->command->line('  Tahun lulus: 2022 (3), 2023 (9), 2024 (9)');
-        $this->command->line('  Fakultas: FTI (10), FDIK (5), FEB (6)');
+        $this->command->info('Lulusan: 24 data berhasil di-seed.');
+        $this->command->line('  Tahun lulus: 2022 (3), 2023 (9), 2024 (9), 2025 (3)');
+        $this->command->line('  Fakultas: FTI (11), FDIK (6), FEB (7)');
     }
 }

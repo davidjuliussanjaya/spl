@@ -19,13 +19,17 @@ class SurveyBulkCreateSeeder extends Seeder
             return;
         }
 
-        $tahun = 2026;
+        $tahunInstrumen = 2026;
+        $tahunSurveyAkhir = Carbon::now()->year;
+        $tahunSurveyAwal = $tahunSurveyAkhir - 3;
+        $tahunSurveyList = range($tahunSurveyAwal, $tahunSurveyAkhir);
+        $tahunLulusList = array_map(fn($tahunSurvey) => $tahunSurvey - 1, $tahunSurveyList);
 
         // Ambil semua soal yang aktif dari instrumen 2026
-        $instrumenId = DB::table('instrumen')->where('tahun', $tahun)->value('id');
+        $instrumenId = DB::table('instrumen')->where('tahun', $tahunInstrumen)->value('id');
 
         if (!$instrumenId) {
-            $this->command->error("Instrumen tahun {$tahun} tidak ditemukan. Jalankan DraftInstrumenUniversitas2026Seeder terlebih dahulu.");
+            $this->command->error("Instrumen tahun {$tahunInstrumen} tidak ditemukan. Jalankan DraftInstrumenUniversitas2026Seeder terlebih dahulu.");
             return;
         }
 
@@ -34,28 +38,35 @@ class SurveyBulkCreateSeeder extends Seeder
             ->get(['id', 'peruntukan_fakultas']);
 
         if ($semuaSoal->isEmpty()) {
-            $this->command->error('Tidak ada soal aktif di instrumen 2026. Seeder dihentikan.');
+            $this->command->error("Tidak ada soal aktif di instrumen {$tahunInstrumen}. Seeder dihentikan.");
             return;
         }
 
-        // Ambil semua lulusan yang sudah terhubung ke perusahaan
-        $lulusanList = lulusan::whereNotNull('pengguna_lulusan_id')->get();
+        // Survey dilakukan satu tahun setelah mahasiswa lulus.
+        $lulusanList = lulusan::whereNotNull('pengguna_lulusan_id')
+            ->whereRaw('EXTRACT(YEAR FROM tahun_lulus) IN (' . implode(',', array_fill(0, count($tahunLulusList), '?')) . ')', $tahunLulusList)
+            ->get();
 
         if ($lulusanList->isEmpty()) {
-            $this->command->error('Tidak ada data lulusan yang terhubung ke perusahaan. Jalankan LulusanSeeder terlebih dahulu.');
+            $this->command->error('Tidak ada data lulusan yang sesuai periode survey empat tahun terakhir dan terhubung ke perusahaan. Jalankan LulusanSeeder terlebih dahulu.');
             return;
         }
 
-        $this->command->info("Membuat survey untuk {$lulusanList->count()} lulusan...");
+        $periode = "{$tahunSurveyAwal}-{$tahunSurveyAkhir}";
+        $this->command->info("Membuat survey periode {$periode} untuk {$lulusanList->count()} lulusan...");
 
         $now     = Carbon::now();
         $berhasil = 0;
+        $rekap = array_fill_keys($tahunSurveyList, 0);
 
-        DB::transaction(function () use ($lulusanList, $semuaSoal, $tahun, $now, &$berhasil) {
+        DB::transaction(function () use ($lulusanList, $semuaSoal, $now, &$berhasil, &$rekap) {
             foreach ($lulusanList as $lulus) {
+                $tahunLulus = Carbon::parse($lulus->tahun_lulus)->year;
+                $tahunSurvey = $tahunLulus + 1;
+
                 $survey = Survey::create([
-                    'judul'               => "Survey Kepuasan Pengguna Lulusan {$tahun}",
-                    'tahun'               => $tahun,
+                    'judul'               => "Survey Kepuasan Pengguna Lulusan {$tahunSurvey}",
+                    'tahun'               => $tahunSurvey,
                     'deskripsi'           => 'Survey tracer study untuk penilaian kinerja dan kompetensi lulusan oleh pengguna lulusan (mitra industri).',
                     'lulusan_id'          => $lulus->id,
                     'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
@@ -82,11 +93,15 @@ class SurveyBulkCreateSeeder extends Seeder
                 }
 
                 $berhasil++;
+                $rekap[$tahunSurvey] = ($rekap[$tahunSurvey] ?? 0) + 1;
             }
         });
 
         $this->command->info("Survey berhasil dibuat: {$berhasil} survey.");
-        $this->command->line("  Tahun survey: {$tahun}");
-        $this->command->line("  Soal per survey: Umum + spesifik fakultas dari instrumen {$tahun}");
+        $this->command->line("  Periode survey: {$periode}");
+        foreach ($rekap as $tahunSurvey => $jumlah) {
+            $this->command->line("  {$tahunSurvey}: {$jumlah} survey");
+        }
+        $this->command->line("  Soal per survey: Umum + spesifik fakultas dari instrumen {$tahunInstrumen}");
     }
 }
