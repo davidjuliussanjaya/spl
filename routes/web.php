@@ -13,6 +13,10 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
+Route::get('/user-manual', function () {
+    return response()->file(base_path('docs/user-manual-role-user.pdf'));
+})->name('user-manual');
+
 Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('survey.access');
 Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('survey.fill');
 Route::post('/submit-survey/{code}', [SurveyController::class, 'submitJawaban'])->name('survey.submit');

@@ -68,6 +68,7 @@ class DashboardService
             ->map(fn ($nilai, $kategori) => (object) [
                 'kategori' => $kategori,
                 'rata_rata' => array_sum($nilai) / count($nilai),
+                'total_respon' => count($nilai),
             ])
             ->sortByDesc('rata_rata')
             ->values();
@@ -94,6 +95,32 @@ class DashboardService
                 ];
             })
             ->sortKeys()
+            ->values();
+
+        $kategoriDetails = collect($ratingByKategori)
+            ->map(function ($nilai, $kategori) {
+                $total = count($nilai);
+                $counts = [
+                    'sb' => count(array_filter($nilai, fn ($value) => $value == 4)),
+                    'b' => count(array_filter($nilai, fn ($value) => $value == 3)),
+                    'k' => count(array_filter($nilai, fn ($value) => $value == 2)),
+                    'sk' => count(array_filter($nilai, fn ($value) => $value == 1)),
+                ];
+
+                return [
+                    'kategori' => $kategori,
+                    'rata_rata' => $total > 0 ? round(array_sum($nilai) / $total, 2) : 0,
+                    'total_respon' => $total,
+                    'counts' => $counts,
+                    'percentages' => [
+                        'sb' => $total > 0 ? round($counts['sb'] / $total * 100, 1) : 0,
+                        'b' => $total > 0 ? round($counts['b'] / $total * 100, 1) : 0,
+                        'k' => $total > 0 ? round($counts['k'] / $total * 100, 1) : 0,
+                        'sk' => $total > 0 ? round($counts['sk'] / $total * 100, 1) : 0,
+                    ],
+                ];
+            })
+            ->sortBy('kategori')
             ->values();
 
         $countKategori = $kepuasanPerKategori->count();
@@ -129,6 +156,27 @@ class DashboardService
         $respondenProdiLabels = $respondenProdiStats->pluck('prodi')->toArray();
         $respondenProdiData = $respondenProdiStats->pluck('total')->toArray();
 
+        $prodiDetails = $arsipList
+            ->groupBy(fn ($arsip) => $arsip->lulusan_program_studi ?: 'Tidak diketahui')
+            ->map(function ($items, $prodi) {
+                $jenisPerusahaan = $items
+                    ->groupBy(fn ($arsip) => $arsip->perusahaan_jenis ?: 'Tidak diketahui')
+                    ->map(fn ($group, $jenis) => [
+                        'label' => $jenis,
+                        'total' => $group->count(),
+                    ])
+                    ->sortByDesc('total')
+                    ->values();
+
+                return [
+                    'prodi' => $prodi,
+                    'fakultas' => $items->pluck('lulusan_fakultas')->filter()->unique()->implode(', ') ?: 'Tidak diketahui',
+                    'total' => $items->count(),
+                    'jenis_perusahaan' => $jenisPerusahaan,
+                ];
+            })
+            ->values();
+
         $komentarTerbaru = $arsipList
             ->sortByDesc('submitted_at')
             ->map(function ($arsip) {
@@ -160,8 +208,10 @@ class DashboardService
             'chartData',
             'respondenProdiLabels',
             'respondenProdiData',
+            'prodiDetails',
             'kepuasanPerKategori',
             'kepuasanRingkasan',
+            'kategoriDetails',
             'komentarTerbaru',
             'filterOptions',
             'filters',

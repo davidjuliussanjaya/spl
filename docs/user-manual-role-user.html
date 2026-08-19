@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>User Manual Role User Biasa - Sistem Tracer Study</title>
+    <title>User Manual Website SPL - Sistem Tracer Study</title>
     <style>
         @page {
             size: A4;
@@ -135,6 +135,61 @@
             margin: 10px 0 14px;
         }
 
+        .link-panel {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            padding: 12px;
+            margin: 10px 0 14px;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #8b1a2a;
+            color: #ffffff;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 10.5pt;
+        }
+
+        .link-button.secondary {
+            background: #c9a227;
+            color: #111827;
+        }
+
+        .plain-link {
+            color: #8b1a2a;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .credential-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 6px 12px;
+            margin-top: 10px;
+        }
+
+        .credential-label {
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .credential-value {
+            font-family: Consolas, "Courier New", monospace;
+            font-weight: 700;
+            color: #111827;
+        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -205,8 +260,8 @@
             <div class="two"></div>
         </div>
         <div class="eyebrow">Universitas Dinamika</div>
-        <h1>User Manual<br>Role User Biasa</h1>
-        <p class="subtitle">Panduan penggunaan Sistem Tracer Study untuk memahami menu, dashboard, profil akun, dan akses pengisian survey.</p>
+        <h1>User Manual<br>Website SPL</h1>
+        <p class="subtitle">Panduan penggunaan website SPL untuk mengakses sistem, login, membaca dashboard, mengelola profil, dan mengisi survey evaluasi setelah testing.</p>
         <div class="meta">
             <p><strong>Aplikasi:</strong> Sistem Tracer Study dan Evaluasi Lulusan</p>
             <p><strong>Role:</strong> Regular User / User Biasa</p>
@@ -217,11 +272,56 @@
 
     <section class="section">
         <h2>1. Tujuan Manual</h2>
-        <p>Manual ini dibuat untuk membantu pengguna dengan role user biasa memahami fungsi yang dapat diakses pada Sistem Tracer Study. Role user biasa memiliki akses terbatas dibanding admin, sehingga fokus penggunaannya adalah melihat ringkasan dashboard, mengelola profil akun, keluar dari sistem, dan memahami alur akses survey melalui kode.</p>
+        <p>Manual ini dibuat untuk membantu pengguna website SPL memahami fungsi yang dapat diakses pada Sistem Tracer Study. Fokus penggunaannya adalah membuka website, masuk ke akun, melihat ringkasan dashboard, mengelola profil akun, keluar dari sistem, dan mengisi survey evaluasi setelah selesai melakukan testing website.</p>
     </section>
 
     <section class="section">
-        <h2>2. Ruang Lingkup Role User Biasa</h2>
+        <h2>2. Informasi Akses Website</h2>
+        <p>Website SPL dapat diakses melalui link berikut:</p>
+        <div class="link-panel">
+            <p><strong>Link Website SPL:</strong><br>
+                <a class="plain-link" href="https://david.mitrasupertech.id/">https://david.mitrasupertech.id/</a>
+            </p>
+            <div class="credential-grid">
+                <div class="credential-label">User</div>
+                <div class="credential-value">user@gmail.com</div>
+                <div class="credential-label">Password</div>
+                <div class="credential-value">password</div>
+            </div>
+            <div class="button-row">
+                <a class="link-button" href="https://david.mitrasupertech.id/">Buka Website SPL</a>
+            </div>
+        </div>
+        <div class="note">
+            <strong>Instruksi penting:</strong> Pengguna harus masuk/login terlebih dahulu sebelum menggunakan fitur utama website SPL. Gunakan akun yang telah disediakan, lalu lanjutkan ke dashboard setelah login berhasil.
+        </div>
+        <p>User Manual tersedia di bagian bawah halaman website SPL. Jika membutuhkan panduan saat testing, gulir ke footer halaman awal lalu klik link <strong>User Manual</strong>.</p>
+    </section>
+
+    <section class="section">
+        <h2>3. Setelah Selesai Testing Website SPL</h2>
+        <p>Setelah selesai mencoba fitur website SPL, pengguna wajib mengisi survey evaluasi testing. Survey ini digunakan untuk mengumpulkan masukan mengenai pengalaman penggunaan website.</p>
+        <div class="link-panel">
+            <p><strong>Link Google Form Survey:</strong><br>
+                <a class="plain-link" href="https://forms.gle/YS2PXJYs1PCwTq748">https://forms.gle/YS2PXJYs1PCwTq748</a>
+            </p>
+            <div class="button-row">
+                <a class="link-button secondary" href="https://forms.gle/YS2PXJYs1PCwTq748">Isi Survey Setelah Testing</a>
+            </div>
+        </div>
+        <ol class="steps">
+            <li>Pastikan testing website SPL sudah selesai dilakukan.</li>
+            <li>Buka link Google Form Survey di atas.</li>
+            <li>Isi jawaban sesuai pengalaman saat menggunakan website SPL.</li>
+            <li>Kirim survey setelah seluruh pertanyaan wajib terisi.</li>
+        </ol>
+        <div class="note">
+            <strong>Catatan:</strong> Bagian ini hanya menjelaskan kewajiban mengisi survey evaluasi setelah testing. Panduan pengisian survey untuk pengguna lulusan tidak termasuk dalam manual utama ini.
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>4. Ruang Lingkup Role User Biasa</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -246,10 +346,6 @@
                     <td>Keluar</td>
                     <td>Mengakhiri sesi login dengan aman.</td>
                 </tr>
-                <tr>
-                    <td>Akses Survey</td>
-                    <td>Mengisi survey menggunakan kode akses yang diberikan, tanpa perlu masuk sebagai admin.</td>
-                </tr>
             </tbody>
         </table>
         <div class="note">
@@ -258,10 +354,11 @@
     </section>
 
     <section class="section">
-        <h2>3. Login ke Sistem</h2>
+        <h2>5. Login ke Sistem</h2>
         <ol class="steps">
-            <li>Buka halaman login Sistem Tracer Study.</li>
-            <li>Pilih tab <strong>Login Admin</strong> pada halaman awal.</li>
+            <li>Buka website SPL melalui link <a class="plain-link" href="https://david.mitrasupertech.id/">https://david.mitrasupertech.id/</a>.</li>
+            <li>Klik tombol <strong>Masuk</strong> atau <strong>Masuk sebagai Admin</strong>.</li>
+            <li>Pilih tab <strong>Login Admin</strong> pada halaman login.</li>
             <li>Masukkan email dan password akun user biasa.</li>
             <li>Centang <strong>Ingat Saya</strong> jika menggunakan perangkat pribadi.</li>
             <li>Klik tombol <strong>Masuk ke Dashboard</strong>.</li>
@@ -272,19 +369,19 @@
     </section>
 
     <section class="section">
-        <h2>4. Mengenal Tampilan Utama</h2>
-        <h3>4.1 Sidebar</h3>
+        <h2>6. Mengenal Tampilan Utama</h2>
+        <h3>6.1 Sidebar</h3>
         <p>Sidebar berada di sisi kiri halaman. Untuk user biasa, menu utama yang ditampilkan adalah <strong>Dashboard</strong>. Pada layar kecil, sidebar dapat dibuka atau ditutup melalui ikon menu di bagian atas.</p>
 
-        <h3>4.2 Navbar</h3>
+        <h3>6.2 Navbar</h3>
         <p>Navbar berada di bagian atas halaman. Area ini memuat ikon notifikasi, nama pengguna, role akun, menu profil, dan tombol keluar.</p>
 
-        <h3>4.3 Menu Akun</h3>
+        <h3>6.3 Menu Akun</h3>
         <p>Klik area nama atau avatar pengguna di kanan atas untuk membuka menu akun. Dari menu ini pengguna dapat membuka <strong>Profil Saya</strong> atau memilih <strong>Keluar</strong>.</p>
     </section>
 
     <section class="section">
-        <h2>5. Menggunakan Dashboard</h2>
+        <h2>7. Menggunakan Dashboard</h2>
         <p>Dashboard menampilkan ringkasan performa dan kualitas lulusan berdasarkan data survey yang sudah terarsip.</p>
 
         <table class="table">
@@ -332,7 +429,7 @@
     </section>
 
     <section class="section">
-        <h2>6. Menggunakan Filter Dashboard</h2>
+        <h2>8. Menggunakan Filter Dashboard</h2>
         <ol class="steps">
             <li>Pada bagian atas dashboard, cari area <strong>Filter</strong>.</li>
             <li>Pilih satu atau beberapa <strong>Periode</strong> yang ingin ditampilkan.</li>
@@ -345,16 +442,16 @@
     </section>
 
     <section class="section">
-        <h2>7. Membaca Grafik dan Feedback</h2>
-        <h3>7.1 Grafik Ringkas</h3>
+        <h2>9. Membaca Grafik dan Feedback</h2>
+        <h3>9.1 Grafik Ringkas</h3>
         <p>Dashboard hanya menampilkan beberapa data teratas agar tampilan tetap ringkas. Klik <strong>Lihat Selengkapnya</strong> untuk membuka grafik dalam tampilan lebih besar.</p>
 
-        <h3>7.2 Umpan Balik</h3>
+        <h3>9.2 Umpan Balik</h3>
         <p>Bagian <strong>Umpan Balik Terbaru</strong> menampilkan tiga komentar terbaru. Klik <strong>Lihat Semua</strong> untuk melihat seluruh feedback yang tersedia.</p>
     </section>
 
     <section class="section">
-        <h2>8. Mengelola Profil Saya</h2>
+        <h2>10. Mengelola Profil Saya</h2>
         <ol class="steps">
             <li>Klik nama atau avatar pengguna di kanan atas.</li>
             <li>Pilih menu <strong>Profil Saya</strong>.</li>
@@ -369,24 +466,7 @@
     </section>
 
     <section class="section">
-        <h2>9. Mengisi Survey dengan Kode Akses</h2>
-        <p>Selain login sebagai user biasa, halaman awal sistem menyediakan tab <strong>Akses Survey</strong>. Fitur ini digunakan oleh responden yang menerima kode akses survey.</p>
-        <ol class="steps">
-            <li>Buka halaman awal Sistem Tracer Study.</li>
-            <li>Pilih tab <strong>Akses Survey</strong>.</li>
-            <li>Masukkan kode akses yang diberikan oleh pengelola survey.</li>
-            <li>Klik <strong>Mulai Survey Sekarang</strong>.</li>
-            <li>Periksa informasi lulusan dan data perusahaan yang tampil.</li>
-            <li>Lengkapi data perusahaan, data pengisi, dan jawaban survey.</li>
-            <li>Kirim survey setelah semua pertanyaan wajib sudah terisi.</li>
-        </ol>
-        <div class="note">
-            <strong>Catatan:</strong> Kode akses hanya berlaku untuk survey yang aktif dan belum selesai diisi. Jika kode tidak valid, hubungi pengelola sistem.
-        </div>
-    </section>
-
-    <section class="section">
-        <h2>10. Keluar dari Sistem</h2>
+        <h2>11. Keluar dari Sistem</h2>
         <ol class="steps">
             <li>Klik nama atau avatar pengguna di kanan atas.</li>
             <li>Pilih menu <strong>Keluar</strong>.</li>
@@ -396,7 +476,7 @@
     </section>
 
     <section class="section">
-        <h2>11. Kendala yang Sering Terjadi</h2>
+        <h2>12. Kendala yang Sering Terjadi</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -422,11 +502,6 @@
                     <td>Reset filter atau pilih periode/fakultas/program studi lain.</td>
                 </tr>
                 <tr>
-                    <td>Kode survey tidak valid</td>
-                    <td>Kode salah, survey tidak aktif, atau survey sudah selesai.</td>
-                    <td>Periksa kode akses dan hubungi pengelola survey.</td>
-                </tr>
-                <tr>
                     <td>Gagal ubah password</td>
                     <td>Password saat ini salah atau konfirmasi password baru tidak sama.</td>
                     <td>Isi ulang password dengan benar dan pastikan konfirmasi sesuai.</td>
@@ -436,10 +511,10 @@
     </section>
 
     <section class="section">
-        <h2>12. Ringkasan Hak Akses</h2>
+        <h2>13. Ringkasan Hak Akses</h2>
         <p>Role user biasa digunakan untuk membaca informasi dan melakukan pengelolaan akun pribadi. Pengguna tidak dapat menambah, mengubah, atau menghapus data master seperti survey, lulusan, pengguna lulusan, pertanyaan, kategori, laporan, atau arsip survey.</p>
         <div class="footer">
-            Dokumen ini disusun berdasarkan menu dan route aplikasi pada Sistem Tracer Study Universitas Dinamika.
+            Dokumen ini disusun berdasarkan menu dan route aplikasi pada Sistem Tracer Study Universitas Dinamika. Setelah testing selesai, isi survey evaluasi melalui https://forms.gle/YS2PXJYs1PCwTq748.
         </div>
     </section>
 </body>
