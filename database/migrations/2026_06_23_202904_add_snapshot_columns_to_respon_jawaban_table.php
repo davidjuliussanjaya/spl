@@ -12,18 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('respon_jawaban', function (Blueprint $table) {
-            // Simpan teks soal dan jawaban saat survey diisi — agar data tidak berubah
-            // meski soal/jawaban diedit atau dihapus di masa mendatang
-            $table->text('soal_text_snapshot')->nullable()->after('soal_id');
-            $table->text('jawaban_text_snapshot')->nullable()->after('jawaban_id');
+            // Simpan teks soal dan jawaban saat survey diisi agar data tidak berubah
+            // meski soal/jawaban diedit atau dihapus di masa mendatang.
+            $table->text('soal_text_snapshot')->nullable();
+            $table->text('jawaban_text_snapshot')->nullable();
 
             // Ganti cascadeOnDelete pada soal_id dan jawaban_id:
-            // - soal_id   → default Oracle (restrict): record respon tidak bisa dihapus jika soal masih dipakai
-            // - jawaban_id → nullOnDelete: jika opsi jawaban dihapus, FK jadi NULL tapi snapshot tetap ada
+            // - soal_id: restrict, record respon tidak bisa dihapus jika soal masih dipakai.
+            // - jawaban_id: nullOnDelete, opsi jawaban boleh dihapus tetapi snapshot tetap ada.
             $table->dropForeign(['soal_id']);
             $table->dropForeign(['jawaban_id']);
 
-            // Oracle default FK = restrict (tidak perlu ON DELETE clause)
             $table->foreign('soal_id')
                   ->references('id')->on('soal');
 

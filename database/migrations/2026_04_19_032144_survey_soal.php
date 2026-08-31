@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('survey_id')->constrained('survey')->cascadeOnDelete();
             $table->foreignId('soal_id')->constrained('soal')->cascadeOnDelete();
             $table->timestamps();
+
+            $table->unique(['survey_id', 'soal_id']);
         });
     }
 

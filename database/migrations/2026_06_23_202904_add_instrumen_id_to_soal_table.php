@@ -16,7 +16,6 @@ return new class extends Migration
             if (!Schema::hasColumn('soal', 'instrumen_id')) {
                 $table->foreignId('instrumen_id')
                       ->nullable()
-                      ->after('id')
                       ->constrained('instrumen');
             } else {
                 // Kolom sudah ada, cukup tambahkan FK constraint

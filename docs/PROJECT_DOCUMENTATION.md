@@ -18,7 +18,7 @@
 | **Frontend Starter** | Laravel Breeze |
 | **Build Tool** | Vite |
 | **CSS Framework** | Tailwind CSS |
-| **Database Driver** | Oracle (via `yajra/laravel-oci8`) |
+| **Database Driver** | PostgreSQL (`pdo_pgsql`) |
 | **Testing** | Pest PHP |
 | **Dev Tools** | Laravel Pail, Laravel Pint |
 
@@ -311,7 +311,7 @@ resources/views/
 - PHP >= 8.2
 - Composer
 - Node.js & npm
-- Oracle Database (dengan konfigurasi OCI8)
+- PostgreSQL (dengan ekstensi PHP `pdo_pgsql`)
 - Laragon (Windows) atau server lokal setara
 
 ### Langkah Setup
@@ -328,13 +328,15 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 4. Konfigurasi database di .env (koneksi Oracle)
-# DB_CONNECTION=oracle
+# 4. Konfigurasi database di .env (koneksi PostgreSQL)
+# DB_CONNECTION=pgsql
 # DB_HOST=127.0.0.1
-# DB_PORT=1521
-# DB_DATABASE=<nama_db>
-# DB_USERNAME=<user>
+# DB_PORT=5432
+# DB_DATABASE=spl
+# DB_USERNAME=postgres
 # DB_PASSWORD=<password>
+# DB_SCHEMA=public
+# DB_SSLMODE=prefer
 
 # 5. Jalankan migrasi
 php artisan migrate
