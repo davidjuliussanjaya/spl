@@ -128,7 +128,7 @@
 
     .modern-input:focus {
         background-color: #fff;
-        border-color: #8B1A2A;
+        border-color: #2563EB;
         box-shadow: 0 4px 12px rgba(67, 94, 190, 0.08);
     }
 
@@ -147,8 +147,8 @@
 
     /* Switch Style */
     .form-check-input:checked {
-        background-color: #8B1A2A;
-        border-color: #8B1A2A;
+        background-color: #2563EB;
+        border-color: #2563EB;
     }
 
     .card {
@@ -157,7 +157,7 @@
 
     /* Hover effect pada button */
     .btn-primary {
-        background-color: #8B1A2A;
+        background-color: #2563EB;
         border: none;
     }
     .btn-primary:hover {

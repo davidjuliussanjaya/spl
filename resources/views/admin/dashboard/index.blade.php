@@ -5,10 +5,10 @@
 @section('content')
 <style>
     :root {
-        --brand-50: #fde8ec;
-        --brand-100: #fbbcca;
-        --brand-500: #8b1a2a;
-        --brand-700: #6c0215;
+        --brand-50: #eff6ff;
+        --brand-100: #bfdbfe;
+        --brand-500: #2563eb;
+        --brand-700: #1d4ed8;
         --slate-50: #f8fafc;
         --slate-100: #f1f5f9;
         --slate-200: #e2e8f0;
@@ -22,24 +22,18 @@
     }
 
     .db-wrap { display: flex; flex-direction: column; gap: 1rem; }
-    .db-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: .75rem; }
+    .db-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
     .db-header h3 { font-size: 1.25rem; font-weight: 700; color: var(--slate-900); margin: 0; }
     .db-header p { font-size: .82rem; color: var(--slate-400); margin: .2rem 0 0; }
+    .dashboard-filter-form { display: flex; align-items: end; gap: .55rem; flex-wrap: wrap; }
+    .dashboard-filter-field { min-width: 170px; }
+    .dashboard-filter-field.prodi { min-width: 210px; }
+    .dashboard-filter-field .form-label { font-size: .66rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
+    .dashboard-filter-form .form-select { font-size: .8rem; min-height: 34px; border-color: var(--slate-200); border-radius: 8px; }
+    .dashboard-filter-form .form-select:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+    .dashboard-filter-actions { display: flex; gap: .4rem; }
+    @media(max-width:767px) { .dashboard-filter-form { width: 100%; } .dashboard-filter-field, .dashboard-filter-field.prodi { flex: 1 1 calc(50% - .3rem); min-width: 0; } }
 
-    .filter-bar {
-        background: #fff; border: 1px solid var(--slate-200);
-        border-radius: var(--radius); padding: .75rem 1rem; box-shadow: var(--shadow);
-    }
-    .filter-bar .form-label {
-        font-size: .7rem; font-weight: 700; color: var(--slate-500);
-        text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem;
-    }
-    .filter-bar .form-select,
-    .filter-bar .periode-toggle {
-        font-size: .82rem; border-color: var(--slate-200); border-radius: 8px; color: var(--slate-700);
-    }
-    .filter-bar .form-select:focus,
-    .filter-bar .periode-toggle:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(139,26,42,.12); }
     .periode-dropdown { width: 100%; }
     .periode-toggle {
         width: 100%; min-height: 31px; background: #fff; border: 1px solid var(--slate-200);
@@ -47,6 +41,7 @@
         padding: .25rem .5rem; text-align: left;
     }
     .periode-toggle span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .periode-toggle:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
     .periode-menu {
         width: 100%; max-height: 220px; overflow-y: auto; padding: .45rem;
         border: 1px solid var(--slate-200); border-radius: 8px; box-shadow: var(--shadow-md);
@@ -99,9 +94,9 @@
     .stat-card::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--brand-500);
     }
-    .stat-card.green::before { background: #16a34a; }
-    .stat-card.amber::before { background: #d97706; }
-    .stat-card.red::before { background: #dc2626; }
+    .stat-card.green::before { background: #0f766e; }
+    .stat-card.amber::before { background: #2563eb; }
+    .stat-card.red::before { background: #64748b; }
     .stat-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; margin-bottom: .7rem; }
     .stat-label {
         font-size: .7rem; font-weight: 700; text-transform: uppercase;
@@ -112,9 +107,9 @@
         display: flex; align-items: center; justify-content: center;
         font-size: .95rem; background: var(--brand-50); color: var(--brand-500); flex-shrink: 0;
     }
-    .stat-card.green .stat-icon-wrap { background: #f0fdf4; color: #16a34a; }
-    .stat-card.amber .stat-icon-wrap { background: #fffbeb; color: #d97706; }
-    .stat-card.red .stat-icon-wrap { background: #fef2f2; color: #dc2626; }
+    .stat-card.green .stat-icon-wrap { background: #f0fdfa; color: #0f766e; }
+    .stat-card.amber .stat-icon-wrap { background: #eff6ff; color: #2563eb; }
+    .stat-card.red .stat-icon-wrap { background: #f1f5f9; color: #475569; }
     .stat-value { font-size: 1.65rem; font-weight: 800; color: var(--slate-900); line-height: 1; }
     .stat-unit { font-size: .76rem; font-weight: 400; color: var(--slate-500); margin-left: .25rem; }
     .stat-name { font-size: .88rem; font-weight: 700; color: var(--slate-900); line-height: 1.25; margin-bottom: .22rem; }
@@ -190,6 +185,7 @@
     .tbl-kepuasan tbody tr.active td { background: var(--brand-50); color: var(--brand-700) !important; }
 
     .satisfaction-panel, .satisfaction-panel * { color: #111 !important; }
+    .satisfaction-panel small { color: var(--slate-500) !important; font-size: .68rem; white-space: nowrap; }
     .satisfaction-panel .view-switch button { color: var(--slate-500) !important; }
     .satisfaction-panel .view-switch button.active { color: #fff !important; background: var(--brand-500); }
     .satisfaction-panel .panel-header { border: 1px solid #d1d5db; border-width: 0 0 1px 0; background: #fff; }
@@ -222,14 +218,8 @@
 
 @php
     $activePeriode = $filters['periode'] ?? [];
-    $selectedFakultas = $filters['fakultas'] ?? '';
-    $selectedProdi = $filters['program_studi'] ?? '';
-    $fakultasProdi = $filterOptions['fakultasProdi'] ?? [];
-    $fakultasLabels = $filterOptions['fakultasLabels'] ?? [];
-    $availableProdi = $selectedFakultas && isset($fakultasProdi[$selectedFakultas])
-        ? $fakultasProdi[$selectedFakultas]
-        : $filterOptions['prodiList'];
-    $hasFilters = !empty($activePeriode) || !empty($filters['fakultas']) || !empty($filters['program_studi']);
+    $selectedProdi = $filters['program_studi'] ?? [];
+    $availableProdi = $filterOptions['prodiList'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
     $activeKategori = $kategoriTerlemah->kategori ?? $kategoriTerbaik->kategori ?? null;
 @endphp
@@ -240,20 +230,11 @@
             <h3>Dashboard Evaluasi Lulusan</h3>
             <p>Ringkasan performa dan kualitas lulusan Universitas Dinamika di dunia kerja.</p>
         </div>
-    </div>
-
-    <div class="filter-bar">
-        <form method="GET" action="{{ route('dashboard') }}" id="filterForm">
-            <div class="row g-2 align-items-end">
-                <div class="col-12 col-lg-auto d-flex align-items-center pe-3">
-                    <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--slate-500);">
-                        <i class="bi bi-sliders me-1" style="color:var(--brand-500);"></i>Filter
-                    </span>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Periode</label>
-                    <div class="dropdown periode-dropdown">
-                        <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <form method="GET" action="{{ route('dashboard') }}" id="filterForm" class="dashboard-filter-form">
+            <div class="dashboard-filter-field">
+                <label class="form-label">Periode</label>
+                <div class="dropdown periode-dropdown">
+                        <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                             <span>
                                 @if(empty($activePeriode))
                                     Semua Periode
@@ -273,54 +254,37 @@
                                 </label>
                             @endforeach
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Fakultas</label>
-                    <select name="fakultas" id="filterFakultas" class="form-select form-select-sm">
-                        <option value="">Semua Fakultas</option>
-                        @foreach($filterOptions['fakultasList'] as $fakultas)
-                            <option value="{{ $fakultas }}" {{ $selectedFakultas == $fakultas ? 'selected' : '' }}>
-                                {{ $fakultasLabels[$fakultas] ?? $fakultas }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Program Studi</label>
-                    <select name="program_studi" id="filterProdi" class="form-select form-select-sm">
-                        <option value="">{{ $selectedFakultas ? 'Semua Prodi di Fakultas ini' : 'Semua Prodi' }}</option>
-                        @foreach($availableProdi as $prodi)
-                            <option value="{{ $prodi }}" {{ $selectedProdi == $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-lg-auto d-flex gap-2">
-                    <button type="submit" class="btn btn-apply">
-                        <i class="bi bi-search me-1"></i> Terapkan
-                    </button>
-                    @if($hasFilters)
-                        <a href="{{ route('dashboard') }}" class="btn btn-reset btn-outline-secondary">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
-                    @endif
                 </div>
             </div>
-
-            @if($hasFilters)
-                <div class="d-flex flex-wrap gap-2 align-items-center mt-2 pt-2 border-top">
-                    <span style="font-size:.72rem;color:var(--slate-500);">Aktif:</span>
-                    @foreach($activePeriode as $periode)
-                        <span class="chip"><i class="bi bi-calendar3"></i> {{ $periode }}</span>
-                    @endforeach
-                    @if(!empty($filters['fakultas']))
-                        <span class="chip"><i class="bi bi-building"></i> {{ $fakultasLabels[$filters['fakultas']] ?? $filters['fakultas'] }}</span>
-                    @endif
-                    @if(!empty($filters['program_studi']))
-                        <span class="chip"><i class="bi bi-book"></i> {{ $filters['program_studi'] }}</span>
-                    @endif
+            <div class="dashboard-filter-field prodi">
+                <label class="form-label">Program Studi</label>
+                <div class="dropdown periode-dropdown">
+                    <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                        <span>
+                            @if(empty($selectedProdi))
+                                Semua prodi
+                            @elseif(count($selectedProdi) === 1)
+                                {{ $selectedProdi[0] }}
+                            @else
+                                {{ count($selectedProdi) }} prodi dipilih
+                            @endif
+                        </span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu periode-menu">
+                        @foreach($availableProdi as $prodi)
+                            <label class="periode-option">
+                                <input type="checkbox" name="program_studi[]" value="{{ $prodi }}" {{ in_array($prodi, $selectedProdi, true) ? 'checked' : '' }}>
+                                <span>{{ $prodi }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
-            @endif
+            </div>
+            <div class="dashboard-filter-actions">
+                <button type="submit" class="btn btn-apply"><i class="bi bi-funnel me-1"></i>Terapkan filter</button>
+                <a href="{{ route('dashboard') }}" class="btn btn-reset btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset filter</a>
+            </div>
         </form>
     </div>
 
@@ -366,6 +330,8 @@
             <div class="stat-sub">Skor {{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00</div>
         </div>
     </div>
+
+    @include('admin.dashboard.partials.satisfaction-panel')
 
     <div class="chart-grid">
         <div class="panel">
@@ -428,68 +394,6 @@
         </div>
     </div>
 
-    <div class="panel satisfaction-panel">
-        <div class="panel-header">
-            <div>
-                <h6 class="panel-title">Tingkat Kepuasan Pengguna</h6>
-                <p class="panel-subtitle">Persentase penilaian responden per kategori kompetensi lulusan</p>
-            </div>
-            @if(!$kepuasanPerKategori->isEmpty())
-                <div class="view-switch" role="group" aria-label="Mode tampilan kepuasan">
-                    <button type="button" class="active" data-view-mode="table"><i class="bi bi-table"></i></button>
-                    <button type="button" data-view-mode="chart"><i class="bi bi-bar-chart"></i></button>
-                </div>
-            @endif
-        </div>
-
-        @if($kepuasanPerKategori->isEmpty())
-            <div class="empty-state"><i class="bi bi-bar-chart"></i>Belum ada data penilaian.</div>
-        @else
-            <div class="kepuasan-table-wrap" style="overflow-x:auto;">
-                <table class="tbl-kepuasan">
-                    <thead>
-                        <tr>
-                            <th class="th-name">Jenis Kemampuan</th>
-                            <th>Sangat Baik (4)</th>
-                            <th>Baik (3)</th>
-                            <th>Kurang (2)</th>
-                            <th>Sangat Kurang (1)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($kepuasanPerKategori as $kat)
-                            <tr data-kategori-row="{{ $kat['kategori'] }}">
-                                <td>{{ $kat['kategori'] }}</td>
-                                <td>{{ $kat['pct_sb'] }}%</td>
-                                <td>{{ $kat['pct_b'] }}%</td>
-                                <td>{{ $kat['pct_k'] }}%</td>
-                                <td>{{ $kat['pct_sk'] }}%</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td>Total</td>
-                            <td>{{ $kepuasanRingkasan['total']['sb'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['b'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['k'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['sk'] }}%</td>
-                        </tr>
-                        <tr>
-                            <td>Rata-Rata</td>
-                            <td>{{ $kepuasanRingkasan['rata']['sb'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['b'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['k'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['sk'] }}%</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <div class="kepuasan-chart-wrap">
-                <div id="chart-kepuasan-stack"></div>
-            </div>
-        @endif
-    </div>
 </div>
 
 <div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
@@ -555,39 +459,11 @@
     const respondenProdiData = @json($respondenProdiData);
     const respondenProdiLabels = @json($respondenProdiLabels);
     const prodiDetails = @json($prodiDetails);
-    const fakultasProdi = @json($fakultasProdi);
     const kategoriDetails = @json($kategoriDetails);
     const initialKategori = @json($activeKategori);
     const compactLimit = 6;
     const kategoriDetailMap = new Map(kategoriDetails.map((item) => [item.kategori, item]));
     const prodiDetailMap = new Map(prodiDetails.map((item) => [item.prodi, item]));
-
-    const fakultasSelect = document.getElementById('filterFakultas');
-    const prodiSelect = document.getElementById('filterProdi');
-
-    const renderProdiOptions = () => {
-        const selectedFakultas = fakultasSelect.value;
-        const currentProdi = prodiSelect.value;
-        const prodiList = selectedFakultas ? (fakultasProdi[selectedFakultas] || []) : Object.values(fakultasProdi).flat();
-        const defaultLabel = selectedFakultas ? 'Semua Prodi di Fakultas ini' : 'Semua Prodi';
-
-        prodiSelect.disabled = true;
-        prodiSelect.innerHTML = '<option value="">Memuat prodi...</option>';
-
-        window.setTimeout(() => {
-            prodiSelect.innerHTML = '';
-            prodiSelect.append(new Option(defaultLabel, ''));
-
-            prodiList.forEach((prodi) => {
-                prodiSelect.append(new Option(prodi, prodi));
-            });
-
-            prodiSelect.value = prodiList.includes(currentProdi) ? currentProdi : '';
-            prodiSelect.disabled = false;
-        }, 120);
-    };
-
-    fakultasSelect.addEventListener('change', renderProdiOptions);
 
     const sliceData = (labels, data, limit = compactLimit) => ({
         labels: labels.slice(0, limit),
@@ -651,7 +527,7 @@
                 dataLabels: { position: 'center' }
             }
         },
-        colors: ['#8b1a2a'],
+        colors: ['#2563eb'],
         dataLabels: {
             enabled: true,
             formatter: value => `${value}`,
@@ -726,7 +602,7 @@
                 dataLabels: { position: 'top' }
             }
         },
-        colors: ['#8b1a2a'],
+        colors: ['#2563eb'],
         dataLabels: {
             enabled: true,
             offsetY: -18,

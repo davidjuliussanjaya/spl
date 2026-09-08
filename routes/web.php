@@ -75,7 +75,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
         Route::get('/addquestion', [PertanyaanController::class, 'add'])->name('addquestion');
         Route::get('/pertanyaan/{id}/edit', [PertanyaanController::class, 'edit'])->name('pertanyaan.edit');
-        Route::get('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
+        Route::patch('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
         Route::put('/pertanyaan/{id}', [PertanyaanController::class, 'update'])->name('pertanyaan.update');
         Route::post('/savequestion', [PertanyaanController::class, 'store'])->name('savequestion');
 

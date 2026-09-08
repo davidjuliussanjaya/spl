@@ -930,7 +930,7 @@
 }
 
 #main {
-    background-color: #FFF5F7 !important; /* Warna latar Universitas Dinamika */
+    background-color: #f6f8fc !important;
     min-height: 100vh;
 }
 
@@ -957,7 +957,7 @@
     padding: 0.75rem 0 0.75rem;
     font-size: 1rem;
     font-weight: 700;
-    border-bottom: 1px solid #f5e8ea;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .sidebar-wrapper .sidebar-header img {
@@ -983,7 +983,7 @@
     font-size: 1rem;
     list-style: none;
     font-weight: 600;
-    color: #8B1A2A
+    color: #64748b
 }
 
 .sidebar-wrapper .menu .sidebar-link {
@@ -1030,8 +1030,8 @@
 }
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link {
-    background-color: #FDE8EC !important;
-    color: var(--primary-color) !important;
+    background-color: #2563eb !important;
+    color: #fff !important;
 }
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link span {
@@ -1040,7 +1040,7 @@
 
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link i,
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link svg {
-    color: var(--primary-color) !important;
+    color: #fff !important;
     fill: none !important; /* Menghilangkan fill agar lebih clean */
 }
 
@@ -1611,21 +1611,21 @@ a {
 /* Universitas Dinamika Surabaya Theme */
 :root {
     /* Custom tokens */
-    --primary-color: #8B1A2A;
-    --primary-dark: #6C0215;
-    --primary-light: #B91C3A;
-    --primary-bg: #FDE8EC;
-    --gold: #C9A227;
-    --gold-light: #F4D03F;
-    --bg-light: #FFF5F7;
+    --primary-color: #2563EB;
+    --primary-dark: #1D4ED8;
+    --primary-light: #60A5FA;
+    --primary-bg: #EFF6FF;
+    --gold: #0F766E;
+    --gold-light: #5EEAD4;
+    --bg-light: #F6F8FC;
     --border-radius: 12px;
 
     /* Override Bootstrap CSS variables */
-    --bs-primary: #8B1A2A;
-    --bs-primary-rgb: 139, 26, 42;
-    --bs-link-color: #8B1A2A;
-    --bs-link-hover-color: #6C0215;
-    --bs-link-color-rgb: 139, 26, 42;
+    --bs-primary: #2563EB;
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-link-color: #2563EB;
+    --bs-link-hover-color: #1D4ED8;
+    --bs-link-color-rgb: 37, 99, 235;
 
     /* Override Bootstrap success → gold/amber for Excel/download actions */
     --bs-success: #1a7a3c;
@@ -1633,57 +1633,57 @@ a {
 }
 
 /* Bootstrap primary overrides */
-.btn-primary { background-color: #8B1A2A !important; border-color: #8B1A2A !important; color: #fff !important; }
-.btn-primary:hover, .btn-primary:focus { background-color: #6C0215 !important; border-color: #6C0215 !important; }
-.btn-outline-primary { color: #8B1A2A !important; border-color: #8B1A2A !important; }
-.btn-outline-primary:hover { background-color: #8B1A2A !important; color: #fff !important; }
-.text-primary { color: #8B1A2A !important; }
-.bg-primary { background-color: #8B1A2A !important; }
-.border-primary { border-color: #8B1A2A !important; }
-.badge.bg-primary { background-color: #8B1A2A !important; }
+.btn-primary { background-color: #2563EB !important; border-color: #2563EB !important; color: #fff !important; }
+.btn-primary:hover, .btn-primary:focus { background-color: #1D4ED8 !important; border-color: #1D4ED8 !important; }
+.btn-outline-primary { color: #2563EB !important; border-color: #2563EB !important; }
+.btn-outline-primary:hover { background-color: #2563EB !important; color: #fff !important; }
+.text-primary { color: #2563EB !important; }
+.bg-primary { background-color: #2563EB !important; }
+.border-primary { border-color: #2563EB !important; }
+.badge.bg-primary { background-color: #2563EB !important; }
 
 /* Breadcrumb & links */
-a { color: #8B1A2A; }
-a:hover { color: #6C0215; }
-.breadcrumb-item a { color: #8B1A2A; }
+a { color: #2563EB; }
+a:hover { color: #1D4ED8; }
+.breadcrumb-item a { color: #2563EB; }
 .breadcrumb-item.active { color: #6b7280; }
 
 /* Form focus → maroon ring */
 .form-select:focus,
 .form-control:focus {
-    border-color: #B91C3A !important;
-    box-shadow: 0 0 0 0.2rem rgba(139, 26, 42, 0.15) !important;
+    border-color: #60A5FA !important;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15) !important;
 }
 
 /* Info → gold */
-.bg-info { background-color: #C9A227 !important; }
-.text-info { color: #C9A227 !important; }
-.btn-info { background-color: #C9A227 !important; border-color: #C9A227 !important; color: #fff !important; }
+.bg-info { background-color: #0F766E !important; }
+.text-info { color: #0F766E !important; }
+.btn-info { background-color: #0F766E !important; border-color: #0F766E !important; color: #fff !important; }
 
 /* Success button → maroon (buttons should follow brand, not semantic green) */
-.btn-success { background-color: #8B1A2A !important; border-color: #8B1A2A !important; color: #fff !important; }
-.btn-success:hover, .btn-success:focus { background-color: #6C0215 !important; border-color: #6C0215 !important; }
-.btn-outline-success { color: #8B1A2A !important; border-color: #8B1A2A !important; }
-.btn-outline-success:hover { background-color: #8B1A2A !important; color: #fff !important; }
+.btn-success { background-color: #16A34A !important; border-color: #16A34A !important; color: #fff !important; }
+.btn-success:hover, .btn-success:focus { background-color: #15803D !important; border-color: #15803D !important; }
+.btn-outline-success { color: #15803D !important; border-color: #86EFAC !important; }
+.btn-outline-success:hover { background-color: #16A34A !important; color: #fff !important; }
 
 /* Large bg-success circles/icons → maroon; keep small badges green (semantic) */
-.rounded-circle.bg-success { background-color: #8B1A2A !important; }
+.rounded-circle.bg-success { background-color: #16A34A !important; }
 
 /* Card styling */
 .card { border-radius: 12px !important; }
 .card-header { border-bottom: 1px solid #f9eaec !important; }
 
 /* Badge overrides */
-.badge.bg-secondary-subtle { background-color: #f5e8ea !important; color: #8B1A2A !important; border-color: #e8c5cb !important; }
+.badge.bg-secondary-subtle { background-color: #f1f5f9 !important; color: #475569 !important; border-color: #cbd5e1 !important; }
 
 /* Page header border */
-.page-title.border-bottom { border-color: #f0e0e4 !important; }
+.page-title.border-bottom { border-color: #e2e8f0 !important; }
 
 /* Chip/tag in dashboard */
-.chip { background: #FDE8EC !important; color: #8B1A2A !important; border-color: #F490A8 !important; }
+.chip { background: #EFF6FF !important; color: #2563EB !important; border-color: #BFDBFE !important; }
 
 /* Sidebar header border */
-.sidebar-header { border-color: #f0e8ea; }
+.sidebar-header { border-color: #e2e8f0; }
 
 body {
     font-family: 'Inter', sans-serif !important;

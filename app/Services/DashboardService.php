@@ -17,12 +17,16 @@ class DashboardService
         $filters['periode'] = $periode;
 
         $fakultas = $filters['fakultas'] ?? null;
-        $programStudi = $filters['program_studi'] ?? null;
+        $programStudi = collect(Arr::wrap($filters['program_studi'] ?? []))
+            ->filter(fn ($value) => filled($value))
+            ->values()
+            ->all();
+        $filters['program_studi'] = $programStudi;
         $fakultasProdi = $this->getFakultasProdiOptions();
 
-        if ($fakultas && $programStudi && !in_array($programStudi, $fakultasProdi[$fakultas] ?? [], true)) {
-            $programStudi = null;
-            $filters['program_studi'] = null;
+        if ($fakultas && !empty($programStudi)) {
+            $programStudi = array_values(array_intersect($programStudi, $fakultasProdi[$fakultas] ?? []));
+            $filters['program_studi'] = $programStudi;
         }
 
         $arsipQuery = SurveyArsip::query();
@@ -35,8 +39,8 @@ class DashboardService
             $arsipQuery->where('lulusan_fakultas', $fakultas);
         }
 
-        if ($programStudi) {
-            $arsipQuery->where('lulusan_program_studi', $programStudi);
+        if (!empty($programStudi)) {
+            $arsipQuery->whereIn('lulusan_program_studi', $programStudi);
         }
 
         $arsipList = $arsipQuery->get();
@@ -88,6 +92,7 @@ class DashboardService
 
                 return [
                     'kategori' => $kategori,
+                    'total_respon' => $total,
                     'pct_sb' => $total > 0 ? round($countSangatBaik / $total * 100, 1) : 0,
                     'pct_b' => $total > 0 ? round($countBaik / $total * 100, 1) : 0,
                     'pct_k' => $total > 0 ? round($countKurang / $total * 100, 1) : 0,
@@ -143,6 +148,7 @@ class DashboardService
                 'sk' => round($sumSangatKurang / $countKategori, 1),
             ] : ['sb' => 0, 'b' => 0, 'k' => 0, 'sk' => 0],
         ];
+        $totalResponKepuasan = count($allRatings);
 
         $respondenProdiStats = $arsipList
             ->groupBy(fn ($arsip) => $arsip->lulusan_program_studi ?: 'Tidak diketahui')
@@ -211,6 +217,7 @@ class DashboardService
             'prodiDetails',
             'kepuasanPerKategori',
             'kepuasanRingkasan',
+            'totalResponKepuasan',
             'kategoriDetails',
             'komentarTerbaru',
             'filterOptions',

@@ -5,12 +5,25 @@
 @section('content')
     <div class="page-heading">
         <div class="page-title mb-3">
-            <h4>Form Survey</h4>
+            <nav class="spl-breadcrumb" aria-label="Breadcrumb"><a href="{{ route('survey') }}">Survei</a><span>/</span><span>Buat survei</span></nav>
+            <h4 class="mt-2 mb-1">Buat Survei</h4>
+            <p class="text-muted mb-0">Lengkapi informasi survei, responden, lalu pilih instrumen yang digunakan.</p>
         </div>
 
         <section class="section">
             <form action="{{ route('survey.store') }}" method="POST">
                 @csrf
+
+                @if($errors->any())
+                    <div class="alert alert-danger spl-alert" role="alert"><i class="bi bi-exclamation-circle-fill me-2"></i>Periksa kembali isian yang ditandai sebelum menyimpan survei.</div>
+                @endif
+
+                <div class="spl-stepper" aria-label="Tahapan pembuatan survei">
+                    <div class="spl-step is-current"><span class="spl-step-number">1</span><span>Informasi survei</span></div>
+                    <div class="spl-step is-current"><span class="spl-step-number">2</span><span>Lulusan dan responden</span></div>
+                    <div class="spl-step is-current"><span class="spl-step-number">3</span><span>Pilih instrumen</span></div>
+                    <div class="spl-step"><span class="spl-step-number">4</span><span>Tinjau dan buat</span></div>
+                </div>
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4">
@@ -236,7 +249,7 @@
 
         .line-input:focus {
             box-shadow: none;
-            border-bottom-color: #8B1A2A;
+            border-bottom-color: #2563EB;
         }
 
         /* Textarea Modern */
@@ -250,25 +263,25 @@
 
         .modern-textarea:focus {
             background-color: #fff;
-            border-color: #8B1A2A;
+            border-color: #2563EB;
             box-shadow: 0 4px 12px rgba(67, 94, 190, 0.08);
         }
 
         /* Checkbox & Button */
         .form-check-input:checked {
-            background-color: #8B1A2A;
-            border-color: #8B1A2A;
+            background-color: #2563EB;
+            border-color: #2563EB;
         }
 
         .btn-primary {
-            background-color: #8B1A2A;
+            background-color: #2563EB;
             border: none;
             transition: transform 0.2s;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            background-color: #6C0215;
+            background-color: #1D4ED8;
         }
 
         /* Responsive Utilities */
