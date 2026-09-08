@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Instrumen;
 use App\Models\Survey;
 use App\Models\SurveyArsip;
 use Carbon\Carbon;
@@ -41,13 +40,14 @@ class SurveyResponseSeeder extends Seeder
 
         if ($surveys->isEmpty()) {
             $this->command->warn('Tidak ada survey aktif yang belum diisi. Seeder dilewati.');
+
             return;
         }
 
         $this->command->info("Ditemukan {$surveys->count()} survey yang akan diisi...");
 
         $berhasil = 0;
-        $gagal    = 0;
+        $gagal = 0;
 
         foreach ($surveys as $survey) {
             try {
@@ -63,23 +63,26 @@ class SurveyResponseSeeder extends Seeder
         }
 
         $this->command->info("Selesai. Berhasil: {$berhasil}, Gagal: {$gagal}.");
+
+        if ($gagal > 0) {
+            throw new \RuntimeException("{$gagal} survey gagal di-seed. Periksa pesan kesalahan di atas.");
+        }
     }
 
     private function isiSurvey(Survey $survey): void
     {
-        $pengguna    = $survey->penggunaLulusan;
+        $pengguna = $survey->penggunaLulusan;
         $namaPengisi = $pengguna?->nama_penyelia ?? $this->acak($this->namaPenyelia);
-        $jabatan     = $pengguna?->jabatan_penyelia ?? $this->acak($this->jabatanList);
+        $jabatan = $pengguna?->jabatan_penyelia ?? $this->acak($this->jabatanList);
         $jumlahBekerja = rand(1, 5);
         $now = $survey->lulusan?->tahun_lulus
             ? Carbon::parse($survey->lulusan->tahun_lulus)->addYear()
             : Carbon::create($survey->tahun ?? Carbon::now()->year, 1, 1);
-        $isFirst     = true;
+        $isFirst = true;
 
         $fakultas = $survey->lulusan->fakultas ?? null;
 
-        $soals = $survey->soals->filter(fn($s) =>
-            $s->peruntukan_fakultas === 'Umum' || ($fakultas && $s->peruntukan_fakultas === $fakultas)
+        $soals = $survey->soals->filter(fn ($s) => $s->peruntukan_fakultas === 'Umum' || ($fakultas && $s->peruntukan_fakultas === $fakultas)
         );
 
         // Rekam pilihan jawaban untuk arsip
@@ -94,16 +97,16 @@ class SurveyResponseSeeder extends Seeder
                     $pilihan = $this->pilihRatingBerbobot($jawabanList);
                     if ($pilihan) {
                         DB::table('respon_jawaban')->insert([
-                            'survey_id'              => $survey->id,
-                            'soal_id'                => $soalItem->id,
-                            'soal_text_snapshot'     => $soalItem->soal,
-                            'jawaban_id'             => $pilihan->id,
-                            'jawaban_text_snapshot'  => $pilihan->jawaban,
-                            'jawaban_text'           => null,
-                            'responden'              => $namaPengisi,
+                            'survey_id' => $survey->id,
+                            'soal_id' => $soalItem->id,
+                            'soal_text_snapshot' => $soalItem->soal,
+                            'jawaban_id' => $pilihan->id,
+                            'jawaban_text_snapshot' => $pilihan->jawaban,
+                            'jawaban_text' => null,
+                            'responden' => $namaPengisi,
                             'jumlah_lulusan_bekerja' => $isFirst ? $jumlahBekerja : null,
-                            'created_at'             => $now,
-                            'updated_at'             => $now,
+                            'created_at' => $now,
+                            'updated_at' => $now,
                         ]);
                         $pilihanUntukArsip = ['teks' => $pilihan->jawaban, 'nilai' => $pilihan->nilai];
                     }
@@ -112,16 +115,16 @@ class SurveyResponseSeeder extends Seeder
                 case 'essay':
                     $esai = $this->acak($this->esaiMasukan);
                     DB::table('respon_jawaban')->insert([
-                        'survey_id'              => $survey->id,
-                        'soal_id'                => $soalItem->id,
-                        'soal_text_snapshot'     => $soalItem->soal,
-                        'jawaban_id'             => null,
-                        'jawaban_text_snapshot'  => null,
-                        'jawaban_text'           => $esai,
-                        'responden'              => $namaPengisi,
+                        'survey_id' => $survey->id,
+                        'soal_id' => $soalItem->id,
+                        'soal_text_snapshot' => $soalItem->soal,
+                        'jawaban_id' => null,
+                        'jawaban_text_snapshot' => null,
+                        'jawaban_text' => $esai,
+                        'responden' => $namaPengisi,
                         'jumlah_lulusan_bekerja' => $isFirst ? $jumlahBekerja : null,
-                        'created_at'             => $now,
-                        'updated_at'             => $now,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ]);
                     $pilihanUntukArsip = $esai;
                     break;
@@ -130,36 +133,36 @@ class SurveyResponseSeeder extends Seeder
                     $dipilih = $jawabanList->whereNotIn('jawaban', ['Lainnya'])
                         ->shuffle()->take(rand(1, min(3, $jawabanList->count())));
                     $firstRow = true;
-                    $teksArr  = [];
+                    $teksArr = [];
                     foreach ($dipilih as $jw) {
                         DB::table('respon_jawaban')->insert([
-                            'survey_id'              => $survey->id,
-                            'soal_id'                => $soalItem->id,
-                            'soal_text_snapshot'     => $soalItem->soal,
-                            'jawaban_id'             => $jw->id,
-                            'jawaban_text_snapshot'  => $jw->jawaban,
-                            'jawaban_text'           => null,
-                            'responden'              => $namaPengisi,
+                            'survey_id' => $survey->id,
+                            'soal_id' => $soalItem->id,
+                            'soal_text_snapshot' => $soalItem->soal,
+                            'jawaban_id' => $jw->id,
+                            'jawaban_text_snapshot' => $jw->jawaban,
+                            'jawaban_text' => null,
+                            'responden' => $namaPengisi,
                             'jumlah_lulusan_bekerja' => ($isFirst && $firstRow) ? $jumlahBekerja : null,
-                            'created_at'             => $now,
-                            'updated_at'             => $now,
+                            'created_at' => $now,
+                            'updated_at' => $now,
                         ]);
                         $teksArr[] = $jw->jawaban;
-                        $firstRow  = false;
+                        $firstRow = false;
                     }
                     $pilihanUntukArsip = $teksArr;
                     break;
             }
 
             $jawabanArsip[$soalItem->kode] = [
-                'kode'     => $soalItem->kode,
+                'kode' => $soalItem->kode,
                 'kategori' => $soalItem->kategori?->nama_kategori,
-                'soal'     => $soalItem->soal,
-                'jenis'    => $soalItem->jenis_soal,
-                'jawaban'  => is_array($pilihanUntukArsip)
+                'soal' => $soalItem->soal,
+                'jenis' => $soalItem->jenis_soal,
+                'jawaban' => is_array($pilihanUntukArsip)
                     ? (isset($pilihanUntukArsip['teks']) ? $pilihanUntukArsip['teks'] : $pilihanUntukArsip)
                     : $pilihanUntukArsip,
-                'nilai'    => is_array($pilihanUntukArsip) && isset($pilihanUntukArsip['nilai'])
+                'nilai' => is_array($pilihanUntukArsip) && isset($pilihanUntukArsip['nilai'])
                     ? $pilihanUntukArsip['nilai']
                     : null,
             ];
@@ -170,9 +173,9 @@ class SurveyResponseSeeder extends Seeder
         // Update data penyelia
         if ($pengguna) {
             $pengguna->update([
-                'nama_penyelia'    => $namaPengisi,
+                'nama_penyelia' => $namaPengisi,
                 'jabatan_penyelia' => $jabatan,
-                'jumlah_lulusan'   => $pengguna->jumlah_lulusan ?? $jumlahBekerja,
+                'jumlah_lulusan' => $pengguna->jumlah_lulusan ?? $jumlahBekerja,
             ]);
         }
 
@@ -183,32 +186,32 @@ class SurveyResponseSeeder extends Seeder
         $lulus = $survey->lulusan;
 
         SurveyArsip::create([
-            'survey_id'       => $survey->id,
-            'access_code'     => $survey->access_code,
-            'judul'           => $survey->judul,
-            'submitted_at'    => $now,
+            'survey_id' => $survey->id,
+            'access_code' => $survey->access_code,
+            'judul' => $survey->judul,
+            'submitted_at' => $now,
             'tahun_instrumen' => $survey->tahun,
 
-            'lulusan_nama'          => $lulus?->nama,
-            'lulusan_nim'           => $lulus?->nim,
+            'lulusan_nama' => $lulus?->nama,
+            'lulusan_nim' => $lulus?->nim,
             'lulusan_program_studi' => $lulus?->program_studi,
-            'lulusan_fakultas'      => $lulus?->fakultas,
-            'lulusan_tahun_lulus'   => $lulus?->tahun_lulus
+            'lulusan_fakultas' => $lulus?->fakultas,
+            'lulusan_tahun_lulus' => $lulus?->tahun_lulus
                 ? Carbon::parse($lulus->tahun_lulus)->format('Y')
                 : null,
 
-            'perusahaan_nama'              => $pengguna?->nama_perusahaan,
-            'perusahaan_jenis'             => $pengguna?->jenis_perusahaan,
-            'perusahaan_alamat'            => $pengguna?->alamat_perusahaan,
-            'perusahaan_kontak'            => $pengguna?->kontak_perusahaan,
+            'perusahaan_nama' => $pengguna?->nama_perusahaan,
+            'perusahaan_jenis' => $pengguna?->jenis_perusahaan,
+            'perusahaan_alamat' => $pengguna?->alamat_perusahaan,
+            'perusahaan_kontak' => $pengguna?->kontak_perusahaan,
             'perusahaan_nomor_badan_hukum' => $pengguna?->nomor_badan_hukum,
-            'perusahaan_cabang_kota'       => $pengguna?->cabang_kota,
-            'perusahaan_cabang_negara'     => $pengguna?->cabang_negara,
+            'perusahaan_cabang_kota' => $pengguna?->cabang_kota,
+            'perusahaan_cabang_negara' => $pengguna?->cabang_negara,
 
-            'penyelia_nama'          => $namaPengisi,
-            'penyelia_jabatan'       => $jabatan,
-            'penyelia_email'         => $pengguna?->email_penyelia,
-            'penyelia_kontak'        => $pengguna?->kontak_penyelia,
+            'penyelia_nama' => $namaPengisi,
+            'penyelia_jabatan' => $jabatan,
+            'penyelia_email' => $pengguna?->email_penyelia,
+            'penyelia_kontak' => $pengguna?->kontak_penyelia,
             'jumlah_lulusan_bekerja' => (string) $jumlahBekerja,
 
             'jawaban_json' => array_values($jawabanArsip),
@@ -217,11 +220,13 @@ class SurveyResponseSeeder extends Seeder
 
     private function pilihRatingBerbobot($jawabanList)
     {
-        if ($jawabanList->isEmpty()) return null;
+        if ($jawabanList->isEmpty()) {
+            return null;
+        }
 
-        $bobot     = $jawabanList->mapWithKeys(fn($j) => [$j->id => max(1, $j->nilai)]);
-        $total     = $bobot->sum();
-        $rand      = rand(1, $total);
+        $bobot = $jawabanList->mapWithKeys(fn ($j) => [$j->id => max(1, $j->nilai)]);
+        $total = $bobot->sum();
+        $rand = rand(1, $total);
         $kumulatif = 0;
 
         foreach ($bobot as $id => $b) {

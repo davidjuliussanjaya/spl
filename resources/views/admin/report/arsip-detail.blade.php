@@ -30,7 +30,7 @@
         color: #1e293b;
     }
     .section-header {
-        background: linear-gradient(to right, #8B1A2A, #B91C3A);
+        background: linear-gradient(to right, #2563EB, #0F766E);
         color: #fff;
         font-size: 0.75rem;
         font-weight: 700;
@@ -76,7 +76,7 @@
 
     {{-- Tombol aksi (tidak ikut cetak) --}}
     <div class="no-print d-flex gap-2 mb-4">
-        <button onclick="window.print()" class="btn text-white fw-semibold px-4" style="background:#8B1A2A;">
+        <button onclick="window.print()" class="btn text-white fw-semibold px-4" style="background:#2563EB;">
             <i class="bi bi-printer-fill me-2"></i>Cetak / Simpan PDF
         </button>
         <a href="{{ route('report.arsip') }}" class="btn btn-outline-secondary">
@@ -90,11 +90,11 @@
     <div id="cetakArea">
 
         {{-- Kop dokumen --}}
-        <div class="text-center mb-4 pb-3" style="border-bottom:2px solid #8B1A2A;">
-            <h5 class="fw-bold mb-0" style="color:#8B1A2A;">ARSIP SURVEY EVALUASI PENGGUNA LULUSAN</h5>
+        <div class="text-center mb-4 pb-3" style="border-bottom:2px solid #2563EB;">
+            <h5 class="fw-bold mb-0" style="color:#2563EB;">ARSIP SURVEY EVALUASI PENGGUNA LULUSAN</h5>
             <p class="text-muted small mb-0">Universitas Dinamika — Tracer Study</p>
             <div class="mt-2">
-                <span class="badge text-white me-2" style="background:#8B1A2A;">
+                <span class="badge text-white me-2" style="background:#2563EB;">
                     Kode: {{ $arsip->access_code ?? '-' }}
                 </span>
                 @if($arsip->tahun_instrumen)
@@ -209,25 +209,25 @@
             <table class="table table-bordered align-middle mb-0" style="font-size:0.82rem;">
                 <thead style="background:#f8f0f2;">
                     <tr>
-                        <th class="text-center py-2" style="width:60px;color:#8B1A2A;">Kode</th>
-                        <th class="py-2" style="color:#8B1A2A;">Aspek / Pertanyaan</th>
-                        <th class="py-2" style="color:#8B1A2A;">Jawaban</th>
-                        <th class="text-center py-2" style="width:60px;color:#8B1A2A;">Nilai</th>
+                        <th class="text-center py-2" style="width:60px;color:#2563EB;">Kode</th>
+                        <th class="py-2" style="color:#2563EB;">Aspek / Pertanyaan</th>
+                        <th class="py-2" style="color:#2563EB;">Jawaban</th>
+                        <th class="text-center py-2" style="width:60px;color:#2563EB;">Nilai</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php $prevKategori = null; @endphp
                     @foreach($jawabans as $j)
                         @if(($j['kategori'] ?? null) !== $prevKategori)
-                            <tr style="background:#FFF5F7;">
-                                <td colspan="4" class="py-1 px-3" style="font-size:0.72rem;font-weight:700;color:#8B1A2A;text-transform:uppercase;letter-spacing:0.5px;">
+                            <tr style="background:#EFF6FF;">
+                                <td colspan="4" class="py-1 px-3" style="font-size:0.72rem;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:0.5px;">
                                     {{ $j['kategori'] ?? 'Tidak Berkategori' }}
                                 </td>
                             </tr>
                             @php $prevKategori = $j['kategori'] ?? null; @endphp
                         @endif
                         <tr class="jawaban-row">
-                            <td class="text-center fw-bold" style="color:#8B1A2A;">
+                            <td class="text-center fw-bold" style="color:#2563EB;">
                                 {{ $j['kode'] ?? '-' }}
                                 <div>
                                     @php
@@ -256,7 +256,7 @@
                                     {{ $j['jawaban'] ?? '<em class="text-muted">Tidak dijawab</em>' }}
                                 @endif
                             </td>
-                            <td class="text-center fw-bold" style="color:#8B1A2A;">
+                            <td class="text-center fw-bold" style="color:#2563EB;">
                                 @if(isset($j['nilai']) && $j['nilai'] !== null)
                                     {{ $j['nilai'] }}
                                 @else

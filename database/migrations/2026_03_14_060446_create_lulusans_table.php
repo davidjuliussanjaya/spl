@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pengguna_lulusan_id')->constrained('pengguna_lulusan')->cascadeOnDelete();
             $table->string('nama');
-            $table->string('nim');
+            $table->string('nim')->unique();
             $table->string('program_studi');
             $table->string('fakultas')->nullable();
             $table->date('tahun_lulus');

@@ -15,7 +15,8 @@ class SurveyBulkCreateSeeder extends Seeder
     public function run(): void
     {
         if (Survey::exists()) {
-            $this->command->warn('Survey sudah ada (' . Survey::count() . ' data). Seeder dilewati untuk mencegah duplikasi.');
+            $this->command->warn('Survey sudah ada ('.Survey::count().' data). Seeder dilewati untuk mencegah duplikasi.');
+
             return;
         }
 
@@ -23,13 +24,14 @@ class SurveyBulkCreateSeeder extends Seeder
         $tahunSurveyAkhir = Carbon::now()->year;
         $tahunSurveyAwal = $tahunSurveyAkhir - 3;
         $tahunSurveyList = range($tahunSurveyAwal, $tahunSurveyAkhir);
-        $tahunLulusList = array_map(fn($tahunSurvey) => $tahunSurvey - 1, $tahunSurveyList);
+        $tahunLulusList = array_map(fn ($tahunSurvey) => $tahunSurvey - 1, $tahunSurveyList);
 
         // Ambil semua soal yang aktif dari instrumen 2026
         $instrumenId = DB::table('instrumen')->where('tahun', $tahunInstrumen)->value('id');
 
-        if (!$instrumenId) {
+        if (! $instrumenId) {
             $this->command->error("Instrumen tahun {$tahunInstrumen} tidak ditemukan. Jalankan DraftInstrumenUniversitas2026Seeder terlebih dahulu.");
+
             return;
         }
 
@@ -39,23 +41,29 @@ class SurveyBulkCreateSeeder extends Seeder
 
         if ($semuaSoal->isEmpty()) {
             $this->command->error("Tidak ada soal aktif di instrumen {$tahunInstrumen}. Seeder dihentikan.");
+
             return;
         }
 
         // Survey dilakukan satu tahun setelah mahasiswa lulus.
         $lulusanList = lulusan::whereNotNull('pengguna_lulusan_id')
-            ->whereRaw('EXTRACT(YEAR FROM tahun_lulus) IN (' . implode(',', array_fill(0, count($tahunLulusList), '?')) . ')', $tahunLulusList)
+            ->where(function ($query) use ($tahunLulusList) {
+                foreach ($tahunLulusList as $tahunLulus) {
+                    $query->orWhereYear('tahun_lulus', $tahunLulus);
+                }
+            })
             ->get();
 
         if ($lulusanList->isEmpty()) {
             $this->command->error('Tidak ada data lulusan yang sesuai periode survey empat tahun terakhir dan terhubung ke perusahaan. Jalankan LulusanSeeder terlebih dahulu.');
+
             return;
         }
 
         $periode = "{$tahunSurveyAwal}-{$tahunSurveyAkhir}";
         $this->command->info("Membuat survey periode {$periode} untuk {$lulusanList->count()} lulusan...");
 
-        $now     = Carbon::now();
+        $now = Carbon::now();
         $berhasil = 0;
         $rekap = array_fill_keys($tahunSurveyList, 0);
 
@@ -65,30 +73,29 @@ class SurveyBulkCreateSeeder extends Seeder
                 $tahunSurvey = $tahunLulus + 1;
 
                 $survey = Survey::create([
-                    'judul'               => "Survey Kepuasan Pengguna Lulusan {$tahunSurvey}",
-                    'tahun'               => $tahunSurvey,
-                    'deskripsi'           => 'Survey tracer study untuk penilaian kinerja dan kompetensi lulusan oleh pengguna lulusan (mitra industri).',
-                    'lulusan_id'          => $lulus->id,
+                    'judul' => "Survey Kepuasan Pengguna Lulusan {$tahunSurvey}",
+                    'tahun' => $tahunSurvey,
+                    'deskripsi' => 'Survey tracer study untuk penilaian kinerja dan kompetensi lulusan oleh pengguna lulusan (mitra industri).',
+                    'lulusan_id' => $lulus->id,
                     'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
-                    'access_code'         => strtoupper(Str::random(8)),
-                    'is_completed'        => false,
-                    'is_active'           => true,
+                    'access_code' => strtoupper(Str::random(8)),
+                    'is_completed' => false,
+                    'is_active' => true,
                 ]);
 
                 // Hanya masukkan soal 'Umum' atau sesuai fakultas lulusan
-                $soalUntukLulusan = $semuaSoal->filter(fn($s) =>
-                    $s->peruntukan_fakultas === 'Umum'
+                $soalUntukLulusan = $semuaSoal->filter(fn ($s) => $s->peruntukan_fakultas === 'Umum'
                     || $s->peruntukan_fakultas === $lulus->fakultas
                 );
 
-                $rows = $soalUntukLulusan->map(fn($s) => [
-                    'survey_id'  => $survey->id,
-                    'soal_id'    => $s->id,
+                $rows = $soalUntukLulusan->map(fn ($s) => [
+                    'survey_id' => $survey->id,
+                    'soal_id' => $s->id,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ])->values()->toArray();
 
-                if (!empty($rows)) {
+                if (! empty($rows)) {
                     DB::table('survey_soal')->insert($rows);
                 }
 

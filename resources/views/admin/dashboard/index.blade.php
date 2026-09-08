@@ -5,10 +5,10 @@
 @section('content')
 <style>
     :root {
-        --brand-50: #fde8ec;
-        --brand-100: #fbbcca;
-        --brand-500: #8b1a2a;
-        --brand-700: #6c0215;
+        --brand-50: #eff6ff;
+        --brand-100: #bfdbfe;
+        --brand-500: #2563eb;
+        --brand-700: #1d4ed8;
         --slate-50: #f8fafc;
         --slate-100: #f1f5f9;
         --slate-200: #e2e8f0;
@@ -22,24 +22,18 @@
     }
 
     .db-wrap { display: flex; flex-direction: column; gap: 1rem; }
-    .db-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: .75rem; }
+    .db-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
     .db-header h3 { font-size: 1.25rem; font-weight: 700; color: var(--slate-900); margin: 0; }
     .db-header p { font-size: .82rem; color: var(--slate-400); margin: .2rem 0 0; }
+    .dashboard-filter-form { display: flex; align-items: end; gap: .55rem; flex-wrap: wrap; }
+    .dashboard-filter-field { min-width: 170px; }
+    .dashboard-filter-field.prodi { min-width: 210px; }
+    .dashboard-filter-field .form-label { font-size: .66rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
+    .dashboard-filter-form .form-select { font-size: .8rem; min-height: 34px; border-color: var(--slate-200); border-radius: 8px; }
+    .dashboard-filter-form .form-select:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+    .dashboard-filter-actions { display: flex; gap: .4rem; }
+    @media(max-width:767px) { .dashboard-filter-form { width: 100%; } .dashboard-filter-field, .dashboard-filter-field.prodi { flex: 1 1 calc(50% - .3rem); min-width: 0; } }
 
-    .filter-bar {
-        background: #fff; border: 1px solid var(--slate-200);
-        border-radius: var(--radius); padding: .75rem 1rem; box-shadow: var(--shadow);
-    }
-    .filter-bar .form-label {
-        font-size: .7rem; font-weight: 700; color: var(--slate-500);
-        text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem;
-    }
-    .filter-bar .form-select,
-    .filter-bar .periode-toggle {
-        font-size: .82rem; border-color: var(--slate-200); border-radius: 8px; color: var(--slate-700);
-    }
-    .filter-bar .form-select:focus,
-    .filter-bar .periode-toggle:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(139,26,42,.12); }
     .periode-dropdown { width: 100%; }
     .periode-toggle {
         width: 100%; min-height: 31px; background: #fff; border: 1px solid var(--slate-200);
@@ -47,6 +41,7 @@
         padding: .25rem .5rem; text-align: left;
     }
     .periode-toggle span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .periode-toggle:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
     .periode-menu {
         width: 100%; max-height: 220px; overflow-y: auto; padding: .45rem;
         border: 1px solid var(--slate-200); border-radius: 8px; box-shadow: var(--shadow-md);
@@ -69,6 +64,13 @@
         display: inline-flex; align-items: center; gap: .3rem;
     }
     .btn-extend:hover { border-color: var(--brand-100); color: var(--brand-700); background: var(--brand-50); }
+    .panel-actions { display: inline-flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+    .btn-back {
+        display: none; border: 1px solid var(--brand-100); background: var(--brand-50); color: var(--brand-700);
+        border-radius: 8px; font-size: .75rem; font-weight: 700; padding: .32rem .65rem;
+        align-items: center; gap: .3rem;
+    }
+    .btn-back.show { display: inline-flex; }
     .chip {
         display: inline-flex; align-items: center; gap: .3rem;
         font-size: .72rem; font-weight: 500; padding: .2rem .6rem;
@@ -92,9 +94,9 @@
     .stat-card::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--brand-500);
     }
-    .stat-card.green::before { background: #16a34a; }
-    .stat-card.amber::before { background: #d97706; }
-    .stat-card.red::before { background: #dc2626; }
+    .stat-card.green::before { background: #0f766e; }
+    .stat-card.amber::before { background: #2563eb; }
+    .stat-card.red::before { background: #64748b; }
     .stat-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; margin-bottom: .7rem; }
     .stat-label {
         font-size: .7rem; font-weight: 700; text-transform: uppercase;
@@ -105,9 +107,9 @@
         display: flex; align-items: center; justify-content: center;
         font-size: .95rem; background: var(--brand-50); color: var(--brand-500); flex-shrink: 0;
     }
-    .stat-card.green .stat-icon-wrap { background: #f0fdf4; color: #16a34a; }
-    .stat-card.amber .stat-icon-wrap { background: #fffbeb; color: #d97706; }
-    .stat-card.red .stat-icon-wrap { background: #fef2f2; color: #dc2626; }
+    .stat-card.green .stat-icon-wrap { background: #f0fdfa; color: #0f766e; }
+    .stat-card.amber .stat-icon-wrap { background: #eff6ff; color: #2563eb; }
+    .stat-card.red .stat-icon-wrap { background: #f1f5f9; color: #475569; }
     .stat-value { font-size: 1.65rem; font-weight: 800; color: var(--slate-900); line-height: 1; }
     .stat-unit { font-size: .76rem; font-weight: 400; color: var(--slate-500); margin-left: .25rem; }
     .stat-name { font-size: .88rem; font-weight: 700; color: var(--slate-900); line-height: 1.25; margin-bottom: .22rem; }
@@ -150,7 +152,42 @@
     }
     .feedback-modal-body { max-height: 70vh; overflow-y: auto; padding: 0; }
 
+    .drill-card { padding: 1rem; display: grid; grid-template-columns: 220px 1fr; gap: 1rem; align-items: center; }
+    @media(max-width:767px) { .drill-card { grid-template-columns: 1fr; } }
+    .drill-score {
+        min-height: 150px; border: 1px solid var(--slate-200); border-radius: 10px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: var(--slate-50); text-align: center; padding: 1rem;
+    }
+    .drill-score strong { font-size: 2rem; font-weight: 800; color: var(--slate-900); line-height: 1; }
+    .drill-score span { font-size: .74rem; color: var(--slate-500); margin-top: .35rem; }
+    .drill-title { font-size: .98rem; font-weight: 800; color: var(--slate-900); margin-bottom: .2rem; }
+    .drill-subtitle { font-size: .74rem; color: var(--slate-500); margin-bottom: .85rem; }
+    .rating-row { display: grid; grid-template-columns: 130px 1fr 62px; gap: .65rem; align-items: center; margin-bottom: .58rem; }
+    .rating-label { font-size: .76rem; color: var(--slate-700); font-weight: 600; }
+    .rating-track { height: 9px; background: var(--slate-100); border-radius: 99px; overflow: hidden; }
+    .rating-fill { height: 100%; border-radius: 99px; width: 0; transition: width .22s ease; }
+    .rating-fill.sb { background: #16a34a; }
+    .rating-fill.b { background: #3b82f6; }
+    .rating-fill.k { background: #d97706; }
+    .rating-fill.sk { background: #dc2626; }
+    .rating-value { font-size: .74rem; color: var(--slate-500); text-align: right; }
+    .view-switch { display: inline-flex; border: 1px solid var(--slate-200); border-radius: 8px; overflow: hidden; }
+    .view-switch button {
+        border: 0; background: #fff; color: var(--slate-500);
+        padding: .32rem .55rem; font-size: .74rem; font-weight: 700;
+    }
+    .view-switch button.active { background: var(--brand-500); color: #fff; }
+    .kepuasan-chart-wrap { display: none; min-height: 280px; padding: .75rem 1rem 1rem; }
+    .satisfaction-panel.chart-mode .kepuasan-table-wrap { display: none; }
+    .satisfaction-panel.chart-mode .kepuasan-chart-wrap { display: block; }
+    .tbl-kepuasan tbody tr { cursor: pointer; }
+    .tbl-kepuasan tbody tr.active td { background: var(--brand-50); color: var(--brand-700) !important; }
+
     .satisfaction-panel, .satisfaction-panel * { color: #111 !important; }
+    .satisfaction-panel small { color: var(--slate-500) !important; font-size: .68rem; white-space: nowrap; }
+    .satisfaction-panel .view-switch button { color: var(--slate-500) !important; }
+    .satisfaction-panel .view-switch button.active { color: #fff !important; background: var(--brand-500); }
     .satisfaction-panel .panel-header { border: 1px solid #d1d5db; border-width: 0 0 1px 0; background: #fff; }
     .tbl-kepuasan { width: 100%; border-collapse: collapse; font-size: .81rem; }
     .tbl-kepuasan thead th {
@@ -181,15 +218,10 @@
 
 @php
     $activePeriode = $filters['periode'] ?? [];
-    $selectedFakultas = $filters['fakultas'] ?? '';
-    $selectedProdi = $filters['program_studi'] ?? '';
-    $fakultasProdi = $filterOptions['fakultasProdi'] ?? [];
-    $fakultasLabels = $filterOptions['fakultasLabels'] ?? [];
-    $availableProdi = $selectedFakultas && isset($fakultasProdi[$selectedFakultas])
-        ? $fakultasProdi[$selectedFakultas]
-        : $filterOptions['prodiList'];
-    $hasFilters = !empty($activePeriode) || !empty($filters['fakultas']) || !empty($filters['program_studi']);
+    $selectedProdi = $filters['program_studi'] ?? [];
+    $availableProdi = $filterOptions['prodiList'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
+    $activeKategori = $kategoriTerlemah->kategori ?? $kategoriTerbaik->kategori ?? null;
 @endphp
 
 <div class="db-wrap">
@@ -198,20 +230,11 @@
             <h3>Dashboard Evaluasi Lulusan</h3>
             <p>Ringkasan performa dan kualitas lulusan Universitas Dinamika di dunia kerja.</p>
         </div>
-    </div>
-
-    <div class="filter-bar">
-        <form method="GET" action="{{ route('dashboard') }}" id="filterForm">
-            <div class="row g-2 align-items-end">
-                <div class="col-12 col-lg-auto d-flex align-items-center pe-3">
-                    <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--slate-500);">
-                        <i class="bi bi-sliders me-1" style="color:var(--brand-500);"></i>Filter
-                    </span>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Periode</label>
-                    <div class="dropdown periode-dropdown">
-                        <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <form method="GET" action="{{ route('dashboard') }}" id="filterForm" class="dashboard-filter-form">
+            <div class="dashboard-filter-field">
+                <label class="form-label">Periode</label>
+                <div class="dropdown periode-dropdown">
+                        <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                             <span>
                                 @if(empty($activePeriode))
                                     Semua Periode
@@ -231,54 +254,37 @@
                                 </label>
                             @endforeach
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Fakultas</label>
-                    <select name="fakultas" id="filterFakultas" class="form-select form-select-sm">
-                        <option value="">Semua Fakultas</option>
-                        @foreach($filterOptions['fakultasList'] as $fakultas)
-                            <option value="{{ $fakultas }}" {{ $selectedFakultas == $fakultas ? 'selected' : '' }}>
-                                {{ $fakultasLabels[$fakultas] ?? $fakultas }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-md-4 col-lg">
-                    <label class="form-label">Program Studi</label>
-                    <select name="program_studi" id="filterProdi" class="form-select form-select-sm">
-                        <option value="">{{ $selectedFakultas ? 'Semua Prodi di Fakultas ini' : 'Semua Prodi' }}</option>
-                        @foreach($availableProdi as $prodi)
-                            <option value="{{ $prodi }}" {{ $selectedProdi == $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-lg-auto d-flex gap-2">
-                    <button type="submit" class="btn btn-apply">
-                        <i class="bi bi-search me-1"></i> Terapkan
-                    </button>
-                    @if($hasFilters)
-                        <a href="{{ route('dashboard') }}" class="btn btn-reset btn-outline-secondary">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
-                    @endif
                 </div>
             </div>
-
-            @if($hasFilters)
-                <div class="d-flex flex-wrap gap-2 align-items-center mt-2 pt-2 border-top">
-                    <span style="font-size:.72rem;color:var(--slate-500);">Aktif:</span>
-                    @foreach($activePeriode as $periode)
-                        <span class="chip"><i class="bi bi-calendar3"></i> {{ $periode }}</span>
-                    @endforeach
-                    @if(!empty($filters['fakultas']))
-                        <span class="chip"><i class="bi bi-building"></i> {{ $fakultasLabels[$filters['fakultas']] ?? $filters['fakultas'] }}</span>
-                    @endif
-                    @if(!empty($filters['program_studi']))
-                        <span class="chip"><i class="bi bi-book"></i> {{ $filters['program_studi'] }}</span>
-                    @endif
+            <div class="dashboard-filter-field prodi">
+                <label class="form-label">Program Studi</label>
+                <div class="dropdown periode-dropdown">
+                    <button class="periode-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                        <span>
+                            @if(empty($selectedProdi))
+                                Semua prodi
+                            @elseif(count($selectedProdi) === 1)
+                                {{ $selectedProdi[0] }}
+                            @else
+                                {{ count($selectedProdi) }} prodi dipilih
+                            @endif
+                        </span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu periode-menu">
+                        @foreach($availableProdi as $prodi)
+                            <label class="periode-option">
+                                <input type="checkbox" name="program_studi[]" value="{{ $prodi }}" {{ in_array($prodi, $selectedProdi, true) ? 'checked' : '' }}>
+                                <span>{{ $prodi }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
-            @endif
+            </div>
+            <div class="dashboard-filter-actions">
+                <button type="submit" class="btn btn-apply"><i class="bi bi-funnel me-1"></i>Terapkan filter</button>
+                <a href="{{ route('dashboard') }}" class="btn btn-reset btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset filter</a>
+            </div>
         </form>
     </div>
 
@@ -325,16 +331,23 @@
         </div>
     </div>
 
+    @include('admin.dashboard.partials.satisfaction-panel')
+
     <div class="chart-grid">
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title">Responden Berdasarkan Program Studi</h6>
-                    <p class="panel-subtitle">Menampilkan data teratas agar panel tetap ringkas</p>
+                    <h6 class="panel-title" id="prodiPanelTitle">Responden Berdasarkan Program Studi</h6>
+                    <p class="panel-subtitle" id="prodiPanelSubtitle">Klik bar untuk melihat detail jenis perusahaan pada prodi tersebut</p>
                 </div>
-                <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#prodiChartModal">
-                    <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
-                </button>
+                <div class="panel-actions">
+                    <button type="button" class="btn-back" id="backProdiChart">
+                        <i class="bi bi-arrow-left"></i> Ringkasan
+                    </button>
+                    <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#prodiChartModal">
+                        <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
+                    </button>
+                </div>
             </div>
             <div class="panel-body">
                 <div id="chart-prodi" class="chart-wrap chart-compact"></div>
@@ -344,12 +357,17 @@
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title">Rata-Rata Penilaian per Kategori</h6>
-                    <p class="panel-subtitle">Ringkasan kategori teratas pada tampilan utama</p>
+                    <h6 class="panel-title" id="kinerjaPanelTitle">Rata-Rata Penilaian per Kategori</h6>
+                    <p class="panel-subtitle" id="kinerjaPanelSubtitle">Klik bar untuk melihat distribusi jawaban kategori tersebut</p>
                 </div>
-                <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#kinerjaChartModal">
-                    <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
-                </button>
+                <div class="panel-actions">
+                    <button type="button" class="btn-back" id="backKinerjaChart">
+                        <i class="bi bi-arrow-left"></i> Ringkasan
+                    </button>
+                    <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#kinerjaChartModal">
+                        <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
+                    </button>
+                </div>
             </div>
             <div class="panel-body">
                 <div id="chart-kinerja" class="chart-wrap chart-compact"></div>
@@ -376,59 +394,6 @@
         </div>
     </div>
 
-    <div class="panel satisfaction-panel">
-        <div class="panel-header">
-            <div>
-                <h6 class="panel-title">Tingkat Kepuasan Pengguna</h6>
-                <p class="panel-subtitle">Persentase penilaian responden per kategori kompetensi lulusan</p>
-            </div>
-        </div>
-
-        @if($kepuasanPerKategori->isEmpty())
-            <div class="empty-state"><i class="bi bi-bar-chart"></i>Belum ada data penilaian.</div>
-        @else
-            <div style="overflow-x:auto;">
-                <table class="tbl-kepuasan">
-                    <thead>
-                        <tr>
-                            <th class="th-name">Jenis Kemampuan</th>
-                            <th>Sangat Baik (4)</th>
-                            <th>Baik (3)</th>
-                            <th>Kurang (2)</th>
-                            <th>Sangat Kurang (1)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($kepuasanPerKategori as $kat)
-                            <tr>
-                                <td>{{ $kat['kategori'] }}</td>
-                                <td>{{ $kat['pct_sb'] }}%</td>
-                                <td>{{ $kat['pct_b'] }}%</td>
-                                <td>{{ $kat['pct_k'] }}%</td>
-                                <td>{{ $kat['pct_sk'] }}%</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td>Total</td>
-                            <td>{{ $kepuasanRingkasan['total']['sb'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['b'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['k'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['total']['sk'] }}%</td>
-                        </tr>
-                        <tr>
-                            <td>Rata-Rata</td>
-                            <td>{{ $kepuasanRingkasan['rata']['sb'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['b'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['k'] }}%</td>
-                            <td>{{ $kepuasanRingkasan['rata']['sk'] }}%</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        @endif
-    </div>
 </div>
 
 <div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
@@ -436,6 +401,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="prodiChartModalLabel">Responden Berdasarkan Program Studi</h5>
+                <div class="panel-actions ms-auto">
+                    <button type="button" class="btn-back" id="backProdiFullChart">
+                        <i class="bi bi-arrow-left"></i> Ringkasan
+                    </button>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -450,6 +420,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="kinerjaChartModalLabel">Rata-Rata Penilaian per Kategori</h5>
+                <div class="panel-actions ms-auto">
+                    <button type="button" class="btn-back" id="backKinerjaFullChart">
+                        <i class="bi bi-arrow-left"></i> Ringkasan
+                    </button>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -483,35 +458,12 @@
     const chartLabels = @json($chartLabels);
     const respondenProdiData = @json($respondenProdiData);
     const respondenProdiLabels = @json($respondenProdiLabels);
-    const fakultasProdi = @json($fakultasProdi);
+    const prodiDetails = @json($prodiDetails);
+    const kategoriDetails = @json($kategoriDetails);
+    const initialKategori = @json($activeKategori);
     const compactLimit = 6;
-
-    const fakultasSelect = document.getElementById('filterFakultas');
-    const prodiSelect = document.getElementById('filterProdi');
-
-    const renderProdiOptions = () => {
-        const selectedFakultas = fakultasSelect.value;
-        const currentProdi = prodiSelect.value;
-        const prodiList = selectedFakultas ? (fakultasProdi[selectedFakultas] || []) : Object.values(fakultasProdi).flat();
-        const defaultLabel = selectedFakultas ? 'Semua Prodi di Fakultas ini' : 'Semua Prodi';
-
-        prodiSelect.disabled = true;
-        prodiSelect.innerHTML = '<option value="">Memuat prodi...</option>';
-
-        window.setTimeout(() => {
-            prodiSelect.innerHTML = '';
-            prodiSelect.append(new Option(defaultLabel, ''));
-
-            prodiList.forEach((prodi) => {
-                prodiSelect.append(new Option(prodi, prodi));
-            });
-
-            prodiSelect.value = prodiList.includes(currentProdi) ? currentProdi : '';
-            prodiSelect.disabled = false;
-        }, 120);
-    };
-
-    fakultasSelect.addEventListener('change', renderProdiOptions);
+    const kategoriDetailMap = new Map(kategoriDetails.map((item) => [item.kategori, item]));
+    const prodiDetailMap = new Map(prodiDetails.map((item) => [item.prodi, item]));
 
     const sliceData = (labels, data, limit = compactLimit) => ({
         labels: labels.slice(0, limit),
@@ -524,14 +476,48 @@
     };
 
     const chartHeight = (count, min = 220, row = 34, max = 420) => Math.min(max, Math.max(min, count * row + 46));
+    const formatPct = (value) => `${Number(value || 0).toFixed(1)}%`;
+    const ratingLabels = {
+        sb: 'Sangat Baik',
+        b: 'Baik',
+        k: 'Kurang',
+        sk: 'Sangat Kurang'
+    };
 
-    const prodiOptions = (labels, data, expanded = false) => ({
+    const setActiveKategori = (kategori) => {
+        const detail = kategoriDetailMap.get(kategori) || kategoriDetails[0];
+        if (!detail) return;
+
+        document.querySelectorAll('[data-kategori-row]').forEach((row) => {
+            row.classList.toggle('active', row.dataset.kategoriRow === detail.kategori);
+        });
+    };
+
+    const setPanelText = (titleId, subtitleId, title, subtitle) => {
+        const titleEl = document.getElementById(titleId);
+        const subtitleEl = document.getElementById(subtitleId);
+
+        if (titleEl) titleEl.textContent = title;
+        if (subtitleEl) subtitleEl.textContent = subtitle;
+    };
+
+    const setBackVisible = (buttonId, visible) => {
+        document.getElementById(buttonId)?.classList.toggle('show', visible);
+    };
+
+    const prodiOptions = (labels, data, expanded = false, onSelect = null) => ({
         series: [{ name: 'Responden', data }],
         chart: {
             type: 'bar',
             height: expanded ? chartHeight(labels.length, 320, 38, 760) : 240,
             toolbar: { show: false },
-            fontFamily: 'inherit'
+            fontFamily: 'inherit',
+            events: onSelect ? {
+                dataPointSelection: (event, chartContext, config) => {
+                    const prodi = labels[config.dataPointIndex];
+                    if (prodi) onSelect(prodi);
+                }
+            } : {}
         },
         plotOptions: {
             bar: {
@@ -541,7 +527,7 @@
                 dataLabels: { position: 'center' }
             }
         },
-        colors: ['#8b1a2a'],
+        colors: ['#2563eb'],
         dataLabels: {
             enabled: true,
             formatter: value => `${value}`,
@@ -562,9 +548,52 @@
         tooltip: { y: { title: { formatter: () => 'Responden:' } } }
     });
 
-    const kinerjaOptions = (labels, data, expanded = false) => ({
+    const prodiDetailOptions = (detail, expanded = false) => {
+        const items = detail.jenis_perusahaan || [];
+        const labels = items.map((item) => item.label);
+        const data = items.map((item) => item.total);
+
+        return {
+            series: [{ name: 'Responden', data }],
+            chart: { type: 'bar', height: expanded ? 420 : 240, toolbar: { show: false }, fontFamily: 'inherit' },
+            plotOptions: { bar: { horizontal: false, borderRadius: 5, columnWidth: expanded ? '36%' : '45%', dataLabels: { position: 'top' } } },
+            colors: ['#3b82f6'],
+            dataLabels: {
+                enabled: true,
+                offsetY: -18,
+                style: { colors: ['#334155'], fontSize: '11px', fontWeight: 700 },
+                formatter: value => `${value}`
+            },
+            xaxis: {
+                categories: labels,
+                labels: { trim: true, rotate: expanded ? -30 : -20, hideOverlappingLabels: true, style: { colors: '#64748b', fontSize: expanded ? '11px' : '10px' } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                min: 0,
+                decimalsInFloat: 0,
+                labels: { formatter: value => Number(value).toFixed(0), style: { colors: '#334155', fontSize: '11px', fontWeight: 500 } }
+            },
+            grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+            tooltip: { y: { title: { formatter: () => 'Responden:' } } }
+        };
+    };
+
+    const kinerjaOptions = (labels, data, expanded = false, onSelect = null) => ({
         series: [{ name: 'Skor', data }],
-        chart: { type: 'bar', height: expanded ? 420 : 240, toolbar: { show: false }, fontFamily: 'inherit' },
+        chart: {
+            type: 'bar',
+            height: expanded ? 420 : 240,
+            toolbar: { show: false },
+            fontFamily: 'inherit',
+            events: onSelect ? {
+                dataPointSelection: (event, chartContext, config) => {
+                    const kategori = labels[config.dataPointIndex];
+                    if (kategori) onSelect(kategori);
+                }
+            } : {}
+        },
         plotOptions: {
             bar: {
                 horizontal: false,
@@ -573,7 +602,7 @@
                 dataLabels: { position: 'top' }
             }
         },
-        colors: ['#8b1a2a'],
+        colors: ['#2563eb'],
         dataLabels: {
             enabled: true,
             offsetY: -18,
@@ -604,45 +633,229 @@
         tooltip: { y: { title: { formatter: () => 'Skor:' } } }
     });
 
+    const kategoriDetailOptions = (detail, expanded = false) => {
+        const keys = ['sb', 'b', 'k', 'sk'];
+
+        return {
+            series: [{ name: 'Persentase', data: keys.map((key) => detail.percentages?.[key] || 0) }],
+            chart: { type: 'bar', height: expanded ? 420 : 240, toolbar: { show: false }, fontFamily: 'inherit' },
+            plotOptions: { bar: { horizontal: true, borderRadius: 5, barHeight: expanded ? '46%' : '52%', dataLabels: { position: 'center' } } },
+            colors: ['#16a34a'],
+            dataLabels: {
+                enabled: true,
+                formatter: (value, opts) => {
+                    const key = keys[opts.dataPointIndex];
+                    return `${formatPct(value)} (${detail.counts?.[key] || 0})`;
+                },
+                style: { colors: ['#fff'], fontSize: '11px', fontWeight: 700 }
+            },
+            xaxis: {
+                min: 0,
+                max: 100,
+                categories: keys.map((key) => ratingLabels[key]),
+                labels: { formatter: (value) => `${Number(value).toFixed(0)}%`, style: { colors: '#64748b', fontSize: '11px' } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: { labels: { style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
+            grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+            tooltip: { y: { formatter: (value) => formatPct(value), title: { formatter: () => 'Porsi:' } } }
+        };
+    };
+
+    const kepuasanStackOptions = () => ({
+        series: [
+            { name: 'Sangat Baik', data: kategoriDetails.map((item) => item.percentages.sb) },
+            { name: 'Baik', data: kategoriDetails.map((item) => item.percentages.b) },
+            { name: 'Kurang', data: kategoriDetails.map((item) => item.percentages.k) },
+            { name: 'Sangat Kurang', data: kategoriDetails.map((item) => item.percentages.sk) },
+        ],
+        chart: { type: 'bar', height: 300, stacked: true, stackType: '100%', toolbar: { show: false }, fontFamily: 'inherit' },
+        plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '58%' } },
+        colors: ['#16a34a', '#3b82f6', '#d97706', '#dc2626'],
+        xaxis: {
+            categories: kategoriDetails.map((item) => item.kategori),
+            labels: { formatter: (value) => `${Number(value).toFixed(0)}%`, style: { colors: '#64748b', fontSize: '11px' } }
+        },
+        yaxis: { labels: { style: { colors: '#334155', fontSize: '11px', fontWeight: 500 } } },
+        dataLabels: { enabled: false },
+        legend: { position: 'top', fontSize: '12px', markers: { radius: 4 } },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        tooltip: { y: { formatter: (value) => formatPct(value) } }
+    });
+
+    let prodiChart = null;
+    let kinerjaChart = null;
     let prodiFullChart = null;
     let kinerjaFullChart = null;
+    let kepuasanStackChart = null;
     const compactProdi = sliceData(respondenProdiLabels, respondenProdiData);
     const compactKinerja = sliceData(chartLabels, chartData);
 
-    if (compactProdi.data.length) {
-        new ApexCharts(document.querySelector('#chart-prodi'), prodiOptions(compactProdi.labels, compactProdi.data)).render();
-    } else {
-        emptyChart('#chart-prodi', 'Belum ada data responden per Prodi.');
-    }
+    setActiveKategori(initialKategori);
 
-    if (compactKinerja.data.length) {
-        new ApexCharts(document.querySelector('#chart-kinerja'), kinerjaOptions(compactKinerja.labels, compactKinerja.data)).render();
-    } else {
-        emptyChart('#chart-kinerja', 'Belum ada data penilaian.');
-    }
+    const renderChart = (chart, selector, options) => {
+        if (chart) chart.destroy();
+
+        const target = document.querySelector(selector);
+        if (!target) return null;
+
+        target.innerHTML = '';
+        const nextChart = new ApexCharts(target, options);
+        nextChart.render();
+
+        return nextChart;
+    };
+
+    const renderProdiSummary = () => {
+        setPanelText(
+            'prodiPanelTitle',
+            'prodiPanelSubtitle',
+            'Responden Berdasarkan Program Studi',
+            'Klik bar untuk melihat detail jenis perusahaan pada prodi tersebut'
+        );
+        setBackVisible('backProdiChart', false);
+
+        if (compactProdi.data.length) {
+            prodiChart = renderChart(prodiChart, '#chart-prodi', prodiOptions(compactProdi.labels, compactProdi.data, false, renderProdiDetail));
+        } else {
+            emptyChart('#chart-prodi', 'Belum ada data responden per Prodi.');
+        }
+    };
+
+    const renderProdiDetail = (prodi) => {
+        const detail = prodiDetailMap.get(prodi);
+        if (!detail) return;
+
+        setPanelText(
+            'prodiPanelTitle',
+            'prodiPanelSubtitle',
+            `Detail ${detail.prodi}`,
+            `${detail.total} responden | Fakultas: ${detail.fakultas}`
+        );
+        setBackVisible('backProdiChart', true);
+        prodiChart = renderChart(prodiChart, '#chart-prodi', prodiDetailOptions(detail));
+    };
+
+    const renderKinerjaSummary = () => {
+        setPanelText(
+            'kinerjaPanelTitle',
+            'kinerjaPanelSubtitle',
+            'Rata-Rata Penilaian per Kategori',
+            'Klik bar untuk melihat distribusi jawaban kategori tersebut'
+        );
+        setBackVisible('backKinerjaChart', false);
+
+        if (compactKinerja.data.length) {
+            kinerjaChart = renderChart(kinerjaChart, '#chart-kinerja', kinerjaOptions(compactKinerja.labels, compactKinerja.data, false, renderKategoriDetail));
+        } else {
+            emptyChart('#chart-kinerja', 'Belum ada data penilaian.');
+        }
+    };
+
+    const renderKategoriDetail = (kategori) => {
+        const detail = kategoriDetailMap.get(kategori);
+        if (!detail) return;
+
+        setActiveKategori(kategori);
+        setPanelText(
+            'kinerjaPanelTitle',
+            'kinerjaPanelSubtitle',
+            `Detail ${detail.kategori}`,
+            `Skor rata-rata ${Number(detail.rata_rata || 0).toFixed(2)} dari ${detail.total_respon || 0} respon penilaian`
+        );
+        setBackVisible('backKinerjaChart', true);
+        kinerjaChart = renderChart(kinerjaChart, '#chart-kinerja', kategoriDetailOptions(detail));
+    };
+
+    const renderProdiFullSummary = () => {
+        const title = document.getElementById('prodiChartModalLabel');
+        if (title) title.textContent = 'Responden Berdasarkan Program Studi';
+        setBackVisible('backProdiFullChart', false);
+
+        if (respondenProdiData.length) {
+            prodiFullChart = renderChart(
+                prodiFullChart,
+                '#chart-prodi-full',
+                prodiOptions(respondenProdiLabels, respondenProdiData, true, renderProdiFullDetail)
+            );
+        } else {
+            emptyChart('#chart-prodi-full', 'Belum ada data responden per Prodi.');
+        }
+    };
+
+    const renderProdiFullDetail = (prodi) => {
+        const detail = prodiDetailMap.get(prodi);
+        if (!detail) return;
+
+        const title = document.getElementById('prodiChartModalLabel');
+        if (title) title.textContent = `Detail ${detail.prodi} - ${detail.total} responden`;
+        setBackVisible('backProdiFullChart', true);
+        prodiFullChart = renderChart(prodiFullChart, '#chart-prodi-full', prodiDetailOptions(detail, true));
+    };
+
+    const renderKinerjaFullSummary = () => {
+        const title = document.getElementById('kinerjaChartModalLabel');
+        if (title) title.textContent = 'Rata-Rata Penilaian per Kategori';
+        setBackVisible('backKinerjaFullChart', false);
+
+        if (chartData.length) {
+            kinerjaFullChart = renderChart(
+                kinerjaFullChart,
+                '#chart-kinerja-full',
+                kinerjaOptions(chartLabels, chartData, true, renderKinerjaFullDetail)
+            );
+        } else {
+            emptyChart('#chart-kinerja-full', 'Belum ada data penilaian.');
+        }
+    };
+
+    const renderKinerjaFullDetail = (kategori) => {
+        const detail = kategoriDetailMap.get(kategori);
+        if (!detail) return;
+
+        setActiveKategori(kategori);
+        const title = document.getElementById('kinerjaChartModalLabel');
+        if (title) title.textContent = `Detail ${detail.kategori} - skor ${Number(detail.rata_rata || 0).toFixed(2)}`;
+        setBackVisible('backKinerjaFullChart', true);
+        kinerjaFullChart = renderChart(kinerjaFullChart, '#chart-kinerja-full', kategoriDetailOptions(detail, true));
+    };
+
+    renderProdiSummary();
+    renderKinerjaSummary();
 
     document.getElementById('prodiChartModal').addEventListener('shown.bs.modal', () => {
-        if (!respondenProdiData.length) {
-            emptyChart('#chart-prodi-full', 'Belum ada data responden per Prodi.');
-            return;
-        }
-
-        if (!prodiFullChart) {
-            prodiFullChart = new ApexCharts(document.querySelector('#chart-prodi-full'), prodiOptions(respondenProdiLabels, respondenProdiData, true));
-            prodiFullChart.render();
-        }
+        if (!prodiFullChart) renderProdiFullSummary();
     });
 
     document.getElementById('kinerjaChartModal').addEventListener('shown.bs.modal', () => {
-        if (!chartData.length) {
-            emptyChart('#chart-kinerja-full', 'Belum ada data penilaian.');
-            return;
-        }
+        if (!kinerjaFullChart) renderKinerjaFullSummary();
+    });
 
-        if (!kinerjaFullChart) {
-            kinerjaFullChart = new ApexCharts(document.querySelector('#chart-kinerja-full'), kinerjaOptions(chartLabels, chartData, true));
-            kinerjaFullChart.render();
-        }
+    document.getElementById('backProdiChart')?.addEventListener('click', renderProdiSummary);
+    document.getElementById('backKinerjaChart')?.addEventListener('click', renderKinerjaSummary);
+    document.getElementById('backProdiFullChart')?.addEventListener('click', renderProdiFullSummary);
+    document.getElementById('backKinerjaFullChart')?.addEventListener('click', renderKinerjaFullSummary);
+
+    document.querySelectorAll('[data-kategori-row]').forEach((row) => {
+        row.addEventListener('click', () => {
+            renderKategoriDetail(row.dataset.kategoriRow);
+        });
+    });
+
+    document.querySelectorAll('[data-view-mode]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.viewMode;
+            const panel = button.closest('.satisfaction-panel');
+
+            button.parentElement.querySelectorAll('button').forEach((item) => item.classList.toggle('active', item === button));
+            panel.classList.toggle('chart-mode', mode === 'chart');
+
+            if (mode === 'chart' && !kepuasanStackChart && kategoriDetails.length) {
+                kepuasanStackChart = new ApexCharts(document.querySelector('#chart-kepuasan-stack'), kepuasanStackOptions());
+                kepuasanStackChart.render();
+            }
+        });
     });
 </script>
 @endsection

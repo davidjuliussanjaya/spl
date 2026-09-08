@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DraftInstrumenUniversitas2026Seeder extends Seeder
 {
@@ -15,6 +15,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
         // Tolak jika instrumen tahun ini sudah ada — agar data yang sudah diisi tidak terhapus
         if (DB::table('instrumen')->where('tahun', $tahun)->exists()) {
             $this->command->warn("Instrumen tahun {$tahun} sudah ada. Seeder dilewati untuk mencegah penghapusan data.");
+
             return;
         }
 
@@ -126,7 +127,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                 'deskripsi' => 'Penilaian umum terhadap keseluruhan kualitas lulusan.',
                 'soal' => [
                     'K1' => [
-                        'teks'  => 'Secara umum, bagaimana penilaian Anda terhadap kualitas lulusan kami?',
+                        'teks' => 'Secara umum, bagaimana penilaian Anda terhadap kualitas lulusan kami?',
                         'jenis' => 'multiple_choice',
                         'pilihan' => $likert,
                     ],
@@ -137,8 +138,8 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                 'deskripsi' => 'Masukan kualitatif untuk peningkatan kualitas lulusan.',
                 'soal' => [
                     'L1' => [
-                        'teks'    => 'Apa yang perlu ditingkatkan dari lulusan kami agar lebih sesuai dengan kebutuhan industri?',
-                        'jenis'   => 'essay',
+                        'teks' => 'Apa yang perlu ditingkatkan dari lulusan kami agar lebih sesuai dengan kebutuhan industri?',
+                        'jenis' => 'essay',
                         'pilihan' => [],
                     ],
                 ],
@@ -148,7 +149,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                 'deskripsi' => 'Potensi bentuk kerja sama antara perusahaan dan kampus.',
                 'soal' => [
                     'M1' => [
-                        'teks'  => 'Bentuk kerja sama apa yang berpotensi dapat dilakukan antara perusahaan Anda dengan kampus kami?',
+                        'teks' => 'Bentuk kerja sama apa yang berpotensi dapat dilakukan antara perusahaan Anda dengan kampus kami?',
                         'jenis' => 'multiple_choice',
                         'pilihan' => [
                             ['jawaban' => 'Rekrutmen Lulusan',                          'nilai' => 1, 'urutan' => 1],
@@ -173,10 +174,10 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
 
             // Buat record instrumen untuk tahun ini
             $instrumenId = DB::table('instrumen')->insertGetId([
-                'tahun'      => $tahun,
-                'judul'      => "Instrumen Evaluasi Pengguna Lulusan {$tahun}",
-                'deskripsi'  => 'Draft instrumen evaluasi lulusan oleh pengguna lulusan (perusahaan/instansi).',
-                'is_active'  => true,
+                'tahun' => $tahun,
+                'judul' => "Instrumen Evaluasi Pengguna Lulusan {$tahun}",
+                'deskripsi' => 'Draft instrumen evaluasi lulusan oleh pengguna lulusan (perusahaan/instansi).',
+                'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -185,34 +186,34 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
 
                 $kategoriId = DB::table('kategoris')->insertGetId([
                     'nama_kategori' => $kategoriNama,
-                    'deskripsi'     => $kategoriData['deskripsi'],
-                    'created_at'    => $now,
-                    'updated_at'    => $now,
+                    'deskripsi' => $kategoriData['deskripsi'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]);
 
                 foreach ($kategoriData['soal'] as $kode => $soalData) {
 
                     $soalId = DB::table('soal')->insertGetId([
-                        'instrumen_id'        => $instrumenId,
-                        'soal'                => $soalData['teks'],
-                        'kode'                => $kode,
-                        'kategori_id'         => $kategoriId,
-                        'jenis_soal'          => $soalData['jenis'],
+                        'instrumen_id' => $instrumenId,
+                        'soal' => $soalData['teks'],
+                        'kode' => $kode,
+                        'kategori_id' => $kategoriId,
+                        'jenis_soal' => $soalData['jenis'],
                         'peruntukan_fakultas' => 'Umum',
-                        'is_required'         => true,
-                        'is_active'           => true,
-                        'created_at'          => $now,
-                        'updated_at'          => $now,
+                        'is_required' => true,
+                        'is_active' => true,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ]);
 
-                    if (!empty($soalData['pilihan'])) {
+                    if (! empty($soalData['pilihan'])) {
                         $jawabanRows = [];
                         foreach ($soalData['pilihan'] as $p) {
                             $jawabanRows[] = [
-                                'soal_id'    => $soalId,
-                                'jawaban'    => $p['jawaban'],
-                                'nilai'      => $p['nilai'],
-                                'urutan'     => $p['urutan'],
+                                'soal_id' => $soalId,
+                                'jawaban' => $p['jawaban'],
+                                'nilai' => $p['nilai'],
+                                'urutan' => $p['urutan'],
                                 'created_at' => $now,
                                 'updated_at' => $now,
                             ];
@@ -227,7 +228,8 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->command->error('Gagal melakukan seeder: ' . $e->getMessage());
+            $this->command->error('Gagal melakukan seeder: '.$e->getMessage());
+            throw $e;
         }
     }
 }

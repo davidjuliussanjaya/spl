@@ -222,6 +222,17 @@
             padding: 2rem; text-align: center; font-size: .8rem;
         }
         footer strong { color: rgba(255,255,255,.85); }
+        .footer-links {
+            display: flex; justify-content: center; gap: .75rem; flex-wrap: wrap;
+            margin-bottom: .9rem;
+        }
+        .footer-link {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .55rem .9rem; border-radius: 8px;
+            color: #4A000D; background: #C9A227; text-decoration: none;
+            font-weight: 700; font-size: .78rem;
+        }
+        .footer-link:hover { background: #E8C547; color: #4A000D; }
 
         /* ── Survey access card ── */
         .survey-card {
@@ -517,6 +528,11 @@
 
     {{-- ── Footer ── --}}
     <footer>
+        <div class="footer-links">
+            <a href="{{ route('user-manual') }}" class="footer-link">
+                <i class="bi bi-file-earmark-text-fill"></i> User Manual
+            </a>
+        </div>
         <p>&copy; {{ date('Y') }} <strong>Universitas Dinamika</strong> · Sistem Tracer Study Evaluasi Pengguna Lulusan</p>
     </footer>
 

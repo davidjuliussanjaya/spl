@@ -25,15 +25,27 @@ class SurveyController extends Controller
         $this->surveyService = $surveyService;
     }
 
-public function index()
-{
-    // Mengambil semua data survey, diurutkan dari yang terbaru (latest)
-    // with() digunakan untuk memuat relasi (Eager Loading) agar tidak terjadi N+1 problem dan query lebih cepat
-    $surveys = Survey::with(['lulusan', 'penggunalulusan'])->latest()->get();
+    public function index(Request $request)
+    {
+        $surveys = Survey::with(['lulusan', 'penggunalulusan'])
+            ->when($request->filled('cari'), function ($query) use ($request) {
+                $term = $request->string('cari')->trim()->toString();
+                $query->where(function ($search) use ($term) {
+                    $search->where('judul', 'like', "%{$term}%")
+                        ->orWhere('access_code', 'like', "%{$term}%")
+                        ->orWhereHas('lulusan', fn ($lulusan) => $lulusan->where('nama', 'like', "%{$term}%"))
+                        ->orWhereHas('penggunalulusan', fn ($perusahaan) => $perusahaan->where('nama_perusahaan', 'like', "%{$term}%"));
+                });
+            })
+            ->when($request->filled('tahun'), fn ($query) => $query->where('tahun', $request->tahun))
+            ->when($request->filled('status'), fn ($query) => $query->where('is_completed', $request->status === 'selesai'))
+            ->latest()
+            ->get();
 
-    // Mengirim variabel $surveys ke halaman view
-    return view('admin.survey.index', compact('surveys'));
-}
+        $tahunList = Survey::whereNotNull('tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
+
+        return view('admin.survey.index', compact('surveys', 'tahunList'));
+    }
 
     public function getPerusahaanData($id)
     {

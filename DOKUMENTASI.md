@@ -156,8 +156,8 @@ Nilai rating diperoleh dari kolom `jawaban.nilai`, bukan disimpan langsung pada 
 | Bagian | Teknologi |
 |---|---|
 | Backend | PHP 8.2+, Laravel 12 |
-| Database utama | Oracle XE |
-| Driver Oracle | `yajra/laravel-oci8` versi 12 |
+| Database utama | PostgreSQL |
+| Driver database | PDO PostgreSQL (`pdo_pgsql`) |
 | Autentikasi | Laravel Breeze 2, session-based authentication |
 | Frontend | Blade, Bootstrap pada template admin, Tailwind CSS, Alpine.js |
 | Visualisasi | ApexCharts dan Chart.js tersedia pada aset publik |
@@ -178,7 +178,7 @@ Browser
   -> Form Request / Validation
   -> Service
   -> Eloquent Model / Query Builder
-  -> Oracle Database
+  -> PostgreSQL Database
   -> Blade View atau file Excel
 ```
 
@@ -762,9 +762,9 @@ Password default wajib diganti sebelum aplikasi digunakan pada lingkungan produk
 - PHP 8.2 atau lebih baru;
 - Composer;
 - Node.js dan npm;
-- Oracle XE;
-- ekstensi PHP OCI8;
-- kredensial database Oracle.
+- PostgreSQL;
+- ekstensi PHP `pdo_pgsql`;
+- kredensial database PostgreSQL.
 
 ### 12.2 Langkah Instalasi
 
@@ -780,15 +780,17 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Contoh konfigurasi Oracle:
+Contoh konfigurasi PostgreSQL:
 
 ```env
-DB_CONNECTION=oracle
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
-DB_PORT=1521
-DB_DATABASE=XE
-DB_USERNAME=spl
+DB_PORT=5432
+DB_DATABASE=spl
+DB_USERNAME=postgres
 DB_PASSWORD=password
+DB_SCHEMA=public
+DB_SSLMODE=prefer
 ```
 
 Jalankan migrasi dan seeder:
@@ -960,13 +962,13 @@ PHP menerima penamaan tersebut, tetapi tidak mengikuti konvensi PSR/Laravel yang
 
 ### 15.4 Portabilitas dan Ketergantungan
 
-Aplikasi bergantung pada Oracle XE dan ekstensi OCI8. Beberapa query menggunakan sintaks Oracle:
+Aplikasi menggunakan PostgreSQL dan ekstensi PHP `pdo_pgsql`. Query laporan dan filter tahun memakai sintaks SQL standar yang didukung PostgreSQL:
 
 ```sql
 EXTRACT(YEAR FROM ...)
 ```
 
-Karena itu, pemindahan ke database lain memerlukan pengujian dan kemungkinan penyesuaian query.
+Karena itu, pemindahan ke database lain tetap memerlukan pengujian dan kemungkinan penyesuaian tipe data atau query.
 
 ---
 
@@ -1030,4 +1032,4 @@ Saat meminta ChatGPT membuat isi laporan:
 
 ## 18. Ringkasan Singkat untuk Konteks AI
 
-SPL adalah aplikasi web Laravel 12 dengan database Oracle untuk mengumpulkan penilaian perusahaan terhadap lulusan Universitas Dinamika. Admin mengelola perusahaan, lulusan, kategori, pertanyaan, survei, dashboard, dan laporan. Penyelia perusahaan mengisi survei tanpa login menggunakan kode akses unik. Setiap survei menilai satu lulusan dan terhubung ke satu perusahaan. Pertanyaan dapat berupa rating, pilihan ganda, atau esai dan dapat diperuntukkan bagi fakultas tertentu atau semua fakultas. Jawaban rating memiliki bobot 1 sampai 4. Dashboard menghitung rata-rata dan distribusi nilai, sedangkan laporan Excel menyajikan data serta ringkasan per tahun lulus, fakultas, program studi, pertanyaan, dan kategori. Sistem telah berfungsi untuk alur utama, tetapi masih memiliki beberapa keterbatasan validasi, konsistensi tipe data, filter dashboard, dan cakupan automated testing.
+SPL adalah aplikasi web Laravel 12 dengan database PostgreSQL untuk mengumpulkan penilaian perusahaan terhadap lulusan Universitas Dinamika. Admin mengelola perusahaan, lulusan, kategori, pertanyaan, survei, dashboard, dan laporan. Penyelia perusahaan mengisi survei tanpa login menggunakan kode akses unik. Setiap survei menilai satu lulusan dan terhubung ke satu perusahaan. Pertanyaan dapat berupa rating, pilihan ganda, atau esai dan dapat diperuntukkan bagi fakultas tertentu atau semua fakultas. Jawaban rating memiliki bobot 1 sampai 4. Dashboard menghitung rata-rata dan distribusi nilai, sedangkan laporan Excel menyajikan data serta ringkasan per tahun lulus, fakultas, program studi, pertanyaan, dan kategori. Sistem telah berfungsi untuk alur utama, tetapi masih memiliki beberapa keterbatasan validasi, konsistensi tipe data, filter dashboard, dan cakupan automated testing.

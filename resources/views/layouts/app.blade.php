@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -14,11 +14,12 @@
     <link rel="stylesheet" href="{{ asset('assets/css/pages/dripicons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}?v=20260906-2">
+    <link rel="stylesheet" href="{{ asset('assets/css/spl-admin.css') }}?v=20260906-2">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.svg') }}">
 </head>
 
-<body>
+<body class="spl-app">
     <div id="app">
         @include('layouts.partials.sidebar')
         <div id="main" class='layout-navbar'>

@@ -17,11 +17,22 @@ class PenggunaLulusanController extends Controller
         $this->penggunaService = $penggunaService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua data pengguna lulusan
-        $pengguna = PenggunaLulusan::withCount('lulusans')->latest()->get();
-        return view('admin.penggunalulusan.index', compact('pengguna'));
+        $pengguna = PenggunaLulusan::withCount('lulusans')
+            ->when($request->filled('cari'), function ($query) use ($request) {
+                $term = $request->string('cari')->trim()->toString();
+                $query->where(function ($search) use ($term) {
+                    $search->where('nama_perusahaan', 'like', "%{$term}%")
+                        ->orWhere('nama_penyelia', 'like', "%{$term}%")
+                        ->orWhere('email_penyelia', 'like', "%{$term}%");
+                });
+            })
+            ->when($request->filled('jenis'), fn ($query) => $query->where('jenis_perusahaan', $request->jenis))
+            ->latest()
+            ->get();
+        $jenisList = PenggunaLulusan::whereNotNull('jenis_perusahaan')->distinct()->orderBy('jenis_perusahaan')->pluck('jenis_perusahaan');
+        return view('admin.penggunalulusan.index', compact('pengguna', 'jenisList'));
     }
 
     public function create()
@@ -56,4 +67,3 @@ class PenggunaLulusanController extends Controller
         return redirect()->route('penggunalulusan')->with('success', 'Instansi berhasil dihapus');
     }
 }
-

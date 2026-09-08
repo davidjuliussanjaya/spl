@@ -13,6 +13,10 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
+Route::get('/user-manual', function () {
+    return response()->file(base_path('docs/user-manual-role-user.pdf'));
+})->name('user-manual');
+
 Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('survey.access');
 Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('survey.fill');
 Route::post('/submit-survey/{code}', [SurveyController::class, 'submitJawaban'])->name('survey.submit');
@@ -71,7 +75,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pertanyaan', [PertanyaanController::class, 'index'])->name('pertanyaan');
         Route::get('/addquestion', [PertanyaanController::class, 'add'])->name('addquestion');
         Route::get('/pertanyaan/{id}/edit', [PertanyaanController::class, 'edit'])->name('pertanyaan.edit');
-        Route::get('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
+        Route::patch('/pertanyaan/{id}/switch', [PertanyaanController::class, 'switch'])->name('pertanyaan.switch');
         Route::put('/pertanyaan/{id}', [PertanyaanController::class, 'update'])->name('pertanyaan.update');
         Route::post('/savequestion', [PertanyaanController::class, 'store'])->name('savequestion');
 

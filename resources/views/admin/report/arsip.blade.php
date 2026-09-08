@@ -5,9 +5,9 @@
 @section('content')
 <style>
     :root {
-        --arsip-brand: #8b1a2a;
-        --arsip-brand-dark: #6c0215;
-        --arsip-soft: #fde8ec;
+        --arsip-brand: #2563eb;
+        --arsip-brand-dark: #1d4ed8;
+        --arsip-soft: #eff6ff;
         --arsip-border: #e2e8f0;
         --arsip-muted: #64748b;
         --arsip-text: #0f172a;
@@ -40,7 +40,7 @@
     }
     .arsip-filter .form-control:focus,
     .arsip-filter .form-select:focus {
-        border-color: var(--arsip-brand); box-shadow: 0 0 0 3px rgba(139, 26, 42, .12);
+        border-color: var(--arsip-brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
     }
     .btn-arsip-primary {
         background: var(--arsip-brand); color: #fff; border: 1px solid var(--arsip-brand);
@@ -72,7 +72,7 @@
     .filter-chip {
         display: inline-flex; align-items: center; gap: .3rem;
         padding: .22rem .6rem; border-radius: 999px;
-        background: var(--arsip-soft); border: 1px solid #fbbcca;
+        background: var(--arsip-soft); border: 1px solid #bfdbfe;
         color: var(--arsip-brand-dark); font-size: .72rem; font-weight: 600;
     }
 

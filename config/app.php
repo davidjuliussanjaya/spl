@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'seed_users' => [
+        'admin' => [
+            'name' => env('SEED_ADMIN_NAME', 'Admin Utama'),
+            'email' => env('SEED_ADMIN_EMAIL', 'admin@gmail.com'),
+            'password' => env('SEED_ADMIN_PASSWORD', 'password'),
+        ],
+        'user' => [
+            'name' => env('SEED_USER_NAME', 'User Biasa'),
+            'email' => env('SEED_USER_EMAIL', 'user@gmail.com'),
+            'password' => env('SEED_USER_PASSWORD', 'password'),
+        ],
+    ],
+
 ];

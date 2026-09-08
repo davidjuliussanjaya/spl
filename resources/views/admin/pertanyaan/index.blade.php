@@ -1,158 +1,45 @@
 @extends('layouts.app')
 
-@section('title', 'Data Soal')
+@section('title', 'Pertanyaan')
 
 @section('content')
-    <div class="page-heading">
-        <div class="page-title mb-4 pb-3 border-bottom">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-
-                <div class="mb-3 mb-md-0">
-                    <h3 class="fw-bold mb-1 text-dark">Data Pertanyaan</h3>
-                    <p class="text-muted mb-0 small">Kelola daftar soal dan kuesioner untuk survey lulusan.</p>
-                </div>
-
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 px-3 py-2 bg-white rounded-pill shadow-sm border">
-                        <li class="breadcrumb-item">
-                            <a href="#" class="text-decoration-none text-primary">
-                                <i class="bi bi-folder2-open me-1"></i> Survey
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active fw-semibold text-secondary" aria-current="page">Pertanyaan</li>
-                    </ol>
-                </nav>
-
-            </div>
+<div class="page-heading">
+    <div class="spl-page-header">
+        <div>
+            <nav class="spl-breadcrumb" aria-label="Breadcrumb"><a href="{{ route('dashboard') }}">Dashboard</a><span>/</span><span>Pertanyaan</span></nav>
+            <h3>Instrumen Survei</h3>
+            <p>Atur pertanyaan yang digunakan untuk mengevaluasi lulusan.</p>
         </div>
-
-        <section class="section">
-            <div class="card shadow-sm border-0">
-
-                <div class="card-header d-flex justify-content-between align-items-center border-bottom mb-3 bg-white pt-4">
-                    <h5 class="mb-0 fw-bold">Data Soal Survey</h5>
-
-                    <a href="{{ route('addquestion') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
-                        <i class="dripicons-plus me-1"></i> Buat Pertanyaan
-                    </a>
-                </div>
-
-                <div class="card-body">
-
-                    <div class="row mb-4 g-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold small text-muted">Cari Soal:</label>
-                            <input type="text" class="form-control" placeholder="Masukkan pertanyaan...">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold small text-muted">Tipe Soal:</label>
-                            <select class="form-select">
-                                <option value="">Semua Tipe</option>
-                                <option value="multiple_choice">Multiple Choice</option>
-                                <option value="essay">Essay</option>
-                                <option value="rating">Rating</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold small text-muted">Status:</label>
-                            <select class="form-select">
-                                <option value="">Semua Status</option>
-                                <option value="1">Aktif</option>
-                                <option value="0">Non Aktif</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped align-middle" id="table1">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="30%">Soal</th>
-                                    <th width="15%">Kategori</th>
-                                    <th width="10%">Fakultas</th>
-                                    <th width="10%">Kode</th>
-                                    <th width="10%">Tipe</th>
-                                    <th width="10%">Required</th>
-                                    <th width="5%">Status</th>
-                                    <th width="15%" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($soal as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $item->soal }}</td>
-
-                                        {{-- Menampilkan Kategori --}}
-                                        <td>
-                                            <span class="badge bg-light text-dark border">{{ $item->kategori->nama_kategori ?? '-' }}</span>
-                                        </td>
-                                        
-                                        <td>
-                                            <span class="badge bg-primary">{{ $item->peruntukan_fakultas }}</span>
-                                        </td>
-
-                                        <td>{{ $item->kode ?? '-' }}</td>
-
-                                        <td>
-                                            @if($item->jenis_soal == 'multiple_choice')
-                                                <span class="badge bg-info">Multiple Choice</span>
-                                            @elseif($item->jenis_soal == 'essay')
-                                                <span class="badge bg-secondary">Essay</span>
-                                            @elseif($item->jenis_soal == 'rating')
-                                                <span class="badge bg-dark">Rating</span>
-                                            @endif
-                                        </td>
-
-                                        <td>
-                                            @if($item->is_required)
-                                                <span class="badge bg-success">Yes</span>
-                                            @else
-                                                <span class="badge bg-light text-dark">No</span>
-                                            @endif
-                                        </td>
-
-                                        <td>
-                                            @if($item->is_active)
-                                                <span class="badge bg-success">Aktif</span>
-                                            @else
-                                                <span class="badge bg-danger">Non Aktif</span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Kolom Aksi yang Diperbaiki --}}
-                                        <td>
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <a href="{{ route('pertanyaan.edit', $item->id) }}"
-                                                    class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-
-                                                {{-- Class text-nowrap mencegah teks terputus ke bawah --}}
-                                                <a href="{{ route('pertanyaan.switch', $item->id) }}"
-                                                    class="btn {{ $item->is_active ? 'btn-outline-danger' : 'btn-outline-success' }} btn-sm text-nowrap"
-                                                    title="{{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                                    <i
-                                                        class="{{ $item->is_active ? 'dripicons-power' : 'dripicons-checkmark' }}"></i>
-                                                    {{ $item->is_active ? 'Matikan' : 'Hidupkan' }}
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center py-4 text-muted">Data soal belum tersedia</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-        </section>
+        <a href="{{ route('addquestion') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Buat pertanyaan</a>
     </div>
+
+    @if(session('success'))<div class="alert alert-success spl-alert" role="status"><i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}</div>@endif
+
+    <section class="card">
+        <div class="card-header spl-toolbar"><div><h4 class="spl-toolbar-title">Daftar pertanyaan <span class="spl-filter-count">{{ $soal->count() }} hasil</span></h4><p class="spl-toolbar-subtitle">Pastikan status dan aspek evaluasi setiap pertanyaan sudah tepat.</p></div></div>
+        <form action="{{ route('pertanyaan') }}" method="GET" class="spl-filter-panel">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-6"><label for="cari" class="form-label">Cari pertanyaan</label><div class="input-group"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span><input id="cari" type="search" name="cari" class="form-control border-start-0" value="{{ request('cari') }}" placeholder="Masukkan kata dalam pertanyaan"></div></div>
+                <div class="col-6 col-md-2"><label for="jenis" class="form-label">Tipe</label><select id="jenis" name="jenis" class="form-select"><option value="">Semua tipe</option><option value="multiple_choice" @selected(request('jenis') === 'multiple_choice')>Pilihan</option><option value="essay" @selected(request('jenis') === 'essay')>Uraian</option><option value="rating" @selected(request('jenis') === 'rating')>Rating</option></select></div>
+                <div class="col-6 col-md-2"><label for="status" class="form-label">Status</label><select id="status" name="status" class="form-select"><option value="">Semua status</option><option value="aktif" @selected(request('status') === 'aktif')>Aktif</option><option value="nonaktif" @selected(request('status') === 'nonaktif')>Nonaktif</option></select></div>
+                <div class="col-12 col-md-2 spl-filter-actions"><button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Terapkan</button><a href="{{ route('pertanyaan') }}" class="btn btn-outline-secondary">Reset</a></div>
+            </div>
+        </form>
+        <div class="table-responsive"><table class="table spl-table" id="table1"><thead><tr><th>Pertanyaan</th><th>Aspek</th><th>Fakultas</th><th>Tipe</th><th>Wajib</th><th>Status</th><th class="text-center">Aksi</th></tr></thead><tbody>
+            @forelse($soal as $item)
+                <tr>
+                    <td><span class="spl-row-title">{{ $item->soal }}</span><span class="spl-row-meta">Kode: {{ $item->kode ?? '-' }}</span></td>
+                    <td><span class="badge bg-primary">{{ $item->kategori->nama_kategori ?? 'Tanpa aspek' }}</span></td>
+                    <td>{{ $item->peruntukan_fakultas }}</td>
+                    <td><span class="badge bg-secondary">{{ $item->jenis_soal === 'multiple_choice' ? 'Pilihan' : ucfirst($item->jenis_soal) }}</span></td>
+                    <td>@if($item->is_required)<span class="badge bg-success">Wajib</span>@else<span class="badge bg-secondary">Opsional</span>@endif</td>
+                    <td>@if($item->is_active)<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Aktif</span>@else<span class="badge bg-danger"><i class="bi bi-pause-circle me-1"></i>Nonaktif</span>@endif</td>
+                    <td><div class="d-flex justify-content-center gap-1"><a href="{{ route('pertanyaan.edit', $item->id) }}" class="spl-icon-action" title="Ubah pertanyaan" aria-label="Ubah pertanyaan"><i class="bi bi-pencil-square"></i></a><form action="{{ route('pertanyaan.switch', $item->id) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="spl-icon-action {{ $item->is_active ? 'text-danger' : 'text-success' }}" title="{{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }} pertanyaan" aria-label="{{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }} pertanyaan"><i class="bi {{ $item->is_active ? 'bi-pause' : 'bi-play' }}"></i></button></form></div></td>
+                </tr>
+            @empty
+                <tr><td colspan="7" class="spl-empty"><i class="bi bi-ui-checks-grid"></i>Belum ada pertanyaan yang sesuai dengan filter.</td></tr>
+            @endforelse
+        </tbody></table></div>
+    </section>
+</div>
 @endsection
