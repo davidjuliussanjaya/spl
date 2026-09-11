@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
+use App\Services\SatisfactionScoreService;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -12,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ReportExport
 {
     private array $filters;
+    private SatisfactionScoreService $satisfactionScoreService;
 
     // ── Palet Warna Global ─────────────────────────────────────────────────
     private const TITLE_BG    = 'FF1E3A5F'; // Navy gelap – judul utama
@@ -49,13 +51,18 @@ class ReportExport
     private array $nilaiLabel = [
         4 => 'Sangat Baik (4)',
         3 => 'Baik (3)',
-        2 => 'Kurang (2)',
-        1 => 'Sangat Kurang (1)',
+        2 => 'Cukup (2)',
+        1 => 'Kurang (1)',
     ];
 
     public function __construct(array $filters)
     {
-        $this->filters = $filters;
+        $this->filters = array_replace([
+            'tahun' => null,
+            'fakultas' => null,
+            'program_studi' => null,
+        ], $filters);
+        $this->satisfactionScoreService = new SatisfactionScoreService();
     }
 
     public function build(): Spreadsheet
@@ -238,13 +245,19 @@ class ReportExport
 
             foreach ($peProdi as $prodi => $jawabanRows) {
                 $jumlahResp = count($jawabanRows);
+                $totalLulusan = $this->getTotalLulusan($tahun, $fakultas, $prodi);
+                $skorKonteks = $this->satisfactionScoreService->calculate([], $jumlahResp, $totalLulusan);
 
                 // ── Blok Info Prodi ────────────────────────────────────────
                 $infoItems = [
                     'Prodi'        => $prodi,
                     'Fakultas'     => $fakultas,
                     'Tahun Lulus'  => $tahun,
-                    'Jumlah Resp'  => $jumlahResp,
+                    'Jumlah Responden (NL)' => $jumlahResp,
+                    'Total Lulusan (NJ)' => $totalLulusan,
+                    'Response Rate (PR)' => number_format($skorKonteks['response_rate_pct'], 1) . '%',
+                    'Rumus Terpilih' => $skorKonteks['rumus'],
+                    'Faktor Pembobot (PJ)' => number_format($skorKonteks['faktor_pembobot'], 4),
                 ];
                 foreach ($infoItems as $label => $value) {
                     $sheet->setCellValue("A{$row}", $label);
@@ -273,7 +286,7 @@ class ReportExport
                 ]);
 
                 // Kolom B-E: warna semantik rating
-                $ratingLabels = [4 => 'Sangat Baik (4)', 3 => 'Baik (3)', 2 => 'Kurang (2)', 1 => 'Sangat Kurang (1)'];
+                $ratingLabels = [4 => 'Sangat Baik (4)', 3 => 'Baik (3)', 2 => 'Cukup (2)', 1 => 'Kurang (1)'];
                 $ratingCols   = [4 => 'B', 3 => 'C', 2 => 'D', 1 => 'E'];
                 foreach ($ratingLabels as $rating => $label) {
                     $rCol = $ratingCols[$rating];
@@ -444,6 +457,74 @@ class ReportExport
                 ]);
                 $row++;
 
+                // Rumus resmi: skor murni skala 1--4 dan penalti jika PR < 30%.
+                $row++;
+                $sheet->mergeCells("A{$row}:E{$row}");
+                $sheet->setCellValue("A{$row}", 'KONVERSI SKOR KEPUASAN PENGGUNA LULUSAN');
+                $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
+                    'font'      => ['bold' => true, 'size' => 11, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $color]],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+                ]);
+                $row++;
+
+                foreach (['Jenis Kemampuan', 'Skor Murni', 'PR', 'Faktor PJ', 'Skor Akhir'] as $index => $header) {
+                    $column = chr(ord('A') + $index);
+                    $sheet->setCellValue("{$column}{$row}", $header);
+                }
+                $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
+                    'font'      => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+                    'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $colorLight]],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                    'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => self::BORDER]]],
+                ]);
+                $row++;
+
+                $totalSkorMurni = 0;
+                $totalSkorAkhir = 0;
+                $jumlahKategori = count($kategoriDistribusi);
+                $konversiNo = 0;
+
+                foreach ($kategoriDistribusi as $namaKategori => $pcts) {
+                    $konversiNo++;
+                    $skorKategori = $this->satisfactionScoreService->calculateFromPercentages(
+                        $pcts,
+                        $jumlahResp,
+                        $totalLulusan,
+                    );
+                    $rowBg = ($konversiNo % 2 === 0) ? self::ROW_ALT : 'FFFFFFFF';
+
+                    $sheet->setCellValue("A{$row}", $namaKategori);
+                    $sheet->setCellValue("B{$row}", round($skorKategori['skor_murni'], 2));
+                    $sheet->setCellValue("C{$row}", round($skorKategori['response_rate_pct'], 1) . '%');
+                    $sheet->setCellValue("D{$row}", round($skorKategori['faktor_pembobot'], 4));
+                    $sheet->setCellValue("E{$row}", round($skorKategori['skor_akhir'], 2));
+                    $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
+                        'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $rowBg]],
+                        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                        'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => self::BORDER]]],
+                    ]);
+                    $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+                    $totalSkorMurni += $skorKategori['skor_murni'];
+                    $totalSkorAkhir += $skorKategori['skor_akhir'];
+                    $row++;
+                }
+
+                $sheet->setCellValue("A{$row}", 'Rata-Rata Keseluruhan');
+                $sheet->setCellValue("B{$row}", $jumlahKategori > 0 ? round($totalSkorMurni / $jumlahKategori, 2) : 0);
+                $sheet->setCellValue("C{$row}", round($skorKonteks['response_rate_pct'], 1) . '%');
+                $sheet->setCellValue("D{$row}", round($skorKonteks['faktor_pembobot'], 4));
+                $sheet->setCellValue("E{$row}", $jumlahKategori > 0 ? round($totalSkorAkhir / $jumlahKategori, 2) : 0);
+                $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
+                    'font'      => ['bold' => true, 'color' => ['argb' => 'FF1A2637']],
+                    'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => self::RATA_BG]],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                    'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['argb' => self::BORDER]]],
+                ]);
+                $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                $row++;
+
                 $row += 2;
             }
         }
@@ -516,6 +597,15 @@ class ReportExport
         }
 
         return $q->get();
+    }
+
+    private function getTotalLulusan(int $tahun, string $fakultas, string $programStudi): int
+    {
+        return DB::table('lulusan')
+            ->where('fakultas', $fakultas)
+            ->where('program_studi', $programStudi)
+            ->whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahun])
+            ->count();
     }
 
     private function getJawabanForSurvey(int $surveyId, array $soalIds): array

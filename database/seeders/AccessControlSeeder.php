@@ -1,4 +1,4 @@
-<?php
+s control standard administrative user password password and dragons new rules indeed about this I see in migrate to see the recent credits<?php
 
 namespace Database\Seeders;
 

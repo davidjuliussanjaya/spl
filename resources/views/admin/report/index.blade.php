@@ -155,7 +155,7 @@
                                 </div>
                                 <div>
                                     <h6 class="fw-bold mb-1">Tabel Ringkasan Distribusi</h6>
-                                    <p class="text-muted small mb-0">Di bagian bawah setiap sheet terdapat tabel distribusi persentase per soal per program studi (% Sangat Baik, Baik, Kurang, Sangat Kurang).</p>
+                                    <p class="text-muted small mb-0">Di bagian bawah setiap sheet terdapat distribusi penilaian serta konversi skor resmi berdasarkan response rate (NL/NJ) dan ambang kecukupan 30%.</p>
                                 </div>
                             </div>
                         </div>

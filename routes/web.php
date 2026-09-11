@@ -7,6 +7,7 @@ use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,7 @@ Route::post('/access-survey', [SurveyController::class, 'verifyCode'])->name('su
 Route::get('/fill-survey/{code}', [SurveyController::class, 'fill'])->name('survey.fill');
 Route::post('/submit-survey/{code}', [SurveyController::class, 'submitJawaban'])->name('survey.submit');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
 
     // --- AKSES SEMUA ROLE (Admin & User Reguler) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -35,6 +36,10 @@ Route::middleware('auth')->group(function () {
     // --- KHUSUS ROLE ADMIN ---
     // Ganti 'admin' sesuai dengan 'code' yang ada di tabel roles Anda
     Route::middleware(['role:admin'])->group(function () {
+
+        // Manajemen akun pengguna
+        Route::patch('/users/{user}/status', [UserManagementController::class, 'toggleStatus'])->name('users.status');
+        Route::resource('users', UserManagementController::class)->except(['show']);
 
         // Survey
         Route::get('/survey', [SurveyController::class, 'index'])->name('survey');
@@ -50,6 +55,7 @@ Route::middleware('auth')->group(function () {
 
         // Lulusan
         Route::get('/lulusan', [LulusanController::class, 'index'])->name('lulusan');
+        Route::post('/lulusan/sinkronisasi', [LulusanController::class, 'syncMahasiswa'])->name('lulusan.sync');
         Route::get('/addgrad', [LulusanController::class, 'add'])->name('addgrad');
         Route::post('/lulusan.store', [LulusanController::class, 'store'])->name('lulusan.store');
         Route::get('/lulusan/{id}', [LulusanController::class, 'show'])->name('lulusan.show');

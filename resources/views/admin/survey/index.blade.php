@@ -25,31 +25,58 @@
         <div class="alert alert-danger spl-alert" role="alert"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}</div>
     @endif
 
+    @if(! $selectedTahun)
+        <section class="card">
+            <div class="card-header spl-toolbar">
+                <div>
+                    <h4 class="spl-toolbar-title">Pilih periode survei</h4>
+                    <p class="spl-toolbar-subtitle">Pilih periode terlebih dahulu untuk melihat daftar sesi survei.</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    @forelse($tahunList as $tahun)
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <a href="{{ route('survey', ['tahun' => $tahun]) }}" class="card h-100 text-decoration-none border-primary-subtle shadow-sm">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <span class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                        <i class="bi bi-calendar3 fs-5"></i>
+                                    </span>
+                                    <div>
+                                        <span class="text-muted small d-block">Periode survei</span>
+                                        <span class="fw-bold text-dark fs-5">{{ $tahun }}</span>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-primary ms-auto"></i>
+                                </div>
+                            </a>
+                        </div>
+                    @empty
+                        <div class="col-12">
+                            <div class="spl-empty"><i class="bi bi-inbox"></i>Belum ada periode survei. Buat survei baru untuk memulai.</div>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+    @else
     <section class="card">
         <div class="card-header spl-toolbar">
             <div>
-                <h4 class="spl-toolbar-title">Daftar sesi survei <span class="spl-filter-count">{{ $surveys->count() }} hasil</span></h4>
+                <h4 class="spl-toolbar-title">Daftar sesi survei periode {{ $selectedTahun }} <span class="spl-filter-count">{{ $surveys->count() }} hasil</span></h4>
                 <p class="spl-toolbar-subtitle">Cari berdasarkan judul, lulusan, perusahaan, atau kode akses.</p>
             </div>
+            <a href="{{ route('survey') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Pilih periode lain</a>
         </div>
 
         <form action="{{ route('survey') }}" method="GET" class="spl-filter-panel">
+            <input type="hidden" name="tahun" value="{{ $selectedTahun }}">
             <div class="row g-3 align-items-end">
-                <div class="col-12 col-lg-5">
+                <div class="col-12 col-lg-7">
                     <label for="cari" class="form-label">Cari survei</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
                         <input id="cari" type="search" name="cari" class="form-control border-start-0" value="{{ request('cari') }}" placeholder="Judul, lulusan, perusahaan, atau kode">
                     </div>
-                </div>
-                <div class="col-6 col-lg-2">
-                    <label for="tahun" class="form-label">Tahun</label>
-                    <select id="tahun" name="tahun" class="form-select">
-                        <option value="">Semua tahun</option>
-                        @foreach($tahunList as $tahun)
-                            <option value="{{ $tahun }}" @selected((string) request('tahun') === (string) $tahun)>{{ $tahun }}</option>
-                        @endforeach
-                    </select>
                 </div>
                 <div class="col-6 col-lg-2">
                     <label for="status" class="form-label">Status</label>
@@ -61,7 +88,7 @@
                 </div>
                 <div class="col-12 col-lg-3 spl-filter-actions">
                     <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Terapkan</button>
-                    <a href="{{ route('survey') }}" class="btn btn-outline-secondary">Reset</a>
+                    <a href="{{ route('survey', ['tahun' => $selectedTahun]) }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </div>
         </form>
@@ -109,5 +136,6 @@
             </table>
         </div>
     </section>
+    @endif
 </div>
 @endsection

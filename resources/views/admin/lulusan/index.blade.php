@@ -19,12 +19,21 @@
             <p>Temukan dan kelola profil lulusan Universitas Dinamika.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
+            <form action="{{ route('lulusan.sync') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-outline-primary" title="Sinkronkan data mahasiswa dari REST API">
+                    <i class="bi bi-arrow-repeat"></i> Sinkron Data Mahasiswa
+                </button>
+            </form>
             <a href="{{ route('addgrad') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah lulusan</a>
         </div>
     </div>
 
     @if(session('success'))
         <div class="alert alert-success spl-alert" role="status"><i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger spl-alert" role="alert"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}</div>
     @endif
 
     <section class="card">
