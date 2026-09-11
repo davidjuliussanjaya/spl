@@ -14,16 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Data hasil impor Oracle dapat membawa nilai ID eksplisit. PostgreSQL
-        // tidak otomatis menaikkan sequence ketika ID tersebut diimpor.
         $this->call([
-            PostgreSqlSequenceSeeder::class,
             AccessControlSeeder::class,
-            PenggunaLulusanSeeder::class,
-            LulusanSeeder::class,
-            DraftInstrumenUniversitas2026Seeder::class,
-            SurveyBulkCreateSeeder::class,
-            SurveyResponseSeeder::class,
+            CompletedSurveyPeriodsSeeder::class,
         ]);
     }
 }
