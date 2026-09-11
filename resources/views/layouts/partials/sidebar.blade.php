@@ -26,6 +26,14 @@
                 </li>
 
                 @if(auth()->user()->hasRole('admin'))
+                    <li class="sidebar-title">Administrasi sistem</li>
+                    <li class="sidebar-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}" class='sidebar-link'>
+                            <i class="bi bi-people-fill"></i>
+                            <span>Pengguna Sistem</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-title">Data master</li>
                     <li class="sidebar-item {{ request()->routeIs('lulusan*', 'addgrad') ? 'active' : '' }}">
                         <a href="{{ route('lulusan') }}" class='sidebar-link'>

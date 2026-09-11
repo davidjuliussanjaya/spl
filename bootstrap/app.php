@@ -11,11 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Aplikasi dapat diakses melalui reverse proxy/tunnel HTTPS (mis. ngrok).
+        // Percayai header proxy agar URL asset dan cookie sesi memakai origin HTTPS yang benar.
+        $middleware->trustProxies(at: '*');
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

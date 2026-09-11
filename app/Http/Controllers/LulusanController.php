@@ -58,4 +58,18 @@ class LulusanController extends Controller
             return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Titik integrasi untuk sinkronisasi data mahasiswa dari REST API eksternal.
+     *
+     * Konfigurasi endpoint, autentikasi, dan pemetaan data akan ditambahkan
+     * setelah detail API dari sumber data tersedia.
+     */
+    public function syncMahasiswa()
+    {
+        return redirect()->route('lulusan')->with(
+            'error',
+            'Sinkronisasi data mahasiswa belum dapat dijalankan karena konfigurasi REST API belum tersedia.'
+        );
+    }
 }

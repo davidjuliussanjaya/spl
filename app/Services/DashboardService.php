@@ -3,10 +3,15 @@
 namespace App\Services;
 
 use App\Models\SurveyArsip;
+use App\Models\lulusan;
 use Illuminate\Support\Arr;
 
 class DashboardService
 {
+    public function __construct(private SatisfactionScoreService $satisfactionScoreService)
+    {
+    }
+
     public function getDashboardData(array $filters = []): array
     {
         $periode = collect(Arr::wrap($filters['periode'] ?? []))
@@ -45,7 +50,7 @@ class DashboardService
 
         $arsipList = $arsipQuery->get();
         $totalSurvey = $arsipList->count();
-        $totalLulusan = $arsipList->pluck('lulusan_nim')->filter()->unique()->count();
+        $totalLulusan = $this->getTotalLulusanDalamCakupan($periode, $fakultas, $programStudi);
 
         $ratingByKategori = [];
         $allRatings = [];
@@ -64,16 +69,24 @@ class DashboardService
             }
         }
 
-        $rataKeseluruhan = count($allRatings) > 0
-            ? array_sum($allRatings) / count($allRatings)
-            : null;
+        $skorKepuasan = $this->satisfactionScoreService->calculate(
+            $allRatings,
+            $totalSurvey,
+            $totalLulusan,
+        );
+        $rataKeseluruhan = $skorKepuasan['skor_akhir'];
 
         $kategoriStats = collect($ratingByKategori)
-            ->map(fn ($nilai, $kategori) => (object) [
-                'kategori' => $kategori,
-                'rata_rata' => array_sum($nilai) / count($nilai),
-                'total_respon' => count($nilai),
-            ])
+            ->map(function ($nilai, $kategori) use ($totalSurvey, $totalLulusan) {
+                $skor = $this->satisfactionScoreService->calculate($nilai, $totalSurvey, $totalLulusan);
+
+                return (object) [
+                    'kategori' => $kategori,
+                    'rata_rata' => $skor['skor_akhir'],
+                    'skor_murni' => $skor['skor_murni'],
+                    'total_respon' => count($nilai),
+                ];
+            })
             ->sortByDesc('rata_rata')
             ->values();
 
@@ -83,12 +96,14 @@ class DashboardService
         $kategoriTerlemah = $kategoriStats->last();
 
         $kepuasanPerKategori = collect($ratingByKategori)
-            ->map(function ($nilai, $kategori) {
+            ->map(function ($nilai, $kategori) use ($totalSurvey, $totalLulusan) {
                 $total = count($nilai);
                 $countSangatBaik = count(array_filter($nilai, fn ($value) => $value == 4));
                 $countBaik = count(array_filter($nilai, fn ($value) => $value == 3));
                 $countKurang = count(array_filter($nilai, fn ($value) => $value == 2));
                 $countSangatKurang = count(array_filter($nilai, fn ($value) => $value == 1));
+
+                $skor = $this->satisfactionScoreService->calculate($nilai, $totalSurvey, $totalLulusan);
 
                 return [
                     'kategori' => $kategori,
@@ -97,13 +112,15 @@ class DashboardService
                     'pct_b' => $total > 0 ? round($countBaik / $total * 100, 1) : 0,
                     'pct_k' => $total > 0 ? round($countKurang / $total * 100, 1) : 0,
                     'pct_sk' => $total > 0 ? round($countSangatKurang / $total * 100, 1) : 0,
+                    'skor_murni' => $skor['skor_murni'],
+                    'skor_akhir' => $skor['skor_akhir'],
                 ];
             })
             ->sortKeys()
             ->values();
 
         $kategoriDetails = collect($ratingByKategori)
-            ->map(function ($nilai, $kategori) {
+            ->map(function ($nilai, $kategori) use ($totalSurvey, $totalLulusan) {
                 $total = count($nilai);
                 $counts = [
                     'sb' => count(array_filter($nilai, fn ($value) => $value == 4)),
@@ -112,9 +129,12 @@ class DashboardService
                     'sk' => count(array_filter($nilai, fn ($value) => $value == 1)),
                 ];
 
+                $skor = $this->satisfactionScoreService->calculate($nilai, $totalSurvey, $totalLulusan);
+
                 return [
                     'kategori' => $kategori,
-                    'rata_rata' => $total > 0 ? round(array_sum($nilai) / $total, 2) : 0,
+                    'rata_rata' => round($skor['skor_akhir'], 2),
+                    'skor_murni' => round($skor['skor_murni'], 2),
                     'total_respon' => $total,
                     'counts' => $counts,
                     'percentages' => [
@@ -218,11 +238,32 @@ class DashboardService
             'kepuasanPerKategori',
             'kepuasanRingkasan',
             'totalResponKepuasan',
+            'skorKepuasan',
             'kategoriDetails',
             'komentarTerbaru',
             'filterOptions',
             'filters',
         );
+    }
+
+    private function getTotalLulusanDalamCakupan(array $periode, ?string $fakultas, array $programStudi): int
+    {
+        $query = lulusan::query()
+            ->join('survey', 'lulusan.id', '=', 'survey.lulusan_id')
+            ->select('lulusan.id')
+            ->distinct();
+
+        if (!empty($periode)) {
+            $query->whereIn('survey.tahun', $periode);
+        }
+        if ($fakultas) {
+            $query->where('lulusan.fakultas', $fakultas);
+        }
+        if (!empty($programStudi)) {
+            $query->whereIn('lulusan.program_studi', $programStudi);
+        }
+
+        return $query->count('lulusan.id');
     }
 
     private function getFilterOptions(): array

@@ -27,24 +27,29 @@ class SurveyController extends Controller
 
     public function index(Request $request)
     {
-        $surveys = Survey::with(['lulusan', 'penggunalulusan'])
-            ->when($request->filled('cari'), function ($query) use ($request) {
-                $term = $request->string('cari')->trim()->toString();
-                $query->where(function ($search) use ($term) {
-                    $search->where('judul', 'like', "%{$term}%")
-                        ->orWhere('access_code', 'like', "%{$term}%")
-                        ->orWhereHas('lulusan', fn ($lulusan) => $lulusan->where('nama', 'like', "%{$term}%"))
-                        ->orWhereHas('penggunalulusan', fn ($perusahaan) => $perusahaan->where('nama_perusahaan', 'like', "%{$term}%"));
-                });
-            })
-            ->when($request->filled('tahun'), fn ($query) => $query->where('tahun', $request->tahun))
-            ->when($request->filled('status'), fn ($query) => $query->where('is_completed', $request->status === 'selesai'))
-            ->latest()
-            ->get();
-
         $tahunList = Survey::whereNotNull('tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
+        $selectedTahun = $request->filled('tahun') ? $request->string('tahun')->trim()->toString() : null;
+        $surveys = collect();
 
-        return view('admin.survey.index', compact('surveys', 'tahunList'));
+        // Daftar survei hanya ditampilkan setelah admin memilih periode.
+        if ($selectedTahun) {
+            $surveys = Survey::with(['lulusan', 'penggunalulusan'])
+                ->where('tahun', $selectedTahun)
+                ->when($request->filled('cari'), function ($query) use ($request) {
+                    $term = $request->string('cari')->trim()->toString();
+                    $query->where(function ($search) use ($term) {
+                        $search->where('judul', 'like', "%{$term}%")
+                            ->orWhere('access_code', 'like', "%{$term}%")
+                            ->orWhereHas('lulusan', fn ($lulusan) => $lulusan->where('nama', 'like', "%{$term}%"))
+                            ->orWhereHas('penggunalulusan', fn ($perusahaan) => $perusahaan->where('nama_perusahaan', 'like', "%{$term}%"));
+                    });
+                })
+                ->when($request->filled('status'), fn ($query) => $query->where('is_completed', $request->status === 'selesai'))
+                ->latest()
+                ->get();
+        }
+
+        return view('admin.survey.index', compact('surveys', 'tahunList', 'selectedTahun'));
     }
 
     public function getPerusahaanData($id)

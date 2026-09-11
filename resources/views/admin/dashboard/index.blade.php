@@ -291,17 +291,17 @@
     <div class="stat-grid">
         <div class="stat-card">
             <div class="stat-top">
-                <span class="stat-label">Lulusan Dinilai</span>
+                <span class="stat-label">Lulusan dalam Cakupan</span>
                 <div class="stat-icon-wrap"><i class="bi bi-mortarboard-fill"></i></div>
             </div>
             <span class="stat-value">{{ $totalLulusan ?? 0 }}</span>
             <span class="stat-unit">orang</span>
-            <div class="stat-sub">{{ $totalSurvey ?? 0 }} respon survey terarsip</div>
+            <div class="stat-sub">{{ $totalSurvey ?? 0 }} respons pengguna lulusan</div>
         </div>
 
         <div class="stat-card green">
             <div class="stat-top">
-                <span class="stat-label">Indeks Kepuasan</span>
+                <span class="stat-label">Indeks Kepuasan Terkonversi</span>
                 <div class="stat-icon-wrap"><i class="bi bi-star-fill"></i></div>
             </div>
             <span class="stat-value">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
@@ -309,7 +309,7 @@
             <div class="stat-bar-track">
                 <div class="stat-bar-fill" style="width:{{ $pct }}%;"></div>
             </div>
-            <div class="stat-sub">{{ $pct }}% dari skor maksimal</div>
+            <div class="stat-sub">Murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
         </div>
 
         <div class="stat-card amber">
@@ -318,7 +318,7 @@
                 <div class="stat-icon-wrap"><i class="bi bi-trophy-fill"></i></div>
             </div>
             <div class="stat-name">{{ $kategoriTerbaik->kategori ?? '-' }}</div>
-            <div class="stat-sub">Skor {{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }} / 4.00</div>
+            <div class="stat-sub">Skor akhir {{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }} / 4.00</div>
         </div>
 
         <div class="stat-card red">
@@ -327,7 +327,7 @@
                 <div class="stat-icon-wrap"><i class="bi bi-arrow-down-right"></i></div>
             </div>
             <div class="stat-name">{{ $kategoriTerlemah->kategori ?? '-' }}</div>
-            <div class="stat-sub">Skor {{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00</div>
+            <div class="stat-sub">Skor akhir {{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00</div>
         </div>
     </div>
 
@@ -357,7 +357,7 @@
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title" id="kinerjaPanelTitle">Rata-Rata Penilaian per Kategori</h6>
+                    <h6 class="panel-title" id="kinerjaPanelTitle">Skor Kepuasan Terkonversi per Kategori</h6>
                     <p class="panel-subtitle" id="kinerjaPanelSubtitle">Klik bar untuk melihat distribusi jawaban kategori tersebut</p>
                 </div>
                 <div class="panel-actions">
@@ -419,7 +419,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="kinerjaChartModalLabel">Rata-Rata Penilaian per Kategori</h5>
+                <h5 class="modal-title" id="kinerjaChartModalLabel">Skor Kepuasan Terkonversi per Kategori</h5>
                 <div class="panel-actions ms-auto">
                     <button type="button" class="btn-back" id="backKinerjaFullChart">
                         <i class="bi bi-arrow-left"></i> Ringkasan
@@ -480,8 +480,8 @@
     const ratingLabels = {
         sb: 'Sangat Baik',
         b: 'Baik',
-        k: 'Kurang',
-        sk: 'Sangat Kurang'
+        k: 'Cukup',
+        sk: 'Kurang'
     };
 
     const setActiveKategori = (kategori) => {
@@ -667,8 +667,8 @@
         series: [
             { name: 'Sangat Baik', data: kategoriDetails.map((item) => item.percentages.sb) },
             { name: 'Baik', data: kategoriDetails.map((item) => item.percentages.b) },
-            { name: 'Kurang', data: kategoriDetails.map((item) => item.percentages.k) },
-            { name: 'Sangat Kurang', data: kategoriDetails.map((item) => item.percentages.sk) },
+            { name: 'Cukup', data: kategoriDetails.map((item) => item.percentages.k) },
+            { name: 'Kurang', data: kategoriDetails.map((item) => item.percentages.sk) },
         ],
         chart: { type: 'bar', height: 300, stacked: true, stackType: '100%', toolbar: { show: false }, fontFamily: 'inherit' },
         plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '58%' } },
@@ -741,7 +741,7 @@
         setPanelText(
             'kinerjaPanelTitle',
             'kinerjaPanelSubtitle',
-            'Rata-Rata Penilaian per Kategori',
+            'Skor Kepuasan Terkonversi per Kategori',
             'Klik bar untuk melihat distribusi jawaban kategori tersebut'
         );
         setBackVisible('backKinerjaChart', false);
@@ -796,7 +796,7 @@
 
     const renderKinerjaFullSummary = () => {
         const title = document.getElementById('kinerjaChartModalLabel');
-        if (title) title.textContent = 'Rata-Rata Penilaian per Kategori';
+        if (title) title.textContent = 'Skor Kepuasan Terkonversi per Kategori';
         setBackVisible('backKinerjaFullChart', false);
 
         if (chartData.length) {
