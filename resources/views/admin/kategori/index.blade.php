@@ -86,6 +86,12 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($kategoris->hasPages())
+                        <div class="spl-pagination">
+                            <span>Menampilkan {{ $kategoris->firstItem() }}–{{ $kategoris->lastItem() }} dari {{ $kategoris->total() }} data</span>
+                            {{ $kategoris->links() }}
+                        </div>
+                    @endif
 
                 </div>
             </div>

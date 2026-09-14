@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
-use App\Models\soal;
+use App\Models\Lulusan;
+use App\Models\PenggunaLulusan;
+use App\Models\Soal;
 use App\Models\Survey;
 use App\Models\SurveyArsip;
 use Carbon\Carbon;
@@ -113,6 +113,7 @@ class CompletedSurveyPeriodsSeeder extends Seeder
                     SurveyArsip::updateOrCreate(
                         ['survey_id' => $survey->id],
                         [
+                            'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
                             'access_code' => $survey->access_code,
                             'judul' => $survey->judul,
                             'submitted_at' => $submittedAt,
@@ -153,18 +154,18 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
     private function ambilSoalAktif()
     {
-        return soal::with(['jawaban', 'kategori'])
+        return Soal::with(['jawaban', 'kategori'])
             ->where('is_active', true)
             ->orderBy('kode')
             ->get();
     }
 
-    private function buatPerusahaan(int $periode, int $urutan, int $nomorData, Carbon $timestamp): penggunalulusan
+    private function buatPerusahaan(int $periode, int $urutan, int $nomorData, Carbon $timestamp): PenggunaLulusan
     {
         $email = "seed.spl.{$periode}.{$urutan}@mitra.test";
         $jenisPerusahaan = ['Swasta', 'Startup', 'BUMN/Instansi Pemerintah', 'Nirlaba/Yayasan'][$urutan - 1];
 
-        return penggunalulusan::updateOrCreate(
+        return PenggunaLulusan::updateOrCreate(
             ['email_penyelia' => $email],
             [
                 'nama_perusahaan' => $this->namaPerusahaan[$nomorData],
@@ -190,12 +191,12 @@ class CompletedSurveyPeriodsSeeder extends Seeder
         int $urutan,
         int $nomorData,
         array $profil,
-        penggunalulusan $perusahaan,
+        PenggunaLulusan $perusahaan,
         Carbon $timestamp,
-    ): lulusan {
+    ): Lulusan {
         $nim = 'SPL' . $periode . str_pad((string) $urutan, 2, '0', STR_PAD_LEFT);
 
-        return lulusan::updateOrCreate(
+        return Lulusan::updateOrCreate(
             ['nim' => $nim],
             [
                 'pengguna_lulusan_id' => $perusahaan->id,
@@ -213,8 +214,8 @@ class CompletedSurveyPeriodsSeeder extends Seeder
     private function buatSurvey(
         int $periode,
         int $urutan,
-        lulusan $lulus,
-        penggunalulusan $perusahaan,
+        Lulusan $lulus,
+        PenggunaLulusan $perusahaan,
         Carbon $timestamp,
     ): Survey {
         $kodeAkses = 'SP' . substr((string) $periode, -2) . str_pad((string) $urutan, 2, '0', STR_PAD_LEFT);
@@ -239,7 +240,7 @@ class CompletedSurveyPeriodsSeeder extends Seeder
         Survey $survey,
         $soalList,
         int $nomorData,
-        penggunalulusan $perusahaan,
+        PenggunaLulusan $perusahaan,
         Carbon $timestamp,
     ): array {
         $jawabanArsip = [];

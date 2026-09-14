@@ -39,7 +39,7 @@
     <section class="card">
         <div class="card-header spl-toolbar">
             <div>
-                <h4 class="spl-toolbar-title">Daftar lulusan <span class="spl-filter-count">{{ $lulusan->count() }} hasil</span></h4>
+                <h4 class="spl-toolbar-title">Daftar lulusan <span class="spl-filter-count">{{ $lulusan->total() }} hasil</span></h4>
                 <p class="spl-toolbar-subtitle">Gunakan pencarian dan filter untuk mempersempit data.</p>
             </div>
         </div>
@@ -112,6 +112,12 @@
                 </tbody>
             </table>
         </div>
+        @if($lulusan->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $lulusan->firstItem() }}–{{ $lulusan->lastItem() }} dari {{ $lulusan->total() }} data</span>
+                {{ $lulusan->links() }}
+            </div>
+        @endif
     </section>
 </div>
 @endsection

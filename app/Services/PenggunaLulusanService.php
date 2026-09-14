@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\penggunalulusan;
+use App\Models\PenggunaLulusan;
 
 class PenggunaLulusanService
 {
@@ -14,7 +14,7 @@ class PenggunaLulusanService
         $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
         $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
 
-        return penggunalulusan::create($data);
+        return PenggunaLulusan::create($data);
     }
 
     /**
@@ -22,7 +22,7 @@ class PenggunaLulusanService
      */
     public function updatePengguna(int $id, array $data, \Illuminate\Http\Request $request)
     {
-        $pengguna = penggunalulusan::findOrFail($id);
+        $pengguna = PenggunaLulusan::findOrFail($id);
         
         $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
         $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
@@ -37,7 +37,7 @@ class PenggunaLulusanService
      */
     public function deletePengguna(int $id)
     {
-        $pengguna = penggunalulusan::findOrFail($id);
+        $pengguna = PenggunaLulusan::findOrFail($id);
         $pengguna->delete();
         
         return true;

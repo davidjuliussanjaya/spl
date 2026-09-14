@@ -6,12 +6,13 @@ use App\Http\Requests\SurveyBulkRequest;
 use App\Http\Requests\SurveyStoreRequest;
 use App\Http\Requests\SurveySubmitJawabanRequest;
 use App\Http\Requests\SurveyUpdateRequest;
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
+use App\Models\Lulusan;
+use App\Models\PenggunaLulusan;
 use App\Models\ResponJawaban;
-use App\Models\soal;
+use App\Models\Soal;
 use App\Models\Survey;
 use App\Services\SurveyService;
+use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -46,7 +47,8 @@ class SurveyController extends Controller
                 })
                 ->when($request->filled('status'), fn ($query) => $query->where('is_completed', $request->status === 'selesai'))
                 ->latest()
-                ->get();
+                ->paginate(10)
+                ->withQueryString();
         }
 
         return view('admin.survey.index', compact('surveys', 'tahunList', 'selectedTahun'));
@@ -134,7 +136,7 @@ public function edit($id)
     $survey = Survey::with(['lulusan', 'penggunalulusan', 'soals.kategori', 'soals.jawaban'])->findOrFail($id);
 
     $perusahaan = PenggunaLulusan::all();
-    $lulusan    = lulusan::all();
+    $lulusan    = Lulusan::all();
     $daftarSoal = Soal::where('is_active', 1)->get();
 
     $responGrouped = $survey->is_completed
@@ -146,7 +148,7 @@ public function edit($id)
 
     public function bulkCreate()
     {
-        $tahunList = \App\Models\Lulusan::selectRaw('EXTRACT(YEAR FROM tahun_lulus) as tahun')
+        $tahunList = \App\Models\Lulusan::selectRaw(DatabaseYearExpression::fromDateColumn('tahun_lulus') . ' as tahun')
             ->whereNotNull('pengguna_lulusan_id')
             ->distinct()
             ->orderByDesc('tahun')
@@ -173,7 +175,7 @@ public function edit($id)
     public function getLulusanByTahun(Request $request)
     {
         $tahun = $request->tahun;
-        $lulusan = \App\Models\Lulusan::whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahun])
+        $lulusan = \App\Models\Lulusan::whereYear('tahun_lulus', $tahun)
             ->whereNotNull('pengguna_lulusan_id')
             ->with('pengguna')
             ->get(['id', 'nama', 'nim', 'program_studi', 'pengguna_lulusan_id']);
@@ -192,7 +194,7 @@ public function edit($id)
         try {
             $this->surveyService->updateSurvey($survey, $request->validated());
 
-            return redirect()->route('survey.index')->with('success', 'Data Survey berhasil diperbarui.');
+            return redirect()->route('survey')->with('success', 'Data Survey berhasil diperbarui.');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }

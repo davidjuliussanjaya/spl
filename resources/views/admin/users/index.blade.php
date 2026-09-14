@@ -22,7 +22,7 @@
 
     <section class="card">
         <div class="card-header spl-toolbar">
-            <div><h4 class="spl-toolbar-title">Daftar pengguna <span class="spl-filter-count">{{ $users->count() }} hasil</span></h4><p class="spl-toolbar-subtitle">Hanya akun aktif yang dapat masuk ke sistem.</p></div>
+            <div><h4 class="spl-toolbar-title">Daftar pengguna <span class="spl-filter-count">{{ $users->total() }} hasil</span></h4><p class="spl-toolbar-subtitle">Hanya akun aktif yang dapat masuk ke sistem.</p></div>
         </div>
         <form action="{{ route('users.index') }}" method="GET" class="spl-filter-panel">
             <div class="row g-3 align-items-end">
@@ -72,6 +72,12 @@
                 </tbody>
             </table>
         </div>
+        @if($users->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }} dari {{ $users->total() }} data</span>
+                {{ $users->links() }}
+            </div>
+        @endif
     </section>
 </div>
 @endsection

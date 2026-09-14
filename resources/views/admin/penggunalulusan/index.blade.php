@@ -19,7 +19,7 @@
 
     <section class="card">
         <div class="card-header spl-toolbar">
-            <div><h4 class="spl-toolbar-title">Daftar perusahaan <span class="spl-filter-count">{{ $pengguna->count() }} hasil</span></h4><p class="spl-toolbar-subtitle">Cari perusahaan, penyelia, atau alamat email responden.</p></div>
+            <div><h4 class="spl-toolbar-title">Daftar perusahaan <span class="spl-filter-count">{{ $pengguna->total() }} hasil</span></h4><p class="spl-toolbar-subtitle">Cari perusahaan, penyelia, atau alamat email responden.</p></div>
         </div>
         <form action="{{ route('penggunalulusan') }}" method="GET" class="spl-filter-panel">
             <div class="row g-3 align-items-end">
@@ -54,6 +54,12 @@
                 </tbody>
             </table>
         </div>
+        @if($pengguna->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $pengguna->firstItem() }}–{{ $pengguna->lastItem() }} dari {{ $pengguna->total() }} data</span>
+                {{ $pengguna->links() }}
+            </div>
+        @endif
     </section>
 </div>
 @endsection

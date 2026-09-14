@@ -62,7 +62,7 @@
     <section class="card">
         <div class="card-header spl-toolbar">
             <div>
-                <h4 class="spl-toolbar-title">Daftar sesi survei periode {{ $selectedTahun }} <span class="spl-filter-count">{{ $surveys->count() }} hasil</span></h4>
+                <h4 class="spl-toolbar-title">Daftar sesi survei periode {{ $selectedTahun }} <span class="spl-filter-count">{{ $surveys->total() }} hasil</span></h4>
                 <p class="spl-toolbar-subtitle">Cari berdasarkan judul, lulusan, perusahaan, atau kode akses.</p>
             </div>
             <a href="{{ route('survey') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Pilih periode lain</a>
@@ -135,6 +135,12 @@
                 </tbody>
             </table>
         </div>
+        @if($surveys->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $surveys->firstItem() }}–{{ $surveys->lastItem() }} dari {{ $surveys->total() }} data</span>
+                {{ $surveys->links() }}
+            </div>
+        @endif
     </section>
     @endif
 </div>

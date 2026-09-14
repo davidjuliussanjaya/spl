@@ -3,7 +3,7 @@
         <div>
             <h6 class="panel-title">Tingkat Kepuasan Pengguna</h6>
             <p class="panel-subtitle">
-                {{ $totalResponKepuasan }} respons penilaian dari {{ $totalSurvey }} respons pengguna.
+                {{ $totalResponKepuasan }} respons penilaian dari {{ $totalResponden }} responden.
                 NL {{ $skorKepuasan['jumlah_responden'] }} / NJ {{ $skorKepuasan['total_lulusan'] }} = {{ number_format($skorKepuasan['response_rate_pct'], 1) }}%
                 — {{ $skorKepuasan['rumus'] }}.
             </p>

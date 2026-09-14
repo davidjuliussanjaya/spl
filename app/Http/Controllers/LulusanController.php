@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LulusanStoreRequest;
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
+use App\Models\Lulusan;
+use App\Models\PenggunaLulusan;
 use App\Services\LulusanService;
 use Illuminate\Http\Request;
 
@@ -33,13 +33,13 @@ class LulusanController extends Controller
 
     public function create()
     {
-        $perusahaan = penggunalulusan::select('id', 'nama_perusahaan')->get();
+        $perusahaan = PenggunaLulusan::select('id', 'nama_perusahaan')->get();
         return view('lulusan.create', compact('perusahaan'));
     }
 
     public function show($id)
     {
-        $lulusan = \App\Models\lulusan::with('pengguna')->findOrFail($id);
+        $lulusan = Lulusan::with('pengguna')->findOrFail($id);
 
         return view('admin.lulusan.show', compact('lulusan'));
     }

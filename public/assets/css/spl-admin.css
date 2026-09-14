@@ -141,6 +141,20 @@ body.spl-app .pagination .page-link { border-color: #bfdbfe !important; color: v
 body.spl-app .pagination .page-link:hover { background: var(--spl-brand-soft) !important; }
 body.spl-app .pagination .page-item.active .page-link { background: var(--spl-brand) !important; border-color: var(--spl-brand) !important; color: #fff !important; }
 
+.spl-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: .875rem;
+}
+
+.spl-pagination .pagination { margin-bottom: 0; }
+
 @media (max-width: 767.98px) {
     .spl-app #main-content { padding: 1.1rem 1rem 1.5rem; }
     .spl-page-header { display: block; }

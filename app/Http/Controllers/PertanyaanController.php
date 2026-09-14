@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PertanyaanStoreRequest;
-use App\Models\soal;
+use App\Models\Soal;
 use App\Services\PertanyaanService;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,8 @@ class PertanyaanController extends Controller
             ->when($request->filled('jenis'), fn ($query) => $query->where('jenis_soal', $request->jenis))
             ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->status === 'aktif'))
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
         return view('admin.pertanyaan.index', compact('soal'));
     }
 

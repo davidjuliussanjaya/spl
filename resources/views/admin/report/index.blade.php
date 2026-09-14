@@ -40,45 +40,42 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-uppercase text-muted">
-                                <i class="bi bi-calendar3 me-1"></i> Tahun Lulus
+                                <i class="bi bi-calendar-range me-1"></i> Rentang Tahun Lulus
                             </label>
-                            <select name="tahun" class="form-select">
-                                <option value="">Semua Tahun</option>
-                                @foreach($tahunList as $t)
-                                    <option value="{{ $t }}" {{ ($filters['tahun'] ?? '') == $t ? 'selected' : '' }}>
-                                        {{ $t }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="form-text">Kosongkan untuk semua tahun (1 sheet per tahun)</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small text-uppercase text-muted">
-                                <i class="bi bi-building me-1"></i> Fakultas
-                            </label>
-                            <select name="fakultas" id="filterFakultas" class="form-select">
-                                <option value="">Semua Fakultas</option>
-                                @foreach($fakultasList as $f)
-                                    <option value="{{ $f }}" {{ ($filters['fakultas'] ?? '') == $f ? 'selected' : '' }}>
-                                        {{ $f }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <select name="tahun_dari" class="form-select" aria-label="Tahun mulai">
+                                        <option value="">Dari tahun</option>
+                                        @foreach($tahunList->sort() as $t)
+                                            <option value="{{ $t }}" {{ ($filters['tahun_dari'] ?? '') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select name="tahun_sampai" class="form-select" aria-label="Tahun sampai">
+                                        <option value="">Sampai tahun</option>
+                                        @foreach($tahunList->sortDesc() as $t)
+                                            <option value="{{ $t }}" {{ ($filters['tahun_sampai'] ?? '') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-text">Kosongkan salah satu batas untuk memilih semua tahun sebelum atau sesudahnya.</div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-uppercase text-muted">
                                 <i class="bi bi-mortarboard me-1"></i> Program Studi
                             </label>
-                            <select name="program_studi" class="form-select">
-                                <option value="">Semua Program Studi</option>
+                            <div class="border rounded p-2" style="max-height: 190px; overflow-y: auto;">
                                 @foreach($prodiList as $p)
-                                    <option value="{{ $p }}" {{ ($filters['program_studi'] ?? '') == $p ? 'selected' : '' }}>
-                                        {{ $p }}
-                                    </option>
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input" type="checkbox" name="program_studi[]" value="{{ $p }}" id="prodi-{{ $loop->index }}" {{ in_array($p, $filters['program_studi'] ?? [], true) ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="prodi-{{ $loop->index }}">{{ $p }}</label>
+                                    </div>
                                 @endforeach
-                            </select>
+                            </div>
+                            <div class="form-text">Pilih satu atau beberapa program studi. Kosongkan untuk semua program studi.</div>
                         </div>
 
                         <div class="d-grid gap-2">

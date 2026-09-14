@@ -291,17 +291,27 @@
     <div class="stat-grid">
         <div class="stat-card">
             <div class="stat-top">
-                <span class="stat-label">Lulusan dalam Cakupan</span>
+                <span class="stat-label">Total Responden</span>
+                <div class="stat-icon-wrap"><i class="bi bi-people-fill"></i></div>
+            </div>
+            <span class="stat-value">{{ $totalResponden ?? 0 }}</span>
+            <span class="stat-unit">orang</span>
+            <div class="stat-sub">Menilai {{ $totalSurvey ?? 0 }} lulusan</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Total Lulusan</span>
                 <div class="stat-icon-wrap"><i class="bi bi-mortarboard-fill"></i></div>
             </div>
             <span class="stat-value">{{ $totalLulusan ?? 0 }}</span>
             <span class="stat-unit">orang</span>
-            <div class="stat-sub">{{ $totalSurvey ?? 0 }} respons pengguna lulusan</div>
+            <div class="stat-sub">Lulusan dalam cakupan survei</div>
         </div>
 
         <div class="stat-card green">
             <div class="stat-top">
-                <span class="stat-label">Indeks Kepuasan Terkonversi</span>
+                <span class="stat-label">Indeks Kepuasan</span>
                 <div class="stat-icon-wrap"><i class="bi bi-star-fill"></i></div>
             </div>
             <span class="stat-value">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
@@ -314,20 +324,11 @@
 
         <div class="stat-card amber">
             <div class="stat-top">
-                <span class="stat-label">Kategori Terbaik</span>
+                <span class="stat-label">Kategori Terbaik &amp; Terendah</span>
                 <div class="stat-icon-wrap"><i class="bi bi-trophy-fill"></i></div>
             </div>
-            <div class="stat-name">{{ $kategoriTerbaik->kategori ?? '-' }}</div>
-            <div class="stat-sub">Skor akhir {{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }} / 4.00</div>
-        </div>
-
-        <div class="stat-card red">
-            <div class="stat-top">
-                <span class="stat-label">Kategori Terendah</span>
-                <div class="stat-icon-wrap"><i class="bi bi-arrow-down-right"></i></div>
-            </div>
-            <div class="stat-name">{{ $kategoriTerlemah->kategori ?? '-' }}</div>
-            <div class="stat-sub">Skor akhir {{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00</div>
+            <div class="stat-sub"><strong>Terbaik:</strong> {{ $kategoriTerbaik->kategori ?? '-' }} ({{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }} / 4.00)</div>
+            <div class="stat-sub"><strong>Terendah:</strong> {{ $kategoriTerlemah->kategori ?? '-' }} ({{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00)</div>
         </div>
     </div>
 

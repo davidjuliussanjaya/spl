@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
+use App\Models\Lulusan;
+use App\Models\PenggunaLulusan;
 use Illuminate\Database\Seeder;
 
 class LulusanSeeder extends Seeder
@@ -62,7 +62,7 @@ class LulusanSeeder extends Seeder
         ];
 
         foreach ($dataset as $emailPenyelia => $lulusanList) {
-            $perusahaan = penggunalulusan::where('email_penyelia', $emailPenyelia)->first();
+            $perusahaan = PenggunaLulusan::where('email_penyelia', $emailPenyelia)->first();
 
             if (!$perusahaan) {
                 $this->command->warn("Perusahaan dengan email {$emailPenyelia} tidak ditemukan, lewati.");
@@ -70,7 +70,7 @@ class LulusanSeeder extends Seeder
             }
 
             foreach ($lulusanList as $l) {
-                lulusan::updateOrCreate(
+                Lulusan::updateOrCreate(
                     ['nim' => $l['nim']],
                     [
                         'pengguna_lulusan_id' => $perusahaan->id,

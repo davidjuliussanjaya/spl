@@ -122,6 +122,7 @@ class SurveyArsipBackfillSeeder extends Seeder
 
         SurveyArsip::create([
             'survey_id' => $survey->id,
+            'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
             'access_code' => $survey->access_code,
             'judul' => $survey->judul,
             'submitted_at' => $submittedAt,

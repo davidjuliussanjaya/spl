@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\lulusan;
-use App\Models\soal;
+use App\Models\Lulusan;
+use App\Models\Soal;
 use App\Models\Survey;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -35,7 +35,7 @@ class SurveyBulkCreateSeeder extends Seeder
             return;
         }
 
-        $semuaSoal = soal::where('instrumen_id', $instrumenId)
+        $semuaSoal = Soal::where('instrumen_id', $instrumenId)
             ->where('is_active', true)
             ->get(['id', 'peruntukan_fakultas']);
 
@@ -46,7 +46,7 @@ class SurveyBulkCreateSeeder extends Seeder
         }
 
         // Survey dilakukan satu tahun setelah mahasiswa lulus.
-        $lulusanList = lulusan::whereNotNull('pengguna_lulusan_id')
+        $lulusanList = Lulusan::whereNotNull('pengguna_lulusan_id')
             ->where(function ($query) use ($tahunLulusList) {
                 foreach ($tahunLulusList as $tahunLulus) {
                     $query->orWhereYear('tahun_lulus', $tahunLulus);
