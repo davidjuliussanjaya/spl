@@ -3,98 +3,66 @@
 @section('title', 'Data Kategori')
 
 @section('content')
-    <div class="page-heading">
-        <div class="page-title mb-4 pb-3 border-bottom">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+<div class="page-heading">
+    <div class="spl-page-header">
+        <div>
+            <nav class="spl-breadcrumb" aria-label="Breadcrumb"><a href="{{ route('dashboard') }}">Dashboard</a><span>/</span><span>Aspek Evaluasi</span></nav>
+            <h3>Aspek Evaluasi</h3>
+            <p>Kelola kategori yang digunakan untuk mengelompokkan pertanyaan survei.</p>
+        </div>
+        <a href="{{ route('kategori.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah kategori</a>
+    </div>
 
-                <div class="mb-3 mb-md-0">
-                    <h3 class="fw-bold mb-1 text-dark">Data Kategori</h3>
-                    <p class="text-muted mb-0 small">Kelola daftar kategori untuk pertanyaan survey.</p>
-                </div>
+    @if(session('success'))
+        <div class="alert alert-success spl-alert alert-dismissible fade show" role="status">
+            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+        </div>
+    @endif
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 px-3 py-2 bg-white rounded-pill shadow-sm border">
-                        <li class="breadcrumb-item">
-                            <a href="#" class="text-decoration-none text-primary">
-                                <i class="bi bi-folder2-open me-1"></i> Survey
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active fw-semibold text-secondary" aria-current="page">Kategori</li>
-                    </ol>
-                </nav>
-
+    <section class="card">
+        <div class="card-header spl-toolbar">
+            <div>
+                <h4 class="spl-toolbar-title">Daftar kategori <span class="spl-filter-count">{{ $kategoris->total() }} hasil</span></h4>
+                <p class="spl-toolbar-subtitle">Kategori membantu membaca hasil kepuasan per aspek secara lebih terarah.</p>
             </div>
         </div>
 
-        <section class="section">
-            <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table spl-table" id="table1">
+                <thead>
+                    <tr><th class="text-center" style="width:72px;">No.</th><th>Nama kategori</th><th>Deskripsi</th><th class="text-center">Aksi</th></tr>
+                </thead>
+                <tbody>
+                    @forelse($kategoris as $index => $item)
+                        <tr>
+                            <td class="text-center text-muted">{{ $kategoris->firstItem() + $index }}</td>
+                            <td><span class="spl-row-title">{{ $item->nama_kategori }}</span></td>
+                            <td>{{ $item->deskripsi ?: '-' }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('kategori.edit', $item->id) }}" class="spl-icon-action" title="Ubah kategori" aria-label="Ubah kategori {{ $item->nama_kategori }}"><i class="bi bi-pencil-square"></i></a>
+                                    <form action="{{ route('kategori.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini? Semua pertanyaan dengan kategori ini akan direset.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="spl-icon-action text-danger" title="Hapus kategori" aria-label="Hapus kategori {{ $item->nama_kategori }}"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="spl-empty"><i class="bi bi-tags"></i>Belum ada kategori. Tambahkan kategori untuk mulai mengelompokkan pertanyaan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                <div class="card-header d-flex justify-content-between align-items-center border-bottom mb-3 bg-white pt-4">
-                    <h5 class="mb-0 fw-bold">Data Kategori</h5>
-
-                    <a href="{{ route('kategori.create') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
-                        <i class="dripicons-plus me-1"></i> Tambah Kategori
-                    </a>
-                </div>
-
-                <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped align-middle" id="table1">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="30%">Nama Kategori</th>
-                                    <th width="45%">Deskripsi</th>
-                                    <th width="20%" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($kategoris as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $item->nama_kategori }}</td>
-                                        <td>{{ $item->deskripsi ?? '-' }}</td>
-                                        <td>
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <a href="{{ route('kategori.edit', $item->id) }}"
-                                                    class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="dripicons-pencil"></i>
-                                                </a>
-
-                                                <form action="{{ route('kategori.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini? Semua pertanyaan dengan kategori ini akan direset.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
-                                                        <i class="dripicons-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4 text-muted">Data kategori belum tersedia</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    @if($kategoris->hasPages())
-                        <div class="spl-pagination">
-                            <span>Menampilkan {{ $kategoris->firstItem() }}–{{ $kategoris->lastItem() }} dari {{ $kategoris->total() }} data</span>
-                            {{ $kategoris->links() }}
-                        </div>
-                    @endif
-
-                </div>
+        @if($kategoris->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $kategoris->firstItem() }}–{{ $kategoris->lastItem() }} dari {{ $kategoris->total() }} data</span>
+                {{ $kategoris->links() }}
             </div>
-        </section>
-    </div>
+        @endif
+    </section>
+</div>
 @endsection

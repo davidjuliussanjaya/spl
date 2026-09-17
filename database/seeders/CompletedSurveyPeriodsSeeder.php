@@ -22,6 +22,23 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 {
     private const PERIODS = [2023, 2024, 2025, 2026];
 
+    /**
+     * Target mutu untuk 16 survei demo (4 survei setiap periode).
+     *
+     * 2023 didominasi penilaian rendah, 2024 cukup, 2025 baik, dan 2026
+     * sengaja campuran. Pola ini membuat grafik serta kategori terbaik dan
+     * terendah dapat diuji dengan data yang nyata, bukan data seragam.
+     */
+    private const TARGET_RATING_BY_SURVEY = [
+        1, 2, 2, 3, // 2023: perlu perbaikan
+        2, 3, 3, 2, // 2024: cukup hingga baik
+        3, 4, 3, 4, // 2025: baik hingga sangat baik
+        4, 3, 4, 2, // 2026: campuran untuk perbandingan
+    ];
+
+    /** Variasi kecil per pertanyaan agar satu respons tidak bernilai identik seluruhnya. */
+    private const QUESTION_RATING_ADJUSTMENTS = [0, 0, -1, 0, 1, 0, -1, 0, 1, 0];
+
     private array $profilLulusan = [
         ['fakultas' => 'FTI',  'program_studi' => 'Teknik Informatika'],
         ['fakultas' => 'FDIK', 'program_studi' => 'Desain Komunikasi Visual'],
@@ -50,6 +67,24 @@ class CompletedSurveyPeriodsSeeder extends Seeder
         'Agus Firmansyah', 'Cindy Larasati', 'Bima Saputra', 'Dinda Amelia',
     ];
 
+    private array $komentarPositif = [
+        'Kinerja lulusan sangat memuaskan. Ia cepat beradaptasi, mandiri, dan mampu memberi kontribusi nyata pada tim.',
+        'Lulusan menunjukkan kompetensi yang kuat, komunikasi yang baik, serta kesiapan kerja di atas harapan perusahaan.',
+        'Kami sangat puas dengan kualitas lulusan, khususnya pada ketelitian, inisiatif, dan kemampuan menyelesaikan masalah.',
+    ];
+
+    private array $komentarCukup = [
+        'Lulusan mampu menjalankan tugas dengan baik, namun masih perlu pendampingan pada beberapa proses kerja baru.',
+        'Secara umum kinerjanya cukup baik. Penguatan komunikasi dan manajemen waktu akan membuat kontribusinya lebih optimal.',
+        'Kompetensi dasar sudah memadai, tetapi pengalaman menghadapi kasus kerja nyata perlu terus ditingkatkan.',
+    ];
+
+    private array $komentarPerluPerbaikan = [
+        'Lulusan masih memerlukan banyak arahan dalam menyelesaikan tugas. Kemampuan komunikasi dan inisiatif perlu diperkuat.',
+        'Kesiapan kerja belum konsisten. Kami menyarankan lebih banyak praktik industri, kerja tim, dan latihan pemecahan masalah.',
+        'Beberapa kompetensi dasar belum memenuhi kebutuhan kerja saat ini, terutama ketelitian dan adaptasi terhadap target kerja.',
+    ];
+
     public function run(): void
     {
         $soalAktif = $this->ambilSoalAktif();
@@ -71,12 +106,19 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
         $totalSurvey = 0;
 
-        DB::transaction(function () use ($soalAktif, &$totalSurvey): void {
+        // Gunakan satu acuan waktu agar data demo untuk periode berjalan tidak
+        // memperoleh timestamp yang melampaui waktu seeder dijalankan.
+        $seededAt = now();
+
+        DB::transaction(function () use ($soalAktif, $seededAt, &$totalSurvey): void {
             foreach (self::PERIODS as $periodIndex => $periode) {
                 for ($urutan = 1; $urutan <= 4; $urutan++) {
                     $nomorData = ($periodIndex * 4) + ($urutan - 1);
                     $profil = $this->profilLulusan[$urutan - 1];
-                    $submittedAt = Carbon::create($periode, 11, min(5 + $urutan, 28), 10, 0, 0);
+                    $targetSubmittedAt = Carbon::create($periode, 11, min(5 + $urutan, 28), 10, 0, 0);
+                    $submittedAt = $targetSubmittedAt->isFuture()
+                        ? $seededAt->copy()->subMinutes(4 - $urutan)
+                        : $targetSubmittedAt;
 
                     $perusahaan = $this->buatPerusahaan($periode, $urutan, $nomorData, $submittedAt);
                     $lulus = $this->buatLulusan($periode, $urutan, $nomorData, $profil, $perusahaan, $submittedAt);
@@ -255,10 +297,10 @@ class CompletedSurveyPeriodsSeeder extends Seeder
             $jawabanText = null;
 
             if ($soalItem->jenis_soal === 'rating') {
+                $targetNilai = $this->tentukanTargetRating($nomorData, $urutanSoal);
                 $pilihan = $soalItem->jawaban
-                    ->sortBy('nilai')
-                    ->values()
-                    ->get(($nomorData + $urutanSoal) % max($soalItem->jawaban->count(), 1));
+                    ->sortBy(fn ($item) => abs(((int) $item->nilai) - $targetNilai))
+                    ->first();
 
                 if (! $pilihan) {
                     continue;
@@ -269,10 +311,12 @@ class CompletedSurveyPeriodsSeeder extends Seeder
                 $jawabanId = $pilihan->id;
                 $jawabanSnapshot = $pilihan->jawaban;
             } elseif ($soalItem->jenis_soal === 'essay') {
-                $jawaban = 'Lulusan menunjukkan kinerja yang baik dan mampu beradaptasi dengan kebutuhan kerja di perusahaan.';
+                $jawaban = $this->tentukanKomentar($nomorData, $urutanSoal);
                 $jawabanText = $jawaban;
             } else {
-                $pilihan = $soalItem->jawaban->first();
+                $pilihan = $soalItem->jawaban
+                    ->values()
+                    ->get(($nomorData + $urutanSoal) % max($soalItem->jawaban->count(), 1));
                 if (! $pilihan) {
                     continue;
                 }
@@ -309,5 +353,27 @@ class CompletedSurveyPeriodsSeeder extends Seeder
         ksort($jawabanArsip);
 
         return $jawabanArsip;
+    }
+
+    private function tentukanTargetRating(int $nomorData, int $urutanSoal): int
+    {
+        $targetDasar = self::TARGET_RATING_BY_SURVEY[$nomorData] ?? 3;
+        $variasi = self::QUESTION_RATING_ADJUSTMENTS[
+            ($nomorData + $urutanSoal) % count(self::QUESTION_RATING_ADJUSTMENTS)
+        ];
+
+        return max(1, min(4, $targetDasar + $variasi));
+    }
+
+    private function tentukanKomentar(int $nomorData, int $urutanSoal): string
+    {
+        $targetDasar = self::TARGET_RATING_BY_SURVEY[$nomorData] ?? 3;
+        $komentar = match (true) {
+            $targetDasar >= 4 => $this->komentarPositif,
+            $targetDasar === 3 => $this->komentarCukup,
+            default => $this->komentarPerluPerbaikan,
+        };
+
+        return $komentar[($nomorData + $urutanSoal) % count($komentar)];
     }
 }

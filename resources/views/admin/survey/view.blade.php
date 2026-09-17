@@ -144,39 +144,7 @@
                 </div>
 
                 <div class="card-body p-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover border">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="50" class="text-center">
-                                        <input type="checkbox" id="checkAll" class="form-check-input" {{ $disabledAttr }}>
-                                    </th>
-                                    <th>Pertanyaan</th>
-                                    <th width="150">Tipe Soal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($daftarSoal as $s)
-                                <tr>
-                                    <td class="text-center">
-                                        <input type="checkbox" name="soal_pilihan[]" value="{{ $s->id }}" class="form-check-input soal-checkbox" 
-                                        {{ in_array($s->id, $selectedSoalIds) ? 'checked' : '' }} {{ $disabledAttr }}>
-                                    </td>
-                                    <td>{{ $s->soal }}</td>
-                                    <td>
-                                        @if($s->jenis_soal === 'rating')
-                                            <span class="badge bg-success">Rating</span>
-                                        @elseif($s->jenis_soal === 'multiple_choice')
-                                            <span class="badge bg-primary">Multiple Choice</span>
-                                        @else
-                                            <span class="badge bg-info">Essay</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="$selectedSoalIds" :locked="$isLocked" />
 
                     {{-- TOMBOL SUBMIT HANYA MUNCUL JIKA SURVEY BELUM DIISI --}}
                     @if(!$isLocked)
@@ -351,14 +319,7 @@ $(document).ready(function() {
         disabled: {{ $isLocked ? 'true' : 'false' }}
     });
 
-    // 2. Logic Check All Pertanyaan
-    $('#checkAll').on('change', function() {
-        if(!{{ $isLocked ? 'true' : 'false' }}) {
-            $('.soal-checkbox').prop('checked', this.checked);
-        }
-    });
-
-    // 3. Auto-fill Data via AJAX saat Perusahaan dipilih
+    // 2. Auto-fill Data via AJAX saat Perusahaan dipilih
     $('#select_perusahaan').on('change', function() {
         let id = $(this).val();
         

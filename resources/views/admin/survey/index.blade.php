@@ -26,34 +26,31 @@
     @endif
 
     @if(! $selectedTahun)
-        <section class="card">
-            <div class="card-header spl-toolbar">
-                <div>
-                    <h4 class="spl-toolbar-title">Pilih periode survei</h4>
-                    <p class="spl-toolbar-subtitle">Pilih periode terlebih dahulu untuk melihat daftar sesi survei.</p>
+        <section class="card spl-period-selector">
+            <div class="card-header spl-period-selector-header">
+                <div class="spl-period-heading">
+                    <span class="spl-period-heading-icon" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+                    <div>
+                        <h4 class="spl-toolbar-title">Pilih periode survei</h4>
+                        <p class="spl-toolbar-subtitle">Pilih periode untuk melihat daftar sesi, status respons, dan kode akses.</p>
+                    </div>
                 </div>
+                <span class="spl-period-count">{{ $tahunList->count() }} periode tersedia</span>
             </div>
-            <div class="card-body">
-                <div class="row g-3">
+            <div class="card-body spl-period-selector-body">
+                <div class="spl-period-grid">
                     @forelse($tahunList as $tahun)
-                        <div class="col-12 col-sm-6 col-lg-4">
-                            <a href="{{ route('survey', ['tahun' => $tahun]) }}" class="card h-100 text-decoration-none border-primary-subtle shadow-sm">
-                                <div class="card-body d-flex align-items-center gap-3">
-                                    <span class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                        <i class="bi bi-calendar3 fs-5"></i>
-                                    </span>
-                                    <div>
-                                        <span class="text-muted small d-block">Periode survei</span>
-                                        <span class="fw-bold text-dark fs-5">{{ $tahun }}</span>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-primary ms-auto"></i>
-                                </div>
-                            </a>
-                        </div>
+                        <a href="{{ route('survey', ['tahun' => $tahun]) }}" class="spl-period-option" aria-label="Buka survei periode {{ $tahun }}">
+                            <span class="spl-period-option-icon" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+                            <span class="spl-period-option-copy">
+                                <span class="spl-period-option-label">Periode survei</span>
+                                <strong>{{ $tahun }}</strong>
+                                <span class="spl-period-option-action">Lihat daftar sesi <i class="bi bi-arrow-right"></i></span>
+                            </span>
+                            <span class="spl-period-option-arrow" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                        </a>
                     @empty
-                        <div class="col-12">
-                            <div class="spl-empty"><i class="bi bi-inbox"></i>Belum ada periode survei. Buat survei baru untuk memulai.</div>
-                        </div>
+                        <div class="spl-empty"><i class="bi bi-inbox"></i>Belum ada periode survei. Buat survei baru untuk memulai.</div>
                     @endforelse
                 </div>
             </div>
@@ -120,12 +117,16 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a href="{{ route('survey.edit', $survey->id) }}" class="spl-icon-action" title="Lihat atau ubah survei" aria-label="Lihat atau ubah survei {{ $survey->judul }}"><i class="bi bi-pencil-square"></i></a>
-                                    <form action="{{ route('survey.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('Hapus survei ini? Tindakan ini tidak dapat dibatalkan.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="spl-icon-action text-danger" title="Hapus survei" aria-label="Hapus survei {{ $survey->judul }}"><i class="bi bi-trash"></i></button>
-                                    </form>
+                                    @if($survey->is_completed)
+                                        <a href="{{ route('survey.edit', $survey->id) }}" class="spl-icon-action" title="Lihat detail arsip survei" aria-label="Lihat detail arsip survei {{ $survey->judul }}"><i class="bi bi-eye"></i></a>
+                                    @else
+                                        <a href="{{ route('survey.edit', $survey->id) }}" class="spl-icon-action" title="Lihat atau ubah survei" aria-label="Lihat atau ubah survei {{ $survey->judul }}"><i class="bi bi-pencil-square"></i></a>
+                                        <form action="{{ route('survey.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('Hapus survei ini? Tindakan ini tidak dapat dibatalkan.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="spl-icon-action text-danger" title="Hapus survei" aria-label="Hapus survei {{ $survey->judul }}"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

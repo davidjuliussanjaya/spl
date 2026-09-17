@@ -22,7 +22,7 @@ class PertanyaanController extends Controller
             ->when($request->filled('cari'), fn ($query) => $query->where('soal', 'like', '%' . $request->cari . '%'))
             ->when($request->filled('jenis'), fn ($query) => $query->where('jenis_soal', $request->jenis))
             ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->status === 'aktif'))
-            ->latest()
+            ->latest('created_at')
             ->paginate(10)
             ->withQueryString();
         return view('admin.pertanyaan.index', compact('soal'));

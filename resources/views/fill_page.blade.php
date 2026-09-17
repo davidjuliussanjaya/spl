@@ -320,6 +320,27 @@
         }
 
         .border-bottom-dashed { border-bottom: 2px dashed #e2e8f0; }
+
+        /* Layar kecil: pertahankan ruang baca dan cegah isi survei terpotong. */
+        @media (max-width: 575.98px) {
+            .survey-container { padding-left: .875rem; padding-right: .875rem; }
+            .card-custom { margin-bottom: 1rem; }
+            .survey-header { padding: 2rem 1.25rem; }
+            .survey-header h2 { font-size: 1.35rem; line-height: 1.35; overflow-wrap: anywhere; }
+            .univ-badge { font-size: .7rem; letter-spacing: .06em; margin-bottom: 1rem; padding: .35rem .7rem; }
+            .lulusan-card { padding: 1.35rem 1rem; }
+            .lulusan-name, .info-value { overflow-wrap: anywhere; }
+            .lulusan-meta { align-items: flex-start; border-radius: 12px; flex-direction: column; padding: .6rem .8rem; text-align: left; width: 100%; }
+            .lulusan-meta-divider { display: none; }
+            .kategori-title { font-size: .95rem; line-height: 1.45; padding: .85rem 1rem; }
+            .survey-table { font-size: .78rem; min-width: 570px; }
+            .survey-table thead th, .survey-table tbody tr td { padding: .55rem .6rem; }
+            .survey-table .th-option { min-width: 54px; }
+            .btn-submit { font-size: .92rem; letter-spacing: .04em; padding: .9rem 1rem; white-space: normal; }
+            .d-flex.justify-content-between.align-items-center { align-items: flex-start !important; gap: .75rem; }
+            .d-flex.align-items-center.gap-2 { align-items: flex-start !important; flex-direction: column; }
+            .d-flex.align-items-center.gap-2 .form-control { max-width: 100% !important; width: 100%; }
+        }
     </style>
 </head>
 <body>

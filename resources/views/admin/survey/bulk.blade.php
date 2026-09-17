@@ -164,47 +164,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
 
-                    @php
-                        $badgeFakultas = ['Umum'=>'secondary','FTI'=>'primary','FDIK'=>'warning','FEB'=>'success'];
-                    @endphp
-
-                    <div class="table-responsive">
-                        <table class="table table-hover border">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="50" class="text-center">
-                                        <input type="checkbox" id="checkAll" class="form-check-input">
-                                    </th>
-                                    <th>Pertanyaan</th>
-                                    <th width="110">Tipe Soal</th>
-                                    <th width="120">Peruntukan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($daftarSoal as $s)
-                                    @php $pf = $s->peruntukan_fakultas ?? 'Umum'; @endphp
-                                    <tr>
-                                        <td class="text-center">
-                                            <input type="checkbox" name="soal_pilihan[]" value="{{ $s->id }}"
-                                                class="form-check-input soal-checkbox"
-                                                {{ in_array($s->id, old('soal_pilihan', [])) ? 'checked' : '' }}>
-                                        </td>
-                                        <td>{{ $s->soal }}</td>
-                                        <td>
-                                            <span class="badge {{ $s->jenis_soal == 'essay' ? 'bg-info' : 'bg-success' }}">
-                                                {{ ucfirst($s->jenis_soal) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{{ $badgeFakultas[$pf] ?? 'secondary' }} {{ $pf === 'FDIK' ? 'text-dark' : '' }}">
-                                                {{ $pf }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" />
 
                     <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
                         <a href="{{ route('survey') }}" class="btn btn-outline-secondary px-4">
@@ -256,10 +216,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
-    $('#checkAll').on('change', function () {
-        $('.soal-checkbox').prop('checked', this.checked);
-    });
-
     $('#btn_preview').on('click', function () {
         const tahun = $('#tahun_lulus').val();
         if (!tahun) {

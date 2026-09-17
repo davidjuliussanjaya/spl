@@ -58,7 +58,7 @@ class ReportController extends Controller
 
     public function arsip(Request $request)
     {
-        $query = SurveyArsip::query()->orderByDesc('submitted_at');
+        $query = SurveyArsip::query()->latest('created_at');
 
         if ($request->filled('tahun')) {
             $query->where('tahun_instrumen', $request->tahun);

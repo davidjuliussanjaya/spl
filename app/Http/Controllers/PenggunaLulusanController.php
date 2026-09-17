@@ -29,7 +29,7 @@ class PenggunaLulusanController extends Controller
                 });
             })
             ->when($request->filled('jenis'), fn ($query) => $query->where('jenis_perusahaan', $request->jenis))
-            ->latest()
+            ->latest('created_at')
             ->paginate(10)
             ->withQueryString();
         $jenisList = PenggunaLulusan::whereNotNull('jenis_perusahaan')->distinct()->orderBy('jenis_perusahaan')->pluck('jenis_perusahaan');

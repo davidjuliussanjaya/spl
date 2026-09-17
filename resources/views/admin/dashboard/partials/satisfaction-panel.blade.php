@@ -1,7 +1,7 @@
 <div class="panel satisfaction-panel">
     <div class="panel-header">
         <div>
-            <h6 class="panel-title">Tingkat Kepuasan Pengguna</h6>
+            <h6 class="panel-title">Kepuasan Gabungan Respons <span class="chip ms-1">Pembanding</span></h6>
             <p class="panel-subtitle">
                 {{ $totalResponKepuasan }} respons penilaian dari {{ $totalResponden }} responden.
                 NL {{ $skorKepuasan['jumlah_responden'] }} / NJ {{ $skorKepuasan['total_lulusan'] }} = {{ number_format($skorKepuasan['response_rate_pct'], 1) }}%

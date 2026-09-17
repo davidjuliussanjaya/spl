@@ -25,6 +25,7 @@
     .db-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
     .db-header h3 { font-size: 1.25rem; font-weight: 700; color: var(--slate-900); margin: 0; }
     .db-header p { font-size: .82rem; color: var(--slate-400); margin: .2rem 0 0; }
+    .dashboard-header-actions { display: flex; align-items: end; justify-content: flex-end; gap: .55rem; flex-wrap: wrap; }
     .dashboard-filter-form { display: flex; align-items: end; gap: .55rem; flex-wrap: wrap; }
     .dashboard-filter-field { min-width: 170px; }
     .dashboard-filter-field.prodi { min-width: 210px; }
@@ -112,8 +113,8 @@
     .stat-card.red .stat-icon-wrap { background: #f1f5f9; color: #475569; }
     .stat-value { font-size: 1.65rem; font-weight: 800; color: var(--slate-900); line-height: 1; }
     .stat-unit { font-size: .76rem; font-weight: 400; color: var(--slate-500); margin-left: .25rem; }
-    .stat-name { font-size: .88rem; font-weight: 700; color: var(--slate-900); line-height: 1.25; margin-bottom: .22rem; }
-    .stat-sub { font-size: .72rem; color: var(--slate-500); margin-top: .35rem; line-height: 1.35; }
+    .stat-name { font-size: .88rem; font-weight: 700; color: var(--slate-900); line-height: 1.35; margin-bottom: .22rem; overflow-wrap: anywhere; }
+    .stat-sub { font-size: .72rem; color: var(--slate-500); margin-top: .35rem; line-height: 1.4; overflow-wrap: anywhere; }
     .stat-bar-track { height: 4px; background: var(--slate-100); border-radius: 99px; margin-top: .55rem; overflow: hidden; }
     .stat-bar-fill { height: 100%; border-radius: 99px; background: #16a34a; }
 
@@ -125,8 +126,8 @@
         padding: .75rem 1rem; border-bottom: 1px solid var(--slate-100); background: #fff;
         gap: .75rem; flex-wrap: wrap;
     }
-    .panel-title { font-size: .86rem; font-weight: 700; color: var(--slate-700); margin: 0; }
-    .panel-subtitle { font-size: .72rem; color: var(--slate-500); margin: .08rem 0 0; }
+    .panel-title { font-size: .86rem; font-weight: 700; color: var(--slate-700); line-height: 1.35; margin: 0; overflow-wrap: anywhere; }
+    .panel-subtitle { font-size: .72rem; color: var(--slate-500); line-height: 1.4; margin: .08rem 0 0; overflow-wrap: anywhere; }
     .panel-body { padding: .75rem 1rem .9rem; }
     .chart-wrap { min-height: 0; }
     .chart-compact { height: 240px; }
@@ -208,6 +209,42 @@
         font-size: .8rem; border-top: 1px solid #111;
     }
     .tbl-kepuasan tfoot td:first-child { text-align: left; }
+
+    .period-dashboard { border-color: var(--brand-100); }
+    .period-dashboard .panel-header { background: linear-gradient(135deg, #f8fbff, #fff); }
+    .period-score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; padding: .9rem 1rem; }
+    @media(max-width:767px) { .period-score-grid { grid-template-columns: 1fr; } }
+    .period-score-card { border: 1px solid var(--slate-200); border-radius: 10px; padding: .8rem .9rem; background: #fff; }
+    .period-score-card.recommended { border-color: var(--brand-100); background: var(--brand-50); }
+    .period-score-label { display: block; color: var(--slate-500); font-size: .68rem; font-weight: 700; letter-spacing: .45px; text-transform: uppercase; }
+    .period-score-value { display: block; margin-top: .32rem; color: var(--slate-900); font-size: 1.45rem; font-weight: 800; line-height: 1; }
+    .period-score-note { display: block; color: var(--slate-500); font-size: .7rem; line-height: 1.45; margin-top: .35rem; }
+    .period-content-grid { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr); gap: .85rem; padding: 0 1rem 1rem; }
+    @media(max-width:991px) { .period-content-grid { grid-template-columns: 1fr; } }
+    .period-chart { min-height: 250px; }
+    .period-table-wrap { overflow-x: auto; border: 1px solid var(--slate-100); border-radius: 9px; }
+    .period-table { width: 100%; min-width: 690px; border-collapse: collapse; font-size: .76rem; }
+    .period-table th { color: var(--slate-500); background: var(--slate-50); font-size: .66rem; font-weight: 700; letter-spacing: .3px; padding: .55rem .65rem; text-align: right; text-transform: uppercase; white-space: nowrap; }
+    .period-table td { border-top: 1px solid var(--slate-100); color: var(--slate-700); padding: .55rem .65rem; text-align: right; white-space: nowrap; }
+    .period-table th:first-child, .period-table td:first-child { text-align: left; font-weight: 700; }
+    .period-table tbody tr:hover td { background: var(--slate-50); }
+    .period-category-list { display: grid; gap: .65rem; padding: 0 1rem 1rem; }
+    .period-detail { border: 1px solid var(--slate-200); border-radius: 10px; overflow: hidden; }
+    .period-detail summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: .75rem; list-style: none; padding: .7rem .85rem; background: #fff; }
+    .period-detail summary::-webkit-details-marker { display: none; }
+    .period-detail summary::after { content: '\F282'; font-family: bootstrap-icons; color: var(--slate-500); font-size: .72rem; }
+    .period-detail[open] summary::after { content: '\F286'; }
+    .period-detail[open] summary { border-bottom: 1px solid var(--slate-100); background: var(--slate-50); }
+    .period-detail-title { color: var(--slate-900); font-size: .8rem; font-weight: 700; }
+    .period-detail-meta { color: var(--slate-500); font-size: .7rem; margin-top: .14rem; }
+    .period-category-table { width: 100%; border-collapse: collapse; font-size: .75rem; }
+    .period-category-table th { background: #fff; color: var(--slate-500); font-size: .65rem; font-weight: 700; letter-spacing: .3px; padding: .5rem .85rem; text-align: left; text-transform: uppercase; }
+    .period-category-table th:not(:first-child), .period-category-table td:not(:first-child) { text-align: right; }
+    .period-category-table td { border-top: 1px solid var(--slate-100); color: var(--slate-700); padding: .5rem .85rem; }
+    .period-category-table td:first-child { font-weight: 600; }
+    .dashboard-info-list { display: grid; gap: .7rem; padding-left: 1.15rem; margin: 0; }
+    .dashboard-info-list li { color: var(--slate-700); font-size: .82rem; line-height: 1.55; }
+    .dashboard-info-formula { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; color: var(--slate-700); font-size: .78rem; line-height: 1.55; padding: .7rem .8rem; }
     .empty-state { text-align: center; padding: 1.75rem 1rem; color: var(--slate-500); font-size: .84rem; }
     .empty-state i { display: block; font-size: 1.5rem; margin-bottom: .45rem; opacity: .45; }
 
@@ -230,6 +267,10 @@
             <h3>Dashboard Evaluasi Lulusan</h3>
             <p>Ringkasan performa dan kualitas lulusan Universitas Dinamika di dunia kerja.</p>
         </div>
+        <div class="dashboard-header-actions">
+            <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#dashboardInfoModal">
+                <i class="bi bi-exclamation-circle"></i> Cara baca dashboard
+            </button>
         <form method="GET" action="{{ route('dashboard') }}" id="filterForm" class="dashboard-filter-form">
             <div class="dashboard-filter-field">
                 <label class="form-label">Periode</label>
@@ -286,6 +327,7 @@
                 <a href="{{ route('dashboard') }}" class="btn btn-reset btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset filter</a>
             </div>
         </form>
+        </div>
     </div>
 
     <div class="stat-grid">
@@ -311,7 +353,7 @@
 
         <div class="stat-card green">
             <div class="stat-top">
-                <span class="stat-label">Indeks Kepuasan</span>
+                <span class="stat-label">Indeks Gabungan Respons</span>
                 <div class="stat-icon-wrap"><i class="bi bi-star-fill"></i></div>
             </div>
             <span class="stat-value">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
@@ -319,7 +361,7 @@
             <div class="stat-bar-track">
                 <div class="stat-bar-fill" style="width:{{ $pct }}%;"></div>
             </div>
-            <div class="stat-sub">Murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
+            <div class="stat-sub">Pembanding: murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
         </div>
 
         <div class="stat-card amber">
@@ -331,6 +373,8 @@
             <div class="stat-sub"><strong>Terendah:</strong> {{ $kategoriTerlemah->kategori ?? '-' }} ({{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00)</div>
         </div>
     </div>
+
+    @include('admin.dashboard.partials.period-dashboard')
 
     @include('admin.dashboard.partials.satisfaction-panel')
 
@@ -397,6 +441,34 @@
 
 </div>
 
+<div class="modal fade" id="dashboardInfoModal" tabindex="-1" aria-labelledby="dashboardInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dashboardInfoModalLabel"><i class="bi bi-exclamation-circle me-1 text-primary"></i> Cara baca dan pengolahan dashboard</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <ol class="dashboard-info-list">
+                    <li><strong>Sumber data.</strong> Jawaban, kategori, dan identitas pada respons dibaca dari <em>arsip survei</em> yang terbentuk saat perusahaan menyelesaikan pengisian. Jadi perubahan pada soal, kategori, data lulusan, atau perusahaan setelah survei selesai tidak mengubah isi respons historisnya.</li>
+                    <li><strong>Filter.</strong> Periode, program studi, dan fakultas membatasi arsip yang dibaca. NL adalah jumlah responden unik pada cakupan tersebut, sedangkan NJ adalah jumlah lulusan yang memiliki sesi survei pada cakupan/periode yang sama.</li>
+                    <li><strong>Skor murni per periode.</strong> Setiap jawaban rating bernilai 1–4 dijumlahkan menurut bobotnya lalu dirata-ratakan. Nama pilihan jawaban boleh berubah pada tahun berikutnya; yang dipakai untuk perhitungan adalah nilai numeriknya.</li>
+                </ol>
+                <div class="dashboard-info-formula my-3">
+                    Skor murni = (4 × % nilai 4) + (3 × % nilai 3) + (2 × % nilai 2) + (1 × % nilai 1).<br>
+                    Faktor respons = min(1, (NL ÷ NJ) ÷ 30%).<br>
+                    Skor akhir periode = skor murni × faktor respons.
+                </div>
+                <ol class="dashboard-info-list" start="4">
+                    <li><strong>Indeks Global Tertimbang</strong> adalah rekomendasi untuk lintas tahun: setiap skor akhir periode dikalikan NJ periodenya, kemudian dibagi total NJ. Dengan cara ini, satu periode tidak menutupi periode lain hanya karena jumlah soalnya lebih banyak atau kategorinya berbeda.</li>
+                    <li><strong>Indeks Gabungan Respons</strong> dipertahankan sebagai pembanding. Metode ini menghitung semua respons pada filter sebagai satu kelompok, sehingga paling tepat dipakai bila instrumennya konsisten antarperiode.</li>
+                    <li><strong>Rincian kategori.</strong> Bandingkan kategori di dalam periode yang sama. Jika nama atau makna kategori berubah antarperiode, jangan menyimpulkan kenaikan/penurunan kategori secara langsung; gunakan tren skor periode atau selaraskan kode kategori terlebih dahulu.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -457,6 +529,8 @@
 <script>
     const chartData = @json($chartData);
     const chartLabels = @json($chartLabels);
+    const periodTrendLabels = @json($periodTrendLabels);
+    const periodTrendData = @json($periodTrendData);
     const respondenProdiData = @json($respondenProdiData);
     const respondenProdiLabels = @json($respondenProdiLabels);
     const prodiDetails = @json($prodiDetails);
@@ -634,6 +708,34 @@
         tooltip: { y: { title: { formatter: () => 'Skor:' } } }
     });
 
+    const periodTrendOptions = () => ({
+        series: [{ name: 'Skor akhir', data: periodTrendData }],
+        chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: 'inherit' },
+        stroke: { width: 3, curve: 'smooth' },
+        markers: { size: 5, strokeWidth: 3, hover: { size: 7 } },
+        colors: ['#2563eb'],
+        dataLabels: {
+            enabled: true,
+            offsetY: -8,
+            formatter: value => Number(value).toFixed(2),
+            style: { colors: ['#334155'], fontSize: '10px', fontWeight: 700 }
+        },
+        xaxis: {
+            categories: periodTrendLabels,
+            labels: { style: { colors: '#64748b', fontSize: '11px' } },
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+        },
+        yaxis: {
+            min: 0,
+            max: 4,
+            tickAmount: 4,
+            labels: { formatter: value => Number(value).toFixed(0), style: { colors: '#64748b', fontSize: '11px' } }
+        },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        tooltip: { y: { formatter: value => `${Number(value).toFixed(2)} / 4.00` } }
+    });
+
     const kategoriDetailOptions = (detail, expanded = false) => {
         const keys = ['sb', 'b', 'k', 'sk'];
 
@@ -690,6 +792,7 @@
     let prodiFullChart = null;
     let kinerjaFullChart = null;
     let kepuasanStackChart = null;
+    let periodTrendChart = null;
     const compactProdi = sliceData(respondenProdiLabels, respondenProdiData);
     const compactKinerja = sliceData(chartLabels, chartData);
 
@@ -824,6 +927,12 @@
 
     renderProdiSummary();
     renderKinerjaSummary();
+
+    if (periodTrendData.length) {
+        periodTrendChart = renderChart(periodTrendChart, '#chart-period-trend', periodTrendOptions());
+    } else {
+        emptyChart('#chart-period-trend', 'Belum ada periode yang dapat dibandingkan.');
+    }
 
     document.getElementById('prodiChartModal').addEventListener('shown.bs.modal', () => {
         if (!prodiFullChart) renderProdiFullSummary();

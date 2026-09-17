@@ -60,7 +60,7 @@ class LulusanService
             $query->where('status', $statusValue);
         }
 
-        return $query->latest()->paginate(10)->withQueryString();
+        return $query->latest('created_at')->paginate(10)->withQueryString();
     }
 
     private function normalizeFakultas(string $fakultas): string

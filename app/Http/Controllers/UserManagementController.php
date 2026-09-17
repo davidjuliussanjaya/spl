@@ -25,7 +25,7 @@ class UserManagementController extends Controller
                 });
             })
             ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->status === 'active'))
-            ->orderBy('name')
+            ->latest('created_at')
             ->paginate(10)
             ->withQueryString();
 

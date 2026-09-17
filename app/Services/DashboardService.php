@@ -54,31 +54,7 @@ class DashboardService
         $penggunaBySurvey = Survey::query()
             ->whereIn('id', $arsipList->pluck('survey_id')->filter()->unique())
             ->pluck('pengguna_lulusan_id', 'id');
-        $totalResponden = $arsipList
-            ->map(function ($arsip) use ($penggunaBySurvey) {
-                // Arsip lama belum memiliki pengguna_lulusan_id, sehingga gunakan
-                // relasi survey yang masih tersedia. Data identitas penyelia menjadi
-                // fallback untuk arsip yang survey asalnya sudah dihapus.
-                $penggunaId = $arsip->pengguna_lulusan_id ?? $penggunaBySurvey->get($arsip->survey_id);
-
-                if ($penggunaId) {
-                    return 'pengguna:' . $penggunaId;
-                }
-
-                $email = strtolower(trim((string) $arsip->penyelia_email));
-                if ($email !== '') {
-                    return 'email:' . $email;
-                }
-
-                $kontak = preg_replace('/\D+/', '', (string) $arsip->penyelia_kontak);
-                if ($kontak !== '') {
-                    return 'kontak:' . $kontak;
-                }
-
-                return 'arsip:' . $arsip->id;
-            })
-            ->unique()
-            ->count();
+        $totalResponden = $this->countUniqueRespondents($arsipList, $penggunaBySurvey);
         $totalLulusan = $this->getTotalLulusanDalamCakupan($periode, $fakultas, $programStudi);
 
         $ratingByKategori = [];
@@ -104,6 +80,94 @@ class DashboardService
             $totalLulusan,
         );
         $rataKeseluruhan = $skorKepuasan['skor_akhir'];
+
+        // Instrumen, kategori, dan label jawaban dapat berubah antarperiode. Karena
+        // itu, hitung indeks setiap periode lebih dahulu; indeks globalnya kemudian
+        // merupakan rata-rata skor akhir periode dengan bobot jumlah lulusan (NJ).
+        $periodSatisfactionSummaries = $arsipList
+            ->filter(fn ($arsip) => filled($arsip->tahun_instrumen))
+            ->groupBy(fn ($arsip) => (string) $arsip->tahun_instrumen)
+            ->map(function ($periodArsip, $period) use ($fakultas, $programStudi, $penggunaBySurvey) {
+                $ratings = [];
+                $ratingsByCategory = [];
+
+                foreach ($periodArsip as $arsip) {
+                    foreach ($arsip->jawaban_json ?? [] as $item) {
+                        if (($item['jenis'] ?? '') !== 'rating' || !isset($item['nilai']) || $item['nilai'] === null) {
+                            continue;
+                        }
+
+                        $nilai = (int) $item['nilai'];
+                        $kategori = $item['kategori'] ?? 'Lainnya';
+                        $ratings[] = $nilai;
+                        $ratingsByCategory[$kategori][] = $nilai;
+                    }
+                }
+
+                $totalRespondenPeriode = $this->countUniqueRespondents($periodArsip, $penggunaBySurvey);
+                $totalLulusanPeriode = $this->getTotalLulusanDalamCakupan([$period], $fakultas, $programStudi);
+                $skorPeriode = $this->satisfactionScoreService->calculate(
+                    $ratings,
+                    $totalRespondenPeriode,
+                    $totalLulusanPeriode,
+                );
+
+                $kategori = collect($ratingsByCategory)
+                    ->map(function ($nilai, $namaKategori) use ($totalRespondenPeriode, $totalLulusanPeriode) {
+                        $skorKategori = $this->satisfactionScoreService->calculate(
+                            $nilai,
+                            $totalRespondenPeriode,
+                            $totalLulusanPeriode,
+                        );
+
+                        return [
+                            'kategori' => $namaKategori,
+                            'total_respon' => count($nilai),
+                            'skor_murni' => round($skorKategori['skor_murni'], 2),
+                            'skor_akhir' => round($skorKategori['skor_akhir'], 2),
+                        ];
+                    })
+                    ->sortBy('kategori')
+                    ->values()
+                    ->all();
+
+                return [
+                    'periode' => $period,
+                    'total_survey' => $periodArsip->count(),
+                    'total_responden' => $totalRespondenPeriode,
+                    'total_lulusan' => $totalLulusanPeriode,
+                    'total_rating' => count($ratings),
+                    'response_rate_pct' => round($skorPeriode['response_rate_pct'], 1),
+                    'faktor_pembobot' => round($skorPeriode['faktor_pembobot'], 2),
+                    'skor_murni' => round($skorPeriode['skor_murni'], 2),
+                    'skor_akhir' => round($skorPeriode['skor_akhir'], 2),
+                    'rumus' => $skorPeriode['rumus'],
+                    'kategori' => $kategori,
+                ];
+            })
+            ->sortByDesc(fn ($item) => (int) $item['periode'])
+            ->values();
+
+        $periodsWithPopulation = $periodSatisfactionSummaries
+            ->filter(fn ($item) => $item['total_lulusan'] > 0);
+        $totalBobotPeriode = $periodsWithPopulation->sum('total_lulusan');
+        $globalPeriodScore = [
+            'skor_akhir' => $totalBobotPeriode > 0
+                ? round($periodsWithPopulation->sum(fn ($item) => $item['skor_akhir'] * $item['total_lulusan']) / $totalBobotPeriode, 2)
+                : 0,
+            'skor_murni' => $totalBobotPeriode > 0
+                ? round($periodsWithPopulation->sum(fn ($item) => $item['skor_murni'] * $item['total_lulusan']) / $totalBobotPeriode, 2)
+                : 0,
+            'total_lulusan' => $totalBobotPeriode,
+            'total_responden' => $periodsWithPopulation->sum('total_responden'),
+            'total_periode' => $periodSatisfactionSummaries->count(),
+        ];
+        $globalPeriodScore['response_rate_pct'] = $globalPeriodScore['total_lulusan'] > 0
+            ? round(($globalPeriodScore['total_responden'] / $globalPeriodScore['total_lulusan']) * 100, 1)
+            : 0;
+        $periodTrend = $periodSatisfactionSummaries->sortBy(fn ($item) => (int) $item['periode'])->values();
+        $periodTrendLabels = $periodTrend->pluck('periode')->all();
+        $periodTrendData = $periodTrend->pluck('skor_akhir')->all();
 
         $kategoriStats = collect($ratingByKategori)
             ->map(function ($nilai, $kategori) use ($totalResponden, $totalLulusan) {
@@ -269,11 +333,44 @@ class DashboardService
             'kepuasanRingkasan',
             'totalResponKepuasan',
             'skorKepuasan',
+            'periodSatisfactionSummaries',
+            'globalPeriodScore',
+            'periodTrendLabels',
+            'periodTrendData',
             'kategoriDetails',
             'komentarTerbaru',
             'filterOptions',
             'filters',
         );
+    }
+
+    private function countUniqueRespondents($arsipList, $penggunaBySurvey): int
+    {
+        return $arsipList
+            ->map(function ($arsip) use ($penggunaBySurvey) {
+                // Arsip lama belum memiliki pengguna_lulusan_id, sehingga gunakan
+                // relasi survey yang masih tersedia. Data identitas penyelia menjadi
+                // fallback untuk arsip yang survey asalnya sudah dihapus.
+                $penggunaId = $arsip->pengguna_lulusan_id ?? $penggunaBySurvey->get($arsip->survey_id);
+
+                if ($penggunaId) {
+                    return 'pengguna:' . $penggunaId;
+                }
+
+                $email = strtolower(trim((string) $arsip->penyelia_email));
+                if ($email !== '') {
+                    return 'email:' . $email;
+                }
+
+                $kontak = preg_replace('/\D+/', '', (string) $arsip->penyelia_kontak);
+                if ($kontak !== '') {
+                    return 'kontak:' . $kontak;
+                }
+
+                return 'arsip:' . $arsip->id;
+            })
+            ->unique()
+            ->count();
     }
 
     private function getTotalLulusanDalamCakupan(array $periode, ?string $fakultas, array $programStudi): int
