@@ -10,6 +10,7 @@ class SurveyArsip extends Model
 
     protected $fillable = [
         'survey_id',
+        'pengguna_lulusan_id',
         'access_code',
         'judul',
         'submitted_at',

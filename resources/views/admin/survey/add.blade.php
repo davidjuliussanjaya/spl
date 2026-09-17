@@ -175,49 +175,11 @@
                     </div>
 
                     <div class="card-body p-4">
-                        <div class="table-responsive">
-                            @php
-                                $badgeFakultas = ['Umum'=>'secondary','FTI'=>'primary','FDIK'=>'warning','FEB'=>'success'];
-                            @endphp
-                            <table class="table table-hover border">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th width="50" class="text-center">
-                                            <input type="checkbox" id="checkAll" class="form-check-input">
-                                        </th>
-                                        <th>Pertanyaan</th>
-                                        <th width="110">Tipe Soal</th>
-                                        <th width="100">Peruntukan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($daftarSoal as $s)
-                                        <tr>
-                                            <td class="text-center">
-                                                <input type="checkbox" name="soal_pilihan[]" value="{{ $s->id }}"
-                                                    class="form-check-input soal-checkbox">
-                                            </td>
-                                            <td>{{ $s->soal }}</td>
-                                            <td>
-                                                @if($s->jenis_soal === 'rating')
-                                                    <span class="badge bg-success">Rating</span>
-                                                @elseif($s->jenis_soal === 'multiple_choice')
-                                                    <span class="badge bg-primary">Multiple Choice</span>
-                                                @else
-                                                    <span class="badge bg-info">Essay</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @php $pf = $s->peruntukan_fakultas ?? 'Umum'; @endphp
-                                                <span class="badge bg-{{ $badgeFakultas[$pf] ?? 'secondary' }}">
-                                                    {{ $pf }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        @error('soal_pilihan')
+                            <div class="alert alert-danger spl-alert">{{ $message }}</div>
+                        @enderror
+
+                        <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" />
 
                         <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm rounded-pill">
@@ -305,12 +267,7 @@
                 width: '100%'
             });
 
-            // 2. Logic Check All Pertanyaan
-            $('#checkAll').on('change', function () {
-                $('.soal-checkbox').prop('checked', this.checked);
-            });
-
-            // 3. Auto-fill Data via AJAX saat Perusahaan dipilih
+            // 2. Auto-fill Data via AJAX saat Perusahaan dipilih
             $('#select_perusahaan').on('change', function () {
                 let id = $(this).val();
 

@@ -4,18 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class jawaban extends Model
+class Jawaban extends Model
 {
-    protected $table = 'jawaban'; 
+    protected $table = 'jawaban';
 
     protected $fillable = [
         'soal_id',
         'jawaban',
         'nilai',
-        'urutan'
+        'urutan',
     ];
 
-    // Relasi ke Soal
     public function soal()
     {
         return $this->belongsTo(Soal::class);

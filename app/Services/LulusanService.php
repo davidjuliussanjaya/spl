@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\lulusan;
+use App\Models\Lulusan;
 use Illuminate\Support\Facades\DB;
 
 class LulusanService
@@ -10,7 +10,7 @@ class LulusanService
     /**
      * Menyimpan data lulusan baru.
      */
-    public function storeLulusan(array $data): lulusan
+    public function storeLulusan(array $data): Lulusan
     {
         return DB::transaction(function () use ($data) {
             $data['fakultas'] = $this->normalizeFakultas($data['fakultas']);
@@ -27,7 +27,7 @@ class LulusanService
      */
     public function getFilteredLulusan(\Illuminate\Http\Request $request)
     {
-        $query = lulusan::query();
+        $query = Lulusan::query();
 
         // Filter Nama
         if ($request->has('nama') && $request->nama != '') {
@@ -60,7 +60,7 @@ class LulusanService
             $query->where('status', $statusValue);
         }
 
-        return $query->latest()->get();
+        return $query->latest('created_at')->paginate(10)->withQueryString();
     }
 
     private function normalizeFakultas(string $fakultas): string

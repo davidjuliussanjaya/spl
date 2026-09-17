@@ -16,7 +16,7 @@
     @if(session('success'))<div class="alert alert-success spl-alert" role="status"><i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}</div>@endif
 
     <section class="card">
-        <div class="card-header spl-toolbar"><div><h4 class="spl-toolbar-title">Daftar pertanyaan <span class="spl-filter-count">{{ $soal->count() }} hasil</span></h4><p class="spl-toolbar-subtitle">Pastikan status dan aspek evaluasi setiap pertanyaan sudah tepat.</p></div></div>
+        <div class="card-header spl-toolbar"><div><h4 class="spl-toolbar-title">Daftar pertanyaan <span class="spl-filter-count">{{ $soal->total() }} hasil</span></h4><p class="spl-toolbar-subtitle">Pastikan status dan aspek evaluasi setiap pertanyaan sudah tepat.</p></div></div>
         <form action="{{ route('pertanyaan') }}" method="GET" class="spl-filter-panel">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-6"><label for="cari" class="form-label">Cari pertanyaan</label><div class="input-group"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span><input id="cari" type="search" name="cari" class="form-control border-start-0" value="{{ request('cari') }}" placeholder="Masukkan kata dalam pertanyaan"></div></div>
@@ -40,6 +40,12 @@
                 <tr><td colspan="7" class="spl-empty"><i class="bi bi-ui-checks-grid"></i>Belum ada pertanyaan yang sesuai dengan filter.</td></tr>
             @endforelse
         </tbody></table></div>
+        @if($soal->hasPages())
+            <div class="spl-pagination">
+                <span>Menampilkan {{ $soal->firstItem() }}–{{ $soal->lastItem() }} dari {{ $soal->total() }} data</span>
+                {{ $soal->links() }}
+            </div>
+        @endif
     </section>
 </div>
 @endsection

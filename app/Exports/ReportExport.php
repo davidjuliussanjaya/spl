@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
 use App\Services\SatisfactionScoreService;
+use App\Support\DatabaseYearExpression;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -58,10 +59,25 @@ class ReportExport
     public function __construct(array $filters)
     {
         $this->filters = array_replace([
-            'tahun' => null,
-            'fakultas' => null,
-            'program_studi' => null,
+            'tahun_dari' => null,
+            'tahun_sampai' => null,
+            'program_studi' => [],
         ], $filters);
+        $this->filters['program_studi'] = array_values(array_filter(
+            (array) $this->filters['program_studi'],
+            fn ($programStudi) => filled($programStudi),
+        ));
+
+        if (
+            filled($this->filters['tahun_dari'])
+            && filled($this->filters['tahun_sampai'])
+            && (int) $this->filters['tahun_dari'] > (int) $this->filters['tahun_sampai']
+        ) {
+            [$this->filters['tahun_dari'], $this->filters['tahun_sampai']] = [
+                $this->filters['tahun_sampai'],
+                $this->filters['tahun_dari'],
+            ];
+        }
         $this->satisfactionScoreService = new SatisfactionScoreService();
     }
 
@@ -113,8 +129,9 @@ class ReportExport
         $row++;
 
         $filterText = "Tahun Lulus: {$tahun}"
-            . ($this->filters['fakultas']      ? '   |   Fakultas: ' . $this->filters['fakultas'] : '')
-            . ($this->filters['program_studi'] ? '   |   Prodi: '    . $this->filters['program_studi'] : '');
+            . (!empty($this->filters['program_studi'])
+                ? '   |   Prodi: ' . implode(', ', $this->filters['program_studi'])
+                : '');
         $sheet->mergeCells("A{$row}:R{$row}");
         $sheet->setCellValue("A{$row}", $filterText);
         $sheet->getStyle("A{$row}")->applyFromArray([
@@ -125,9 +142,7 @@ class ReportExport
         $row++;
         $row++; // baris kosong
 
-        $fakultasList = $this->filters['fakultas']
-            ? [$this->filters['fakultas']]
-            : ['FTI', 'FDIK', 'FEB'];
+        $fakultasList = ['FTI', 'FDIK', 'FEB'];
 
         $summaryDataPerFakultas = [];
 
@@ -540,17 +555,17 @@ class ReportExport
         $q = DB::table('lulusan')
             ->join('survey', 'lulusan.id', '=', 'survey.lulusan_id')
             ->where('survey.is_completed', true)
-            ->selectRaw('EXTRACT(YEAR FROM lulusan.tahun_lulus) as tahun')
+            ->selectRaw(DatabaseYearExpression::fromDateColumn('lulusan.tahun_lulus') . ' as tahun')
             ->distinct();
 
-        if ($this->filters['tahun']) {
-            $q->whereRaw('EXTRACT(YEAR FROM lulusan.tahun_lulus) = ?', [$this->filters['tahun']]);
+        if (filled($this->filters['tahun_dari'])) {
+            $q->whereYear('lulusan.tahun_lulus', '>=', $this->filters['tahun_dari']);
         }
-        if ($this->filters['fakultas']) {
-            $q->where('lulusan.fakultas', $this->filters['fakultas']);
+        if (filled($this->filters['tahun_sampai'])) {
+            $q->whereYear('lulusan.tahun_lulus', '<=', $this->filters['tahun_sampai']);
         }
-        if ($this->filters['program_studi']) {
-            $q->where('lulusan.program_studi', $this->filters['program_studi']);
+        if (!empty($this->filters['program_studi'])) {
+            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
         }
 
         return $q->orderBy('tahun')->pluck('tahun')->map(fn($v) => (int) $v)->toArray();
@@ -577,7 +592,7 @@ class ReportExport
             ->join('pengguna_lulusan', 'survey.pengguna_lulusan_id', '=', 'pengguna_lulusan.id')
             ->where('survey.is_completed', true)
             ->where('lulusan.fakultas', $fakultas)
-            ->whereRaw('EXTRACT(YEAR FROM lulusan.tahun_lulus) = ?', [$tahun])
+            ->whereYear('lulusan.tahun_lulus', $tahun)
             ->select(
                 'survey.id as survey_id',
                 'lulusan.nama',
@@ -592,8 +607,8 @@ class ReportExport
             ->orderBy('lulusan.program_studi')
             ->orderBy('lulusan.nama');
 
-        if ($this->filters['program_studi']) {
-            $q->where('lulusan.program_studi', $this->filters['program_studi']);
+        if (!empty($this->filters['program_studi'])) {
+            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
         }
 
         return $q->get();
@@ -604,7 +619,7 @@ class ReportExport
         return DB::table('lulusan')
             ->where('fakultas', $fakultas)
             ->where('program_studi', $programStudi)
-            ->whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahun])
+            ->whereYear('tahun_lulus', $tahun)
             ->count();
     }
 
@@ -633,10 +648,13 @@ class ReportExport
     {
         $spreadsheet = $this->build();
 
-        $tahun    = $this->filters['tahun']          ?? 'Semua';
-        $fak      = $this->filters['fakultas']        ?? 'Semua';
-        $prodi    = $this->filters['program_studi']   ?? '';
-        $parts    = array_filter(["Tahun{$tahun}", "Fak{$fak}", $prodi ? 'Prodi_' . str_replace(' ', '_', $prodi) : '']);
+        $tahunDari = $this->filters['tahun_dari'] ?: 'Semua';
+        $tahunSampai = $this->filters['tahun_sampai'] ?: 'Semua';
+        $jumlahProdi = count($this->filters['program_studi']);
+        $parts = array_filter([
+            "Tahun{$tahunDari}-{$tahunSampai}",
+            $jumlahProdi ? "{$jumlahProdi}_Prodi" : '',
+        ]);
         $filename = 'Laporan_Tracer_Study_' . implode('_', $parts) . '.xlsx';
 
         $writer = new Xlsx($spreadsheet);

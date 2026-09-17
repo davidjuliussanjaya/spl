@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Exports\ReportExport;
 use App\Models\SurveyArsip;
+use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
 class ReportController extends Controller
 {
@@ -13,16 +15,10 @@ class ReportController extends Controller
     {
         $tahunList = DB::table('lulusan')
             ->whereNotNull('tahun_lulus')
-            ->selectRaw('EXTRACT(YEAR FROM tahun_lulus) as tahun')
+            ->selectRaw(DatabaseYearExpression::fromDateColumn('tahun_lulus') . ' as tahun')
             ->distinct()
             ->orderByDesc('tahun')
             ->pluck('tahun');
-
-        $fakultasList = DB::table('lulusan')
-            ->whereNotNull('fakultas')
-            ->distinct()
-            ->orderBy('fakultas')
-            ->pluck('fakultas');
 
         $prodiList = DB::table('lulusan')
             ->whereNotNull('program_studi')
@@ -32,23 +28,37 @@ class ReportController extends Controller
 
         $totalSurveySelesai = DB::table('survey')->where('is_completed', true)->count();
 
-        $filters = $request->only(['tahun', 'fakultas', 'program_studi']);
+        $filters = [
+            'tahun_dari' => $request->input('tahun_dari'),
+            'tahun_sampai' => $request->input('tahun_sampai'),
+            'program_studi' => collect(Arr::wrap($request->input('program_studi')))
+                ->filter(fn ($programStudi) => filled($programStudi))
+                ->values()
+                ->all(),
+        ];
 
         return view('admin.report.index', compact(
-            'tahunList', 'fakultasList', 'prodiList',
+            'tahunList', 'prodiList',
             'totalSurveySelesai', 'filters'
         ));
     }
 
     public function download(Request $request)
     {
-        $filters = $request->only(['tahun', 'fakultas', 'program_studi']);
+        $filters = [
+            'tahun_dari' => $request->input('tahun_dari'),
+            'tahun_sampai' => $request->input('tahun_sampai'),
+            'program_studi' => collect(Arr::wrap($request->input('program_studi')))
+                ->filter(fn ($programStudi) => filled($programStudi))
+                ->values()
+                ->all(),
+        ];
         return (new ReportExport($filters))->download();
     }
 
     public function arsip(Request $request)
     {
-        $query = SurveyArsip::query()->orderByDesc('submitted_at');
+        $query = SurveyArsip::query()->latest('created_at');
 
         if ($request->filled('tahun')) {
             $query->where('tahun_instrumen', $request->tahun);
@@ -69,7 +79,7 @@ class ReportController extends Controller
             });
         }
 
-        $arsip = $query->paginate(20)->withQueryString();
+        $arsip = $query->paginate(10)->withQueryString();
 
         $tahunList   = SurveyArsip::whereNotNull('tahun_instrumen')->distinct()->orderByDesc('tahun_instrumen')->pluck('tahun_instrumen');
         $fakultasList = SurveyArsip::whereNotNull('lulusan_fakultas')->distinct()->orderBy('lulusan_fakultas')->pluck('lulusan_fakultas');

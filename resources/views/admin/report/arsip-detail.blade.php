@@ -1,11 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Arsip Survey — ' . ($arsip->lulusan_nama ?? $arsip->access_code))
+@php
+    $detailTitle = $detailTitle ?? 'Detail Arsip Survey';
+    $backUrl = $backUrl ?? route('report.arsip');
+    $backLabel = $backLabel ?? 'Kembali ke Daftar Arsip';
+    $breadcrumbLabel = $breadcrumbLabel ?? 'Arsip Survey';
+@endphp
+
+@section('title', $detailTitle . ' — ' . ($arsip->lulusan_nama ?? $arsip->access_code))
 
 @push('styles')
 <style>
     @media print {
-        /* Sembunyikan semua elemen kecuali area cetak */
         body * { visibility: hidden !important; }
         #cetakArea, #cetakArea * { visibility: visible !important; }
         #cetakArea {
@@ -13,52 +19,73 @@
             inset: 0 !important;
             padding: 24px 32px !important;
             background: #fff !important;
+            border: 0 !important;
+            box-shadow: none !important;
         }
         .no-print { display: none !important; }
     }
 
-    .label-arsip {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #94a3b8;
-    }
-    .value-arsip {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-    .section-header {
-        background: linear-gradient(to right, #2563EB, #0F766E);
-        color: #fff;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        padding: 6px 14px;
-        border-radius: 6px;
-        margin-bottom: 12px;
-    }
-    .jawaban-row:nth-child(even) { background: #fafafa; }
-    .badge-jenis {
-        font-size: 0.65rem;
-        padding: 2px 7px;
-        border-radius: 20px;
-        font-weight: 600;
+    .spl-survey-detail { padding-bottom: 1rem; }
+    .spl-survey-detail-header { align-items: flex-start; border-bottom: 1px solid var(--spl-border); display: flex; gap: 1rem; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 1.25rem; }
+    .spl-survey-detail-header > .row { width: 100%; }
+    .spl-survey-detail-title { color: var(--spl-text); font-size: 1.45rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; margin: 0; }
+    .spl-survey-detail-subtitle { color: var(--spl-muted); font-size: .83rem; margin: .35rem 0 0; }
+    .spl-survey-detail .breadcrumb { justify-content: flex-end; margin: .15rem 0 0; }
+    .spl-survey-detail .breadcrumb-item, .spl-survey-detail .breadcrumb-item a { font-size: .78rem; }
+    .spl-survey-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+    .spl-archive-document { background: #fff; border: 1px solid var(--spl-border); border-radius: var(--spl-radius); box-shadow: var(--spl-shadow); padding: 1.5rem; }
+    .spl-archive-document-head { align-items: center; border-bottom: 2px solid var(--spl-brand); display: flex; flex-direction: column; gap: .35rem; padding: .25rem 0 1.25rem; text-align: center; }
+    .spl-archive-document-title { color: var(--spl-brand); font-size: 1rem; font-weight: 800; letter-spacing: -.01em; margin: 0; }
+    .spl-archive-document-subtitle { color: var(--spl-muted); font-size: .78rem; margin: 0; }
+    .spl-archive-document-head .text-muted { color: var(--spl-muted) !important; font-size: .78rem; margin: 0; }
+    .spl-archive-document-badges { display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; margin-top: .45rem; }
+    .spl-archive-code-badge { background: var(--spl-brand) !important; color: #fff !important; }
+    .spl-archive-instrument-badge { background: #fff5d6 !important; color: #92660a !important; }
+    .spl-archive-info-grid { margin-bottom: 1.5rem; margin-top: 1.5rem; }
+    .spl-archive-info-card { background: #fff; border: 1px solid var(--spl-border); border-radius: 10px; height: 100%; padding: 1rem; }
+    .spl-archive-section-title { align-items: center; border-bottom: 1px solid var(--spl-border); color: var(--spl-text); display: flex; font-size: .78rem; font-weight: 800; gap: .45rem; letter-spacing: .035em; margin-bottom: 1rem; padding-bottom: .7rem; text-transform: uppercase; }
+    .spl-archive-section-title i { color: var(--spl-brand); font-size: .92rem; }
+    .spl-archive-info-grid .section-header { align-items: center; border-bottom: 1px solid var(--spl-border); color: var(--spl-text); display: flex; font-size: .78rem; font-weight: 800; gap: .45rem; letter-spacing: .035em; margin-bottom: 1rem; padding-bottom: .7rem; text-transform: uppercase; }
+    .spl-archive-info-grid .section-header i { color: var(--spl-brand); font-size: .92rem; }
+    .spl-archive-info-grid .ps-1 { display: flex; flex-direction: column; gap: .8rem; padding-left: 0 !important; }
+    .spl-archive-info-grid .mb-2 { margin-bottom: 0 !important; }
+    .spl-archive-fields { display: flex; flex-direction: column; gap: .8rem; }
+    .spl-archive-field { min-width: 0; }
+    .label-arsip { color: #94a3b8; font-size: .67rem; font-weight: 800; letter-spacing: .06em; line-height: 1.25; text-transform: uppercase; }
+    .value-arsip { color: #334155; font-size: .86rem; font-weight: 600; line-height: 1.45; margin-top: .18rem; overflow-wrap: anywhere; }
+    .spl-archive-answers { border: 1px solid var(--spl-border); border-radius: 10px; overflow: hidden; }
+    .spl-archive-answers .table { font-size: .82rem; margin: 0; }
+    .spl-archive-answers .table thead th { background: #f8fafc; color: #475569; font-size: .68rem; font-weight: 800; letter-spacing: .045em; padding: .75rem 1rem; text-transform: uppercase; }
+    .spl-archive-answers .table tbody td { border-color: #edf2f7; padding: .85rem 1rem; vertical-align: top; }
+    .spl-archive-category-row td { background: var(--spl-brand-soft); color: var(--spl-brand); font-size: .7rem; font-weight: 800; letter-spacing: .055em; padding: .52rem 1rem !important; text-transform: uppercase; }
+    .jawaban-row:nth-child(even) { background: #fbfdff; }
+    .spl-answer-code { color: var(--spl-brand); font-weight: 800; }
+    .badge-jenis { border-radius: 999px; display: inline-block; font-size: .64rem; font-weight: 700; line-height: 1.2; margin-top: .3rem; padding: .2rem .45rem; }
+    .spl-answer-value { color: var(--spl-brand); font-weight: 800; }
+    .spl-archive-footer { border-top: 1px dashed #cbd5e1; color: var(--spl-muted); font-size: .72rem; margin-top: 1.5rem; padding-top: 1rem; text-align: center; }
+
+    @media (max-width: 767.98px) {
+        .spl-survey-detail-header { flex-direction: column; gap: .75rem; }
+        .spl-survey-detail .breadcrumb { justify-content: flex-start; }
+        .spl-survey-detail-title { font-size: 1.2rem; }
+        .spl-survey-actions .btn { flex: 1 1 auto; }
+        .spl-archive-document { padding: 1rem; }
+        .spl-archive-document-title { font-size: .9rem; }
+        .spl-archive-info-grid { margin-top: 1rem; }
+        .spl-archive-answers .table { min-width: 640px; }
     }
 </style>
 @endpush
 
 @section('content')
-<div class="page-heading">
+<div class="page-heading spl-survey-detail">
 
     {{-- Header navigasi (tidak ikut cetak) --}}
-    <div class="no-print page-title mb-4 pb-3 border-bottom">
+    <header class="no-print spl-survey-detail-header">
         <div class="row align-items-center">
             <div class="col-12 col-md-6">
-                <h3 class="fw-bold mb-1">Detail Arsip Survey</h3>
-                <p class="text-muted mb-0 small">
+                <h3 class="spl-survey-detail-title">{{ $detailTitle }}</h3>
+                <p class="spl-survey-detail-subtitle">
                     Rekaman permanen — tidak dapat diubah meski data master berubah.
                 </p>
             </div>
@@ -66,49 +93,50 @@
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('report.arsip') }}">Arsip Survey</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $backUrl }}">{{ $breadcrumbLabel }}</a></li>
                         <li class="breadcrumb-item active">Detail</li>
                     </ol>
                 </nav>
             </div>
         </div>
-    </div>
+    </header>
 
     {{-- Tombol aksi (tidak ikut cetak) --}}
-    <div class="no-print d-flex gap-2 mb-4">
-        <button onclick="window.print()" class="btn text-white fw-semibold px-4" style="background:#2563EB;">
+    <div class="no-print spl-survey-actions">
+        <button onclick="window.print()" class="btn btn-primary">
             <i class="bi bi-printer-fill me-2"></i>Cetak / Simpan PDF
         </button>
-        <a href="{{ route('report.arsip') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>Kembali ke Daftar
+        <a href="{{ $backUrl }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>{{ $backLabel }}
         </a>
     </div>
 
     {{-- ═══════════════════════════════════════════════════════════
          AREA CETAK
     ════════════════════════════════════════════════════════════ --}}
-    <div id="cetakArea">
+    <div id="cetakArea" class="spl-archive-document">
 
         {{-- Kop dokumen --}}
-        <div class="text-center mb-4 pb-3" style="border-bottom:2px solid #2563EB;">
-            <h5 class="fw-bold mb-0" style="color:#2563EB;">ARSIP SURVEY EVALUASI PENGGUNA LULUSAN</h5>
+        <div class="spl-archive-document-head">
+            <h5 class="spl-archive-document-title">ARSIP SURVEY EVALUASI PENGGUNA LULUSAN</h5>
             <p class="text-muted small mb-0">Universitas Dinamika — Tracer Study</p>
-            <div class="mt-2">
-                <span class="badge text-white me-2" style="background:#2563EB;">
+            <div class="spl-archive-document-badges">
+                <span class="badge spl-archive-code-badge">
                     Kode: {{ $arsip->access_code ?? '-' }}
                 </span>
                 @if($arsip->tahun_instrumen)
-                <span class="badge" style="background:#FFF5D6;color:#92660A;">
+                <span class="badge spl-archive-instrument-badge">
                     Instrumen {{ $arsip->tahun_instrumen }}
                 </span>
                 @endif
             </div>
         </div>
 
-        <div class="row g-4 mb-4">
+        <div class="row g-4 spl-archive-info-grid">
 
             {{-- Identitas Lulusan --}}
             <div class="col-12 col-md-4">
+                <section class="spl-archive-info-card">
                 <div class="section-header"><i class="bi bi-person-fill me-1"></i>Identitas Lulusan</div>
                 <div class="ps-1">
                     <div class="mb-2">
@@ -132,10 +160,12 @@
                         <div class="value-arsip">{{ $arsip->lulusan_tahun_lulus ?? '-' }}</div>
                     </div>
                 </div>
+                </section>
             </div>
 
             {{-- Identitas Perusahaan --}}
             <div class="col-12 col-md-4">
+                <section class="spl-archive-info-card">
                 <div class="section-header"><i class="bi bi-building me-1"></i>Identitas Perusahaan</div>
                 <div class="ps-1">
                     <div class="mb-2">
@@ -161,10 +191,12 @@
                         <div class="value-arsip">{{ $arsip->perusahaan_nomor_badan_hukum ?? '-' }}</div>
                     </div>
                 </div>
+                </section>
             </div>
 
             {{-- Identitas Penyelia --}}
             <div class="col-12 col-md-4">
+                <section class="spl-archive-info-card">
                 <div class="section-header"><i class="bi bi-person-badge-fill me-1"></i>Penyelia Pengisi</div>
                 <div class="ps-1">
                     <div class="mb-2">
@@ -194,20 +226,21 @@
                         </div>
                     </div>
                 </div>
+                </section>
             </div>
         </div>
 
         {{-- Tabel Jawaban --}}
-        <div class="section-header"><i class="bi bi-list-check me-1"></i>Jawaban Survey</div>
+        <div class="spl-archive-section-title"><i class="bi bi-list-check"></i>Jawaban Survey</div>
 
         @php $jawabans = $arsip->jawaban_json ?? []; @endphp
 
         @if(empty($jawabans))
             <p class="text-muted text-center py-3">Tidak ada data jawaban.</p>
         @else
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle mb-0" style="font-size:0.82rem;">
-                <thead style="background:#f8f0f2;">
+        <div class="table-responsive spl-archive-answers">
+            <table class="table table-bordered align-middle mb-0">
+                <thead>
                     <tr>
                         <th class="text-center py-2" style="width:60px;color:#2563EB;">Kode</th>
                         <th class="py-2" style="color:#2563EB;">Aspek / Pertanyaan</th>
@@ -219,15 +252,15 @@
                     @php $prevKategori = null; @endphp
                     @foreach($jawabans as $j)
                         @if(($j['kategori'] ?? null) !== $prevKategori)
-                            <tr style="background:#EFF6FF;">
-                                <td colspan="4" class="py-1 px-3" style="font-size:0.72rem;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:0.5px;">
+                            <tr class="spl-archive-category-row">
+                                <td colspan="4">
                                     {{ $j['kategori'] ?? 'Tidak Berkategori' }}
                                 </td>
                             </tr>
                             @php $prevKategori = $j['kategori'] ?? null; @endphp
                         @endif
                         <tr class="jawaban-row">
-                            <td class="text-center fw-bold" style="color:#2563EB;">
+                            <td class="text-center spl-answer-code">
                                 {{ $j['kode'] ?? '-' }}
                                 <div>
                                     @php
@@ -256,7 +289,7 @@
                                     {{ $j['jawaban'] ?? '<em class="text-muted">Tidak dijawab</em>' }}
                                 @endif
                             </td>
-                            <td class="text-center fw-bold" style="color:#2563EB;">
+                            <td class="text-center spl-answer-value">
                                 @if(isset($j['nilai']) && $j['nilai'] !== null)
                                     {{ $j['nilai'] }}
                                 @else
@@ -271,7 +304,7 @@
         @endif
 
         {{-- Footer dokumen --}}
-        <div class="mt-4 pt-3 text-muted text-center no-print" style="border-top:1px dashed #dee2e6;font-size:0.72rem;">
+        <div class="no-print spl-archive-footer">
             Arsip ID #{{ $arsip->id }} &nbsp;·&nbsp; Disimpan: {{ $arsip->created_at?->format('d M Y H:i') }}
             &nbsp;·&nbsp; Data ini bersifat permanen dan tidak dapat diubah.
         </div>

@@ -77,13 +77,6 @@
                             <span>Buat Laporan</span>
                         </a>
                     </li>
-
-                    <li class="sidebar-item {{ request()->routeIs('report.arsip') || request()->routeIs('report.arsip.detail') ? 'active' : '' }}">
-                        <a href="{{ route('report.arsip') }}" class='sidebar-link'>
-                            <i class="bi bi-archive-fill"></i>
-                            <span>Arsip Survey</span>
-                        </a>
-                    </li>
                 @endif              
             </ul>
         </div>

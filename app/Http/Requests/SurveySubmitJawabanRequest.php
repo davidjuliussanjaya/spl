@@ -27,6 +27,7 @@ class SurveySubmitJawabanRequest extends FormRequest
             'cabang_negara'     => 'nullable|integer|min:0',
             'jumlah_lulusan_bekerja' => 'nullable|integer|min:0',
             'jawaban'                => 'nullable|array',
+            'jawaban.*'              => 'nullable',
             'mc'                     => 'nullable|array',
             'mc.*'                   => 'nullable|array',
             'mc.*.*'                 => 'nullable|integer',

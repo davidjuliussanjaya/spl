@@ -6,14 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class penggunalulusan extends Model
+class PenggunaLulusan extends Model
 {
     use HasFactory;
 
-    // Nama tabel secara eksplisit (opsional jika nama tabel sudah sesuai standar plural)
     protected $table = 'pengguna_lulusan';
 
-    // Kolom yang boleh diisi (mass assignable)
     protected $fillable = [
         'nama_perusahaan',
         'nama_penyelia',
@@ -30,12 +28,8 @@ class penggunalulusan extends Model
         'cabang_negara',
     ];
 
-    /**
-     * Relasi ke model Lulusan.
-     * Satu perusahaan bisa memiliki banyak lulusan yang bekerja di sana.
-     */
     public function lulusans(): HasMany
     {
-        return $this->hasMany(lulusan::class, 'pengguna_lulusan_id');
+        return $this->hasMany(Lulusan::class, 'pengguna_lulusan_id');
     }
 }

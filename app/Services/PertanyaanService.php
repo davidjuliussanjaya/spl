@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\jawaban;
-use App\Models\soal;
+use App\Models\Jawaban;
+use App\Models\Soal;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PertanyaanService
 {
@@ -19,7 +20,8 @@ class PertanyaanService
             'soal'                => $data['question'],
             'kategori_id'         => $data['kategori_id'], // Simpan data kategori ke database
             'peruntukan_fakultas' => $data['peruntukan_fakultas'],
-            'kode'                => $data['kode'] ?? null,
+            // Kode bersifat opsional di form, tetapi kolom database wajib unik.
+            'kode'                => $this->resolveKode($data['kode'] ?? null),
             'jenis_soal'          => $jenis,
             'is_required'         => isset($data['required']),
             'is_active'           => true
@@ -47,7 +49,7 @@ class PertanyaanService
                 'soal'                => $data['question'],
                 'kategori_id'         => $data['kategori_id'], // Simpan kategori yang diupdate
                 'peruntukan_fakultas' => $data['peruntukan_fakultas'],
-                'kode'                => $data['kode'],
+                'kode'                => $this->resolveKode($data['kode'] ?? null, $soal->kode),
                 'jenis_soal'          => $jenis,
                 'is_required'         => isset($data['required']),
             ]);
@@ -68,7 +70,7 @@ class PertanyaanService
      */
     public function toggleStatus($id)
     {
-        $soal = soal::findOrFail($id);
+        $soal = Soal::findOrFail($id);
         $soal->is_active = !$soal->is_active;
         $soal->save();
 
@@ -89,12 +91,31 @@ class PertanyaanService
     private function saveJawaban($soalId, $jawabanList, $nilaiList)
     {
         foreach ($jawabanList as $index => $teks) {
-            jawaban::create([
+            Jawaban::create([
                 'soal_id' => $soalId,
                 'jawaban' => $teks,
                 'nilai'   => $nilaiList[$index] ?? 0,
                 'urutan'  => $index + 1
             ]);
         }
+    }
+
+    private function resolveKode(?string $kode, ?string $fallback = null): string
+    {
+        $kode = trim((string) $kode);
+
+        if ($kode !== '') {
+            return $kode;
+        }
+
+        if ($fallback !== null) {
+            return $fallback;
+        }
+
+        do {
+            $generatedKode = 'Q-' . Str::upper(Str::random(8));
+        } while (Soal::where('kode', $generatedKode)->exists());
+
+        return $generatedKode;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\penggunalulusan;
+use App\Models\PenggunaLulusan;
 use Illuminate\Database\Seeder;
 
 class PenggunaLulusanSeeder extends Seeder
@@ -133,7 +133,7 @@ class PenggunaLulusanSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            penggunalulusan::updateOrCreate(
+            PenggunaLulusan::updateOrCreate(
                 ['email_penyelia' => $item['email_penyelia']],
                 $item
             );

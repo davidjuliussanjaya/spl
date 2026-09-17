@@ -6,12 +6,14 @@ use App\Http\Requests\SurveyBulkRequest;
 use App\Http\Requests\SurveyStoreRequest;
 use App\Http\Requests\SurveySubmitJawabanRequest;
 use App\Http\Requests\SurveyUpdateRequest;
-use App\Models\lulusan;
-use App\Models\penggunalulusan;
+use App\Models\Lulusan;
+use App\Models\PenggunaLulusan;
 use App\Models\ResponJawaban;
-use App\Models\soal;
+use App\Models\Soal;
 use App\Models\Survey;
+use App\Models\SurveyArsip;
 use App\Services\SurveyService;
+use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -45,8 +47,9 @@ class SurveyController extends Controller
                     });
                 })
                 ->when($request->filled('status'), fn ($query) => $query->where('is_completed', $request->status === 'selesai'))
-                ->latest()
-                ->get();
+                ->latest('created_at')
+                ->paginate(10)
+                ->withQueryString();
         }
 
         return view('admin.survey.index', compact('surveys', 'tahunList', 'selectedTahun'));
@@ -62,7 +65,7 @@ class SurveyController extends Controller
     $perusahaan = \App\Models\PenggunaLulusan::all();
     
     // Ambil semua soal aktif untuk dipilih oleh Admin
-    $daftarSoal = \App\Models\Soal::with('jawaban')
+    $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori'])
         ->where('is_active', 1)
         ->get();
 
@@ -76,7 +79,8 @@ class SurveyController extends Controller
     {
         try {
             $this->surveyService->createSurvey($request->validated());
-            return redirect()->route('survey')->with('success', 'Sesi Survey berhasil dibuat dan data instansi tersinkronisasi.');
+            return redirect()->route('survey', ['tahun' => $request->tahun])
+                ->with('success', 'Sesi Survey berhasil dibuat dan data instansi tersinkronisasi.');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
@@ -133,9 +137,27 @@ public function edit($id)
 {
     $survey = Survey::with(['lulusan', 'penggunalulusan', 'soals.kategori', 'soals.jawaban'])->findOrFail($id);
 
+    // Survei yang selesai dibaca dari snapshot arsip, bukan relasi master.
+    if ($survey->is_completed) {
+        $arsip = SurveyArsip::where('survey_id', $survey->id)->first();
+
+        if (! $arsip) {
+            return redirect()->route('survey', ['tahun' => $survey->tahun])
+                ->with('error', 'Survei sudah selesai, tetapi arsip permanennya belum tersedia.');
+        }
+
+        return view('admin.report.arsip-detail', [
+            'arsip' => $arsip,
+            'detailTitle' => 'Detail Survei Selesai',
+            'backUrl' => route('survey', ['tahun' => $survey->tahun]),
+            'backLabel' => 'Kembali ke Daftar Survei',
+            'breadcrumbLabel' => 'Survei',
+        ]);
+    }
+
     $perusahaan = PenggunaLulusan::all();
-    $lulusan    = lulusan::all();
-    $daftarSoal = Soal::where('is_active', 1)->get();
+    $lulusan    = Lulusan::all();
+    $daftarSoal = Soal::with('kategori')->where('is_active', 1)->get();
 
     $responGrouped = $survey->is_completed
         ? ResponJawaban::with('jawaban')->where('survey_id', $id)->get()->groupBy('soal_id')
@@ -146,13 +168,13 @@ public function edit($id)
 
     public function bulkCreate()
     {
-        $tahunList = \App\Models\Lulusan::selectRaw('EXTRACT(YEAR FROM tahun_lulus) as tahun')
+        $tahunList = \App\Models\Lulusan::selectRaw(DatabaseYearExpression::fromDateColumn('tahun_lulus') . ' as tahun')
             ->whereNotNull('pengguna_lulusan_id')
             ->distinct()
             ->orderByDesc('tahun')
             ->pluck('tahun');
 
-        $daftarSoal = \App\Models\Soal::with('jawaban')
+        $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori'])
             ->where('is_active', 1)
             ->get();
 
@@ -164,7 +186,8 @@ public function edit($id)
         try {
             $surveys = $this->surveyService->createBulkSurveys($request->validated());
             $count = count($surveys);
-            return redirect()->route('survey')->with('success', "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.");
+            return redirect()->route('survey', ['tahun' => $request->tahun])
+                ->with('success', "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.");
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
@@ -173,7 +196,7 @@ public function edit($id)
     public function getLulusanByTahun(Request $request)
     {
         $tahun = $request->tahun;
-        $lulusan = \App\Models\Lulusan::whereRaw('EXTRACT(YEAR FROM tahun_lulus) = ?', [$tahun])
+        $lulusan = \App\Models\Lulusan::whereYear('tahun_lulus', $tahun)
             ->whereNotNull('pengguna_lulusan_id')
             ->with('pengguna')
             ->get(['id', 'nama', 'nim', 'program_studi', 'pengguna_lulusan_id']);
@@ -192,7 +215,7 @@ public function edit($id)
         try {
             $this->surveyService->updateSurvey($survey, $request->validated());
 
-            return redirect()->route('survey.index')->with('success', 'Data Survey berhasil diperbarui.');
+            return redirect()->route('survey')->with('success', 'Data Survey berhasil diperbarui.');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
@@ -201,6 +224,10 @@ public function edit($id)
     public function destroy($id)
     {
         $survey = Survey::findOrFail($id);
+
+        if ($survey->is_completed) {
+            return back()->with('error', 'Survei yang sudah selesai tersimpan sebagai arsip permanen dan tidak dapat dihapus.');
+        }
 
         try {
             DB::transaction(function () use ($survey) {
