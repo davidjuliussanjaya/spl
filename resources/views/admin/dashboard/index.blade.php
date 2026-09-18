@@ -466,23 +466,24 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="dashboardInfoModalLabel"><i class="bi bi-exclamation-circle me-1 text-primary"></i> Cara baca dan pengolahan dashboard</h5>
+                <h5 class="modal-title" id="dashboardInfoModalLabel"><i class="bi bi-info-circle me-1 text-primary"></i> Cara membaca dashboard</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
+                <p class="mb-3 text-muted" style="font-size:.84rem;">Dashboard ini membantu melihat penilaian perusahaan terhadap lulusan. Gunakan filter di bagian atas bila ingin melihat data tertentu.</p>
                 <ol class="dashboard-info-list">
-                    <li><strong>Sumber data.</strong> Jawaban, kategori, dan identitas pada respons dibaca dari <em>arsip survei</em> yang terbentuk saat perusahaan menyelesaikan pengisian. Jadi perubahan pada soal, kategori, data lulusan, atau perusahaan setelah survei selesai tidak mengubah isi respons historisnya.</li>
-                    <li><strong>Filter.</strong> Periode, fakultas, dan program studi membatasi seluruh KPI, grafik, serta tabel. NL menampilkan responden unik yang sudah mengisi dan yang masih memiliki survei belum diisi; NJ adalah total lulusan dalam cakupan yang sama.</li>
-                    <li><strong>Skor murni per periode.</strong> Setiap jawaban rating bernilai 1–4 dijumlahkan menurut bobotnya lalu dirata-ratakan. Nama pilihan jawaban boleh berubah pada tahun berikutnya; yang dipakai untuk perhitungan adalah nilai numeriknya.</li>
+                    <li><strong>Dari mana datanya?</strong> Angka di dashboard berasal dari survei yang sudah dikirim oleh perusahaan. Setelah survei selesai, jawabannya menjadi arsip sehingga data lama tetap sama meskipun pertanyaan atau profil perusahaan diperbarui.</li>
+                    <li><strong>Arti NL dan NJ.</strong> <strong>NL</strong> adalah jumlah responden unik, yaitu perusahaan atau penyelia yang mengisi survei. Kartu NL juga menunjukkan yang sudah dan belum mengisi. <strong>NJ</strong> adalah jumlah lulusan yang mendapat sesi survei pada filter yang dipilih.</li>
+                    <li><strong>Cara nilai dihitung.</strong> Jawaban penilaian memakai angka 1 sampai 4, lalu sistem mencari nilai rata-ratanya. Nama pilihan jawaban boleh berbeda pada tiap periode, tetapi angka nilainya tetap dipakai agar hasilnya konsisten.</li>
                 </ol>
                 <div class="dashboard-info-formula my-3">
-                    Skor murni = (4 × % nilai 4) + (3 × % nilai 3) + (2 × % nilai 2) + (1 × % nilai 1).<br>
-                    Faktor respons = min(1, (NL ÷ NJ) ÷ 30%).<br>
-                    Skor akhir periode = skor murni × faktor respons.
+                    <strong>Ringkasnya:</strong> skor murni adalah rata-rata nilai jawaban. Skor akhir adalah skor murni yang disesuaikan dengan tingkat respons.<br>
+                    Sistem membandingkan NL dengan NJ. Jika jumlah respons masih sedikit, nilai akhir ikut disesuaikan agar hasilnya lebih adil.<br>
+                    Target tingkat respons yang digunakan sistem adalah 30%.
                 </div>
                 <ol class="dashboard-info-list" start="4">
-                    <li><strong>Indeks Kepuasan Pengguna</strong> merangkum seluruh respons yang sesuai filter. Gunakan tren periode untuk melihat perubahan indeks dari waktu ke waktu.</li>
-                    <li><strong>Rincian kategori.</strong> Grafik dan tabel kepuasan membantu melihat area yang perlu ditingkatkan dalam cakupan filter aktif.</li>
+                    <li><strong>Indeks Kepuasan Pengguna.</strong> Nilai ini memakai jawaban penilaian dari 1 sampai 4. Semakin dekat ke 4, semakin baik penilaian pengguna lulusan. Gunakan tren periode untuk melihat perubahan dari tahun ke tahun.</li>
+                    <li><strong>Grafik dan tabel.</strong> Semua bagian mengikuti filter aktif. Grafik kategori membantu menemukan kekuatan dan area yang perlu ditingkatkan; klik batang kategori untuk melihat rincian jawabannya.</li>
                 </ol>
             </div>
         </div>
