@@ -1,17 +1,20 @@
 @props([
     'daftarSoal',
     'selectedSoalIds' => [],
+    'selectedCategoryIds' => [],
     'locked' => false,
 ])
 
 @php
     $selectedSoalIds = collect($selectedSoalIds)->map(fn ($id) => (int) $id)->all();
+    $selectedCategoryIds = collect($selectedCategoryIds)->map(fn ($id) => (int) $id)->filter()->values()->all();
     $categories = $daftarSoal
         ->groupBy(fn ($soal) => $soal->kategori?->id ?? 'tanpa-kategori')
         ->map(function ($questions, $key) {
             return [
                 'key' => (string) $key,
                 'name' => $questions->first()?->kategori?->nama_kategori ?? 'Tanpa kategori',
+                'status' => $questions->first()?->kategori?->status ?? 'utama',
                 'questions' => $questions->sortBy(fn ($soal) => $soal->kode ?? $soal->id)->values(),
             ];
         })
@@ -20,7 +23,17 @@
     $selectedCategoryKeys = $categories
         ->filter(fn ($category) => $category['questions']->contains(fn ($soal) => in_array($soal->id, $selectedSoalIds, true)))
         ->pluck('key')
+        ->merge(collect($selectedCategoryIds)->map(fn ($id) => (string) $id))
+        ->unique()
         ->all();
+    $categoryPriority = array_flip($selectedCategoryIds);
+    $categories = $categories->sortBy(function ($category) use ($selectedCategoryKeys, $categoryPriority) {
+        if (! in_array($category['key'], $selectedCategoryKeys, true)) {
+            return '1-' . $category['name'];
+        }
+
+        return '0-' . str_pad((string) ($categoryPriority[(int) $category['key']] ?? PHP_INT_MAX), 12, '0', STR_PAD_LEFT);
+    })->values();
     $selectorId = 'survey-question-selector-' . uniqid();
     $badgeType = ['rating' => 'Rating', 'multiple_choice' => 'Pilihan', 'essay' => 'Esai'];
 @endphp
@@ -29,7 +42,7 @@
     <div class="spl-question-selector-summary">
         <div>
             <span class="spl-question-selector-kicker">Susun instrumen</span>
-            <p>Seret kategori ke area digunakan. Klik kategori untuk memilih pertanyaan yang aktif.</p>
+            <p>Seret kategori untuk menentukan urutan tampil pertanyaan pada survei perusahaan.</p>
         </div>
         <span class="spl-question-selector-count"><strong data-selected-count>0</strong> pertanyaan aktif</span>
     </div>
@@ -55,7 +68,7 @@
                             <span class="spl-category-drag" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
                             <button type="button" class="spl-category-card-main" data-show-category="{{ $category['key'] }}">
                                 <span class="spl-category-card-name">{{ $category['name'] }}</span>
-                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan</span>
+                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
                             </button>
                             @unless($locked)
                                 <button type="button" class="spl-category-card-action" data-add-category="{{ $category['key'] }}" aria-label="Tambahkan kategori {{ $category['name'] }}"><i class="bi bi-plus-lg"></i></button>
@@ -70,7 +83,7 @@
             <div class="spl-category-zone-header">
                 <div>
                     <span class="spl-category-zone-label" id="{{ $selectorId }}-selected-label">Kategori digunakan</span>
-                    <span class="spl-category-zone-note">Kategori ini tersedia di survei</span>
+                    <span class="spl-category-zone-note">Urutan di sini menjadi urutan pertanyaan survei</span>
                 </div>
                 <i class="bi bi-check2-circle" aria-hidden="true"></i>
             </div>
@@ -82,7 +95,7 @@
                             <span class="spl-category-drag" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
                             <button type="button" class="spl-category-card-main" data-show-category="{{ $category['key'] }}">
                                 <span class="spl-category-card-name">{{ $category['name'] }}</span>
-                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan</span>
+                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
                             </button>
                             @unless($locked)
                                 <button type="button" class="spl-category-card-action is-remove" data-remove-category="{{ $category['key'] }}" aria-label="Hapus kategori {{ $category['name'] }}"><i class="bi bi-x-lg"></i></button>
@@ -91,6 +104,7 @@
                     @endif
                 @endforeach
             </div>
+            <div data-category-order-inputs></div>
         </section>
     </div>
 
@@ -106,6 +120,7 @@
                     <div>
                         <span class="spl-question-selector-kicker">Detail kategori</span>
                         <h6>{{ $category['name'] }}</h6>
+                        <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">Status: {{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span>
                     </div>
                     <span class="spl-question-panel-status" data-category-status="{{ $category['key'] }}"></span>
                 </div>
@@ -115,7 +130,6 @@
                         @php
                             $isSelected = in_array($soal->id, $selectedSoalIds, true);
                             $isCategorySelected = in_array($category['key'], $selectedCategoryKeys, true);
-                            $fakultas = $soal->peruntukan_fakultas ?? 'Umum';
                         @endphp
                         <label class="spl-question-item" data-question-category="{{ $category['key'] }}">
                             <input type="checkbox" name="soal_pilihan[]" value="{{ $soal->id }}" class="form-check-input" data-question-input
@@ -126,7 +140,6 @@
                                 <span class="spl-question-item-meta">
                                     <span>{{ $soal->kode }}</span>
                                     <span>{{ $badgeType[$soal->jenis_soal] ?? $soal->jenis_soal }}</span>
-                                    <span>{{ $fakultas }}</span>
                                 </span>
                             </span>
                         </label>
@@ -168,6 +181,8 @@
             .spl-category-card-main { background: transparent; border: 0; min-width: 0; padding: .15rem; text-align: left; width: 100%; }
             .spl-category-card-name { color: var(--spl-text); display: block; font-size: .79rem; font-weight: 750; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .spl-category-card-meta { color: var(--spl-muted); display: block; font-size: .68rem; margin-top: .12rem; }
+            .spl-category-status { background: #f1f5f9; border-radius: 999px; color: #64748b; display: inline-block; font-size: .63rem; font-weight: 750; padding: .1rem .35rem; }
+            .spl-category-status.is-primary { background: #dbeafe; color: #1d4ed8; }
             .spl-category-card-action { align-items: center; background: var(--spl-brand-soft); border: 0; border-radius: 6px; color: var(--spl-brand); display: inline-flex; flex: 0 0 28px; height: 28px; justify-content: center; width: 28px; }
             .spl-category-card-action.is-remove { background: #f1f5f9; color: #64748b; }
             .spl-category-empty { align-items: center; color: #94a3b8; display: flex; font-size: .74rem; font-style: italic; justify-content: center; margin: 0; min-height: 96px; text-align: center; }
@@ -205,6 +220,7 @@
                     const availableZone = selector.querySelector('[data-zone="available"]');
                     const selectedZone = selector.querySelector('[data-zone="selected"]');
                     const detailEmpty = selector.querySelector('[data-detail-empty]');
+                    const categoryOrderInputs = selector.querySelector('[data-category-order-inputs]');
                     let activeCategory = null;
                     let draggedCard = null;
 
@@ -226,6 +242,17 @@
                         const count = Array.from(selector.querySelectorAll('[data-question-input]'))
                             .filter(function (input) { return !input.disabled && input.checked; }).length;
                         selector.querySelector('[data-selected-count]').textContent = count;
+                    };
+                    const syncCategoryOrder = function () {
+                        categoryOrderInputs.innerHTML = '';
+                        selectedZone.querySelectorAll('.spl-category-card').forEach(function (card) {
+                            if (!/^\d+$/.test(card.dataset.category)) return;
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'kategori_urutan[]';
+                            input.value = card.dataset.category;
+                            categoryOrderInputs.appendChild(input);
+                        });
                     };
                     const updatePanel = function (key) {
                         const categoryPanel = panel(key);
@@ -271,6 +298,7 @@
                             input.checked = destination === selectedZone;
                         });
                         updateEmptyState();
+                        syncCategoryOrder();
                         showCategory(key);
                     };
 
@@ -312,12 +340,25 @@
                             zone.addEventListener('drop', function (event) {
                                 event.preventDefault();
                                 zone.classList.remove('is-drag-over');
-                                if (draggedCard) moveCategory(draggedCard.dataset.category, zone);
+                                if (!draggedCard) return;
+
+                                if (zone === selectedZone && draggedCard.closest('[data-zone="selected"]') === selectedZone) {
+                                    const target = event.target.closest('.spl-category-card');
+                                    if (target && target !== draggedCard) {
+                                        const bounds = target.getBoundingClientRect();
+                                        zone.insertBefore(draggedCard, event.clientY < bounds.top + (bounds.height / 2) ? target : target.nextSibling);
+                                        syncCategoryOrder();
+                                        return;
+                                    }
+                                }
+
+                                moveCategory(draggedCard.dataset.category, zone);
                             });
                         });
                     }
 
                     updateEmptyState();
+                    syncCategoryOrder();
                     updateCount();
                     const firstCard = selector.querySelector('.spl-category-card');
                     if (firstCard) showCategory(firstCard.dataset.category);

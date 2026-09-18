@@ -25,19 +25,18 @@
                 <div class="col-12 col-md-2 spl-filter-actions"><button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Terapkan</button><a href="{{ route('pertanyaan') }}" class="btn btn-outline-secondary">Reset</a></div>
             </div>
         </form>
-        <div class="table-responsive"><table class="table spl-table" id="table1"><thead><tr><th>Pertanyaan</th><th>Aspek</th><th>Fakultas</th><th>Tipe</th><th>Wajib</th><th>Status</th><th class="text-center">Aksi</th></tr></thead><tbody>
+        <div class="table-responsive"><table class="table spl-table" id="table1"><thead><tr><th>Pertanyaan</th><th>Aspek</th><th>Tipe</th><th>Wajib</th><th>Status</th><th class="text-center">Aksi</th></tr></thead><tbody>
             @forelse($soal as $item)
                 <tr>
                     <td><span class="spl-row-title">{{ $item->soal }}</span><span class="spl-row-meta">Kode: {{ $item->kode ?? '-' }}</span></td>
                     <td><span class="badge bg-primary">{{ $item->kategori->nama_kategori ?? 'Tanpa aspek' }}</span></td>
-                    <td>{{ $item->peruntukan_fakultas }}</td>
                     <td><span class="badge bg-secondary">{{ $item->jenis_soal === 'multiple_choice' ? 'Pilihan' : ucfirst($item->jenis_soal) }}</span></td>
                     <td>@if($item->is_required)<span class="badge bg-success">Wajib</span>@else<span class="badge bg-secondary">Opsional</span>@endif</td>
                     <td>@if($item->is_active)<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Aktif</span>@else<span class="badge bg-danger"><i class="bi bi-pause-circle me-1"></i>Nonaktif</span>@endif</td>
                     <td><div class="d-flex justify-content-center gap-1"><a href="{{ route('pertanyaan.edit', $item->id) }}" class="spl-icon-action" title="Ubah pertanyaan" aria-label="Ubah pertanyaan"><i class="bi bi-pencil-square"></i></a><form action="{{ route('pertanyaan.switch', $item->id) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="spl-icon-action {{ $item->is_active ? 'text-danger' : 'text-success' }}" title="{{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }} pertanyaan" aria-label="{{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }} pertanyaan"><i class="bi {{ $item->is_active ? 'bi-pause' : 'bi-play' }}"></i></button></form></div></td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="spl-empty"><i class="bi bi-ui-checks-grid"></i>Belum ada pertanyaan yang sesuai dengan filter.</td></tr>
+                <tr><td colspan="6" class="spl-empty"><i class="bi bi-ui-checks-grid"></i>Belum ada pertanyaan yang sesuai dengan filter.</td></tr>
             @endforelse
         </tbody></table></div>
         @if($soal->hasPages())

@@ -19,7 +19,6 @@ class PertanyaanService
         $soal = Soal::create([
             'soal'                => $data['question'],
             'kategori_id'         => $data['kategori_id'], // Simpan data kategori ke database
-            'peruntukan_fakultas' => $data['peruntukan_fakultas'],
             // Kode bersifat opsional di form, tetapi kolom database wajib unik.
             'kode'                => $this->resolveKode($data['kode'] ?? null),
             'jenis_soal'          => $jenis,
@@ -48,7 +47,6 @@ class PertanyaanService
             $soal->update([
                 'soal'                => $data['question'],
                 'kategori_id'         => $data['kategori_id'], // Simpan kategori yang diupdate
-                'peruntukan_fakultas' => $data['peruntukan_fakultas'],
                 'kode'                => $this->resolveKode($data['kode'] ?? null, $soal->kode),
                 'jenis_soal'          => $jenis,
                 'is_required'         => isset($data['required']),

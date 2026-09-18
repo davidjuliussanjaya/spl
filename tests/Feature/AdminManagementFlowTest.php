@@ -6,6 +6,9 @@ use App\Models\Kategori;
 use App\Models\Jawaban;
 use App\Models\Role;
 use App\Models\Soal;
+use App\Models\Fakultas;
+use App\Models\ProgramStudi;
+use App\Models\Periode;
 use App\Models\Survey;
 use App\Models\User;
 
@@ -13,6 +16,14 @@ beforeEach(function () {
     $role = Role::create(['code' => 'admin', 'name' => 'Administrator']);
     $this->admin = User::factory()->create(['is_active' => true]);
     $this->admin->roles()->attach($role, ['is_active' => true, 'assigned_at' => now()]);
+    $this->fakultas = Fakultas::create(['kode' => 'FTI', 'nama' => 'Fakultas Teknologi dan Informatika']);
+    $this->programStudi = ProgramStudi::create(['fakultas_id' => $this->fakultas->id, 'kode' => 'TI', 'nama' => 'Teknik Informatika']);
+    $this->periode = Periode::create([
+        'kode_periode' => 'TEST-AKTIF',
+        'nama_periode' => 'Periode Pengujian Aktif',
+        'tanggal_mulai' => now()->subDay(),
+        'tanggal_berakhir' => now()->addDay(),
+    ]);
 });
 
 function perusahaanData(array $overrides = []): array
@@ -28,7 +39,6 @@ function perusahaanData(array $overrides = []): array
         'alamat_perusahaan' => 'Jl. Contoh No. 1',
         'cabang_kota' => 2,
         'cabang_negara' => 0,
-        'jumlah_lulusan' => 3,
         'durasi_lulusan_bekerja' => 12,
     ], $overrides);
 }
@@ -88,8 +98,8 @@ test('administrator can open, add, and view a graduate', function () {
             'pengguna_lulusan_id' => $perusahaan->id,
             'nama' => 'Budi Lulusan',
             'nim' => '22410100009',
-            'program_studi' => 'Teknik Informatika',
-            'fakultas' => 'FTI',
+            'program_studi_id' => $this->programStudi->id,
+            'fakultas_id' => $this->fakultas->id,
             'tahun_lulus' => '2025-08-01',
             'status' => '1',
         ])
@@ -112,7 +122,6 @@ test('administrator can open every remaining management page', function () {
         'soal' => 'Kemampuan teknis lulusan',
         'kode' => 'A1',
         'kategori_id' => $kategori->id,
-        'peruntukan_fakultas' => 'Umum',
         'jenis_soal' => 'rating',
         'is_required' => true,
         'is_active' => true,
@@ -146,20 +155,21 @@ test('administrator can create, update, and delete a survey', function () {
         'nim' => '22410100009',
         'program_studi' => 'Teknik Informatika',
         'fakultas' => 'FTI',
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
         'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
         'kode' => 'A1',
-        'peruntukan_fakultas' => 'Umum',
         'jenis_soal' => 'rating',
         'is_required' => true,
         'is_active' => true,
     ]);
     $data = [
         'judul' => 'Survey Pengguna Lulusan 2026',
-        'tahun' => 2026,
+        'periode_id' => $this->periode->id,
         'lulusan_id' => $lulusan->id,
         'pengguna_lulusan_id' => $perusahaan->id,
         'soal_pilihan' => [$soal->id],
@@ -167,7 +177,7 @@ test('administrator can create, update, and delete a survey', function () {
 
     $this->actingAs($this->admin)
         ->post(route('survey.store'), $data)
-        ->assertRedirect(route('survey'));
+        ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 
     $survey = Survey::firstOrFail();
 
@@ -179,11 +189,11 @@ test('administrator can create, update, and delete a survey', function () {
         ->put(route('survey.update', $survey->id), array_merge($data, [
             'judul' => 'Survey Pengguna Lulusan Diperbarui',
         ]))
-        ->assertRedirect(route('survey'));
+        ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 
     $this->actingAs($this->admin)
         ->delete(route('survey.destroy', $survey->id))
-        ->assertRedirect(route('survey'));
+        ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 });
 
 test('administrator can create and update a question without entering an optional code', function () {
@@ -191,7 +201,6 @@ test('administrator can create and update a question without entering an optiona
     $data = [
         'question' => 'Bagaimana kemampuan teknis lulusan?',
         'kategori_id' => $kategori->id,
-        'peruntukan_fakultas' => 'Umum',
         'type' => 'text',
         'required' => '1',
     ];
@@ -228,13 +237,14 @@ test('public survey access, fill, and submit flow works', function () {
         'nim' => '22410100009',
         'program_studi' => 'Teknik Informatika',
         'fakultas' => 'FTI',
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
         'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
         'kode' => 'A1',
-        'peruntukan_fakultas' => 'Umum',
         'jenis_soal' => 'rating',
         'is_required' => true,
         'is_active' => true,
@@ -247,7 +257,7 @@ test('public survey access, fill, and submit flow works', function () {
     ]);
     $survey = Survey::create([
         'judul' => 'Survey Kepuasan',
-        'tahun' => 2026,
+        'periode_id' => $this->periode->id,
         'lulusan_id' => $lulusan->id,
         'pengguna_lulusan_id' => $perusahaan->id,
         'access_code' => 'TEST2026',
@@ -261,9 +271,19 @@ test('public survey access, fill, and submit flow works', function () {
 
     $this->get(route('survey.fill', $survey->access_code))->assertOk();
 
+    $this->from(route('survey.fill', $survey->access_code))
+        ->post(route('survey.submit', $survey->access_code), [
+            'nama_pengisi' => 'Rina Penyelia',
+            'nama_perusahaan' => $perusahaan->nama_perusahaan,
+            'jumlah_lulusan_bekerja' => 0,
+        ])
+        ->assertRedirect(route('survey.fill', $survey->access_code))
+        ->assertSessionHasErrors(['jumlah_lulusan_bekerja', 'jawaban.' . $soal->id]);
+
     $this->post(route('survey.submit', $survey->access_code), [
         'nama_pengisi' => 'Rina Penyelia',
         'nama_perusahaan' => $perusahaan->nama_perusahaan,
+        'jumlah_lulusan_bekerja' => 1,
         'jawaban' => [$soal->id => $jawaban->id],
     ])->assertRedirect('/');
 
@@ -276,6 +296,7 @@ test('administrator can manage categories, use the company data endpoint, and do
         ->post(route('kategori.store'), [
             'nama_kategori' => 'Kompetensi',
             'deskripsi' => 'Penilaian kompetensi lulusan',
+            'status' => 'utama',
         ])
         ->assertRedirect(route('kategori.index'));
 
@@ -285,6 +306,7 @@ test('administrator can manage categories, use the company data endpoint, and do
         ->put(route('kategori.update', $kategori), [
             'nama_kategori' => 'Kompetensi Diperbarui',
             'deskripsi' => 'Deskripsi diperbarui',
+            'status' => 'optional',
         ])
         ->assertRedirect(route('kategori.index'));
 
@@ -311,13 +333,14 @@ test('administrator can generate surveys in bulk', function () {
         'nim' => '22410100009',
         'program_studi' => 'Teknik Informatika',
         'fakultas' => 'FTI',
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
         'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
         'kode' => 'A1',
-        'peruntukan_fakultas' => 'Umum',
         'jenis_soal' => 'rating',
         'is_required' => true,
         'is_active' => true,
@@ -326,11 +349,11 @@ test('administrator can generate surveys in bulk', function () {
     $this->actingAs($this->admin)
         ->post(route('survey.bulk.store'), [
             'judul' => 'Survey Massal 2026',
-            'tahun' => 2026,
+            'periode_id' => $this->periode->id,
             'tahun_lulus' => 2025,
             'soal_pilihan' => [$soal->id],
         ])
-        ->assertRedirect(route('survey'));
+        ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 
     $this->assertDatabaseCount('survey', 1);
 });

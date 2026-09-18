@@ -24,7 +24,6 @@ class PertanyaanStoreRequest extends FormRequest
         return [
             'question'  => 'required|string',
             'kategori_id'  => 'required|exists:kategoris,id',
-            'peruntukan_fakultas' => 'required|in:FTI,FDIK,FEB,Umum',
             'type'      => 'required',
             'kode'      => 'nullable|string',
             'jawaban.*' => 'required_if:type,radio'

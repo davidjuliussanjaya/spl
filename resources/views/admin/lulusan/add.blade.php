@@ -12,7 +12,7 @@
     </div>
 
     <section class="section">
-        <form action="{{ route('lulusan.store') }}" method="POST">
+        <form action="{{ route('lulusan.store') }}" method="POST" data-draft-key="spl:draft:graduate-create">
             @csrf
             
             <div class="row">
@@ -41,19 +41,22 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Fakultas</label>
-                                    <select name="fakultas" class="form-select modern-input" required>
+                                    <select name="fakultas_id" id="fakultas_id" class="form-select modern-input @error('fakultas_id') is-invalid @enderror" required>
                                         <option value="" selected disabled>Pilih Fakultas</option>
-                                        <option value="FTI">Fakultas Teknologi dan Informatika</option>
-                                        <option value="FDIK">Fakultas Desain dan Industri Kreatif</option>
-                                        <option value="FEB">Fakultas Ekonomi dan Bisnis</option>
+                                        @foreach($fakultasList as $fakultas)
+                                            <option value="{{ $fakultas->id }}" @selected(old('fakultas_id') == $fakultas->id)>{{ $fakultas->nama }} ({{ $fakultas->kode }})</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">Program Studi</label>
-                                    <select name="program_studi" class="form-select modern-input" required>
+                                    <select name="program_studi_id" id="program_studi_id" class="form-select modern-input @error('program_studi_id') is-invalid @enderror" required>
                                         <option value="" selected disabled>Pilih Prodi</option>
-                                        <option value="Teknik Informatika">Teknik Informatika</option>
-                                        <option value="Sistem Informasi">Sistem Informasi</option>
+                                        @foreach($fakultasList as $fakultas)
+                                            @foreach($fakultas->programStudis as $prodi)
+                                                <option value="{{ $prodi->id }}" data-fakultas-id="{{ $fakultas->id }}" @selected(old('program_studi_id') == $prodi->id)>{{ $prodi->nama }}</option>
+                                            @endforeach
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -165,4 +168,19 @@
         transform: translateY(-1px);
     }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const fakultas = document.getElementById('fakultas_id');
+    const prodi = document.getElementById('program_studi_id');
+    const filterProdi = () => {
+        [...prodi.options].forEach((option) => {
+            if (!option.value) return;
+            option.hidden = fakultas.value && option.dataset.fakultasId !== fakultas.value;
+        });
+        if (prodi.selectedOptions[0]?.hidden) prodi.value = '';
+    };
+    fakultas.addEventListener('change', filterProdi);
+    filterProdi();
+});
+</script>
 @endsection

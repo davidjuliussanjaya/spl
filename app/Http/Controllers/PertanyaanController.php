@@ -48,7 +48,7 @@ class PertanyaanController extends Controller
         return view('admin.pertanyaan.edit', compact('soal', 'kategoris'));
     }
 
-    public function update(Request $request, $id)
+    public function update(PertanyaanStoreRequest $request, $id)
     {
         $this->pertanyaanService->updatePertanyaan($id, $request->all());
 

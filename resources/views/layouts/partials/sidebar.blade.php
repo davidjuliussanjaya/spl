@@ -37,15 +37,22 @@
                     <li class="sidebar-title">Data master</li>
                     <li class="sidebar-item {{ request()->routeIs('lulusan*', 'addgrad') ? 'active' : '' }}">
                         <a href="{{ route('lulusan') }}" class='sidebar-link'>
-                            <i class="bi bi-mortarboard-fill"></i>
+                            <i class="bi bi-person-badge-fill"></i>
                             <span>Lulusan</span>
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ request()->routeIs('penggunalulusan*', 'create', 'pengguna.*') ? 'active' : '' }}">
                         <a href="{{ route('penggunalulusan') }}" class='sidebar-link'>
-                            <i class="bi bi-buildings-fill"></i>
+                            <i class="bi bi-building"></i>
                             <span>Perusahaan</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {{ request()->routeIs('periode.*') ? 'active' : '' }}">
+                        <a href="{{ route('periode.index') }}" class='sidebar-link'>
+                            <i class="bi bi-calendar-range-fill"></i>
+                            <span>Periode</span>
                         </a>
                     </li>
 

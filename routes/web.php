@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LulusanController;
 use App\Http\Controllers\PenggunaLulusanController;
 use App\Http\Controllers\PertanyaanController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
@@ -70,6 +71,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         // Kategori
         Route::resource('kategori', \App\Http\Controllers\KategoriController::class)->except(['show']);
+
+        // Periode survei
+        Route::resource('periode', PeriodeController::class)->except(['show']);
 
         // Report
         Route::get('/report', [ReportController::class, 'index'])->name('report');

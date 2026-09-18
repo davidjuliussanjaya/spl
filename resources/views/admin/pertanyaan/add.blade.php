@@ -19,7 +19,7 @@
     <section class="section">
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4 p-md-5">
-                <form action="{{ route('savequestion') }}" method="POST">
+                <form action="{{ route('savequestion') }}" method="POST" data-draft-key="spl:draft:question-create">
                     @csrf
 
                     <div class="mb-4">
@@ -35,16 +35,6 @@
                                 @foreach($kategoris as $kategori)
                                     <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                                 @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark">Peruntukan Fakultas <span class="text-danger">*</span></label>
-                            <select class="form-select modern-input" name="peruntukan_fakultas" required>
-                                <option value="Umum" selected>Umum (Semua Fakultas)</option>
-                                <option value="FTI">Fakultas Teknologi dan Informatika (FTI)</option>
-                                <option value="FDIK">Fakultas Desain dan Industri Kreatif (FDIK)</option>
-                                <option value="FEB">Fakultas Ekonomi dan Bisnis (FEB)</option>
                             </select>
                         </div>
 

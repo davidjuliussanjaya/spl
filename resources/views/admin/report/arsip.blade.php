@@ -119,12 +119,8 @@
 </style>
 
 @php
-    $fakultasLabels = [
-        'FTI' => 'Fakultas Teknologi dan Informatika',
-        'FEB' => 'Fakultas Ekonomi dan Bisnis',
-        'FDIK' => 'Fakultas Desain dan Industri Kreatif',
-    ];
-    $hasFilters = request()->filled('cari') || request()->filled('tahun') || request()->filled('fakultas') || request()->filled('program_studi');
+    $fakultasLabels = $fakultasList->pluck('nama', 'kode')->all();
+    $hasFilters = request()->filled('cari') || request()->filled('periode') || request()->filled('fakultas') || request()->filled('program_studi');
 @endphp
 
 <div class="arsip-wrap">
@@ -155,11 +151,11 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-2">
-                    <label class="form-label">Tahun Instrumen</label>
-                    <select name="tahun" class="form-select form-select-sm">
-                        <option value="">Semua Tahun</option>
-                        @foreach($tahunList as $t)
-                            <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                    <label class="form-label">Periode survei</label>
+                    <select name="periode" class="form-select form-select-sm">
+                        <option value="">Semua periode</option>
+                        @foreach($periodeList as $kodePeriode => $namaPeriode)
+                            <option value="{{ $kodePeriode }}" {{ request('periode') == $kodePeriode ? 'selected' : '' }}>{{ $namaPeriode }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -168,8 +164,8 @@
                     <select name="fakultas" class="form-select form-select-sm">
                         <option value="">Semua Fakultas</option>
                         @foreach($fakultasList as $f)
-                            <option value="{{ $f }}" {{ request('fakultas') == $f ? 'selected' : '' }}>
-                                {{ $fakultasLabels[$f] ?? $f }}
+                            <option value="{{ $f->kode }}" {{ request('fakultas') == $f->kode ? 'selected' : '' }}>
+                                {{ $f->nama }}
                             </option>
                         @endforeach
                     </select>
@@ -179,7 +175,7 @@
                     <select name="program_studi" class="form-select form-select-sm">
                         <option value="">Semua Program Studi</option>
                         @foreach($prodiList as $p)
-                            <option value="{{ $p }}" {{ request('program_studi') == $p ? 'selected' : '' }}>{{ $p }}</option>
+                            <option value="{{ $p->nama }}" {{ request('program_studi') == $p->nama ? 'selected' : '' }}>{{ $p->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -199,7 +195,7 @@
                 <div class="active-filters mt-3 pt-3 border-top">
                     <span class="small text-muted fw-semibold me-1">Filter aktif:</span>
                     @if(request('cari')) <span class="filter-chip"><i class="bi bi-search"></i>{{ request('cari') }}</span>@endif
-                    @if(request('tahun')) <span class="filter-chip"><i class="bi bi-calendar3"></i>{{ request('tahun') }}</span>@endif
+                    @if(request('periode')) <span class="filter-chip"><i class="bi bi-calendar3"></i>{{ $periodeList[request('periode')] ?? request('periode') }}</span>@endif
                     @if(request('fakultas')) <span class="filter-chip"><i class="bi bi-building"></i>{{ $fakultasLabels[request('fakultas')] ?? request('fakultas') }}</span>@endif
                     @if(request('program_studi')) <span class="filter-chip"><i class="bi bi-mortarboard"></i>{{ request('program_studi') }}</span>@endif
                 </div>
@@ -241,7 +237,7 @@
                             <th>Program Studi</th>
                             <th>Perusahaan</th>
                             <th>Penyelia</th>
-                            <th class="text-center" style="width:95px;">Tahun</th>
+                            <th class="text-center" style="width:125px;">Periode</th>
                             <th style="width:125px;">Tanggal Isi</th>
                             <th class="text-center" style="width:90px;">Aksi</th>
                         </tr>
@@ -271,8 +267,9 @@
                                     <div class="secondary-text">{{ $item->penyelia_jabatan ?? 'Jabatan belum tersedia' }}</div>
                                 </td>
                                 <td class="text-center">
-                                    @if($item->tahun_instrumen)
-                                        <span class="badge-year">{{ $item->tahun_instrumen }}</span>
+                                    @if($item->periode_kode)
+                                        <span class="badge-year">{{ $item->periode_kode }}</span>
+                                        <div class="secondary-text">{{ $item->periode_nama }}</div>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif

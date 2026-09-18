@@ -42,16 +42,6 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark">Peruntukan Fakultas <span class="text-danger">*</span></label>
-                            <select class="form-select modern-input" name="peruntukan_fakultas" required>
-                                <option value="Umum" {{ $soal->peruntukan_fakultas == 'Umum' ? 'selected' : '' }}>Umum (Semua Fakultas)</option>
-                                <option value="FTI" {{ $soal->peruntukan_fakultas == 'FTI' ? 'selected' : '' }}>Fakultas Teknologi dan Informatika (FTI)</option>
-                                <option value="FDIK" {{ $soal->peruntukan_fakultas == 'FDIK' ? 'selected' : '' }}>Fakultas Desain dan Industri Kreatif (FDIK)</option>
-                                <option value="FEB" {{ $soal->peruntukan_fakultas == 'FEB' ? 'selected' : '' }}>Fakultas Ekonomi dan Bisnis (FEB)</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Tipe Masukan <span class="text-danger">*</span></label>
                             <select class="form-select modern-input" name="type" id="typeSelect">
                                 <option value="radio" {{ $soal->jenis_soal == 'multiple_choice' ? 'selected' : '' }}>Pilihan Ganda (Radio / Rating)</option>

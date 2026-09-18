@@ -21,7 +21,10 @@ class SurveyArsipBackfillSeeder extends Seeder
 
         $surveys = Survey::with([
             'lulusan',
+            'lulusan.programStudi',
+            'lulusan.fakultasMaster',
             'penggunaLulusan',
+            'periode',
             'soals.jawaban',
             'soals.kategori',
             'soals.instrumen',
@@ -125,13 +128,17 @@ class SurveyArsipBackfillSeeder extends Seeder
             'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
             'access_code' => $survey->access_code,
             'judul' => $survey->judul,
+            'periode_kode' => $survey->periode?->kode_periode,
+            'periode_nama' => $survey->periode?->nama_periode,
+            'periode_tanggal_mulai' => $survey->periode?->tanggal_mulai,
+            'periode_tanggal_berakhir' => $survey->periode?->tanggal_berakhir,
             'submitted_at' => $submittedAt,
             'tahun_instrumen' => $survey->soals->first()?->instrumen?->tahun,
 
             'lulusan_nama' => $lulus?->nama,
             'lulusan_nim' => $lulus?->nim,
-            'lulusan_program_studi' => $lulus?->program_studi,
-            'lulusan_fakultas' => $lulus?->fakultas,
+            'lulusan_program_studi' => $lulus?->programStudi?->nama,
+            'lulusan_fakultas' => $lulus?->fakultasMaster?->kode,
             'lulusan_tahun_lulus' => $lulus?->tahun_lulus
                 ? Carbon::parse($lulus->tahun_lulus)->format('Y')
                 : null,

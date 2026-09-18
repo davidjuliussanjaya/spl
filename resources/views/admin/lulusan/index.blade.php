@@ -3,14 +3,6 @@
 @section('title', 'Lulusan')
 
 @section('content')
-@php
-    $namaFakultas = [
-        'FTI' => 'Fakultas Teknologi dan Informatika',
-        'FDIK' => 'Fakultas Desain dan Industri Kreatif',
-        'FEB' => 'Fakultas Ekonomi dan Bisnis',
-    ];
-    $prodiList = ['Manajemen Informatika', 'Sistem Informasi', 'Teknik Informatika', 'Akuntansi', 'Ekonomi Pembangunan', 'Manajemen', 'Desain Komunikasi Visual', 'Ilmu Komunikasi', 'Jurnalistik'];
-@endphp
 <div class="page-heading">
     <div class="spl-page-header">
         <div>
@@ -54,20 +46,20 @@
                     <input id="nim" type="search" name="nim" class="form-control" value="{{ request('nim') }}" placeholder="Cari NIM">
                 </div>
                 <div class="col-6 col-md-3 col-xl-2">
-                    <label for="fakultas" class="form-label">Fakultas</label>
-                    <select id="fakultas" name="fakultas" class="form-select">
-                        <option value="Select">Semua fakultas</option>
-                        @foreach($namaFakultas as $kode => $label)
-                            <option value="{{ $kode }}" @selected(request('fakultas') === $kode)>{{ $kode }}</option>
+                    <label for="fakultas_id" class="form-label">Fakultas</label>
+                    <select id="fakultas_id" name="fakultas_id" class="form-select">
+                        <option value="">Semua fakultas</option>
+                        @foreach($fakultasList as $fakultas)
+                            <option value="{{ $fakultas->id }}" @selected((string) request('fakultas_id') === (string) $fakultas->id)>{{ $fakultas->kode }} — {{ $fakultas->nama }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-xl-3">
-                    <label for="prodi" class="form-label">Program studi</label>
-                    <select id="prodi" name="prodi" class="form-select">
-                        <option value="Select">Semua program studi</option>
+                    <label for="program_studi_id" class="form-label">Program studi</label>
+                    <select id="program_studi_id" name="program_studi_id" class="form-select">
+                        <option value="">Semua program studi</option>
                         @foreach($prodiList as $prodi)
-                            <option value="{{ $prodi }}" @selected(request('prodi') === $prodi)>{{ $prodi }}</option>
+                            <option value="{{ $prodi->id }}" @selected((string) request('program_studi_id') === (string) $prodi->id)>{{ $prodi->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -100,8 +92,8 @@
                     @forelse($lulusan as $data)
                         <tr>
                             <td><span class="spl-row-title">{{ $data->nama }}</span><span class="spl-row-meta">NIM {{ $data->nim }}</span></td>
-                            <td><span class="badge bg-primary">{{ $data->fakultas }}</span><span class="spl-row-meta">{{ $namaFakultas[$data->fakultas] ?? $data->fakultas }}</span></td>
-                            <td>{{ $data->program_studi }}</td>
+                            <td><span class="badge bg-primary">{{ $data->fakultasMaster?->kode ?? '-' }}</span><span class="spl-row-meta">{{ $data->fakultasMaster?->nama ?? '-' }}</span></td>
+                            <td>{{ $data->programStudi?->nama ?? '-' }}</td>
                             <td>{{ $data->tahun_lulus?->format('Y') ?? '-' }}</td>
                             <td>@if($data->status)<span class="badge bg-success"><i class="bi bi-briefcase me-1"></i>Bekerja</span>@else<span class="badge bg-danger"><i class="bi bi-hourglass-split me-1"></i>Belum bekerja</span>@endif</td>
                             <td class="text-center"><a href="{{ route('lulusan.show', $data->id) }}" class="spl-icon-action" title="Lihat profil" aria-label="Lihat profil {{ $data->nama }}"><i class="bi bi-arrow-up-right"></i></a></td>

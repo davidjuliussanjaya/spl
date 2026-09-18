@@ -16,7 +16,7 @@
         <section class="section">
             <div class="card shadow-sm border-0">
                 <div class="card-body pt-4">
-                    <form action="{{ route('kategori.store') }}" method="POST">
+                    <form action="{{ route('kategori.store') }}" method="POST" data-draft-key="spl:draft:category-create">
                         @csrf
                         
                         <div class="mb-3">
@@ -33,6 +33,16 @@
                             @error('deskripsi')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="status" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                <option value="utama" @selected(old('status', 'utama') === 'utama')>Utama</option>
+                                <option value="optional" @selected(old('status') === 'optional')>Optional</option>
+                            </select>
+                            <div class="form-text">Tentukan status aspek evaluasi ini sebagai Utama atau Optional.</div>
+                            @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">

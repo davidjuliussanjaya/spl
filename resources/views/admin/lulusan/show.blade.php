@@ -36,11 +36,11 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-4 text-muted small fw-semibold">Fakultas</div>
-                            <div class="col-sm-8">{{ $namaFakultas[$lulusan->fakultas] ?? $lulusan->fakultas }}</div>
+                            <div class="col-sm-8">{{ $lulusan->fakultasMaster?->nama ?? '-' }}</div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-4 text-muted small fw-semibold">Program Studi</div>
-                            <div class="col-sm-8">{{ $lulusan->program_studi }}</div>
+                            <div class="col-sm-8">{{ $lulusan->programStudi?->nama ?? '-' }}</div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-4 text-muted small fw-semibold">Tahun Lulus</div>

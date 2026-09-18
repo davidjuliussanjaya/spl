@@ -38,6 +38,7 @@
     <script src="{{ $assetBaseUrl }}/assets/js/bootstrap.bundle.min.js"></script>
     <script src="{{ $assetBaseUrl }}/assets/js/main.js"></script>
     @stack('scripts')
+    <x-form-draft-cache :clear-on-success="session()->has('success')" />
 </body>
 
 </html>

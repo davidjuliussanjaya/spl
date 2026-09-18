@@ -31,7 +31,7 @@
         <div class="table-responsive">
             <table class="table spl-table" id="table1">
                 <thead>
-                    <tr><th class="text-center" style="width:72px;">No.</th><th>Nama kategori</th><th>Deskripsi</th><th class="text-center">Aksi</th></tr>
+                    <tr><th class="text-center" style="width:72px;">No.</th><th>Nama kategori</th><th>Deskripsi</th><th>Status</th><th class="text-center">Aksi</th></tr>
                 </thead>
                 <tbody>
                     @forelse($kategoris as $index => $item)
@@ -39,6 +39,7 @@
                             <td class="text-center text-muted">{{ $kategoris->firstItem() + $index }}</td>
                             <td><span class="spl-row-title">{{ $item->nama_kategori }}</span></td>
                             <td>{{ $item->deskripsi ?: '-' }}</td>
+                            <td><span class="badge {{ $item->status === 'utama' ? 'bg-primary' : 'bg-secondary' }}">{{ $item->status === 'utama' ? 'Utama' : 'Optional' }}</span></td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('kategori.edit', $item->id) }}" class="spl-icon-action" title="Ubah kategori" aria-label="Ubah kategori {{ $item->nama_kategori }}"><i class="bi bi-pencil-square"></i></a>
@@ -51,7 +52,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="spl-empty"><i class="bi bi-tags"></i>Belum ada kategori. Tambahkan kategori untuk mulai mengelompokkan pertanyaan.</td></tr>
+                        <tr><td colspan="5" class="spl-empty"><i class="bi bi-tags"></i>Belum ada kategori. Tambahkan kategori untuk mulai mengelompokkan pertanyaan.</td></tr>
                     @endforelse
                 </tbody>
             </table>

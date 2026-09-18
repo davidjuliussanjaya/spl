@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Survey;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class SurveySubmitJawabanRequest extends FormRequest
 {
@@ -25,7 +27,7 @@ class SurveySubmitJawabanRequest extends FormRequest
             'kontak_perusahaan' => 'nullable|string|max:255',
             'cabang_kota'       => 'nullable|integer|min:0',
             'cabang_negara'     => 'nullable|integer|min:0',
-            'jumlah_lulusan_bekerja' => 'nullable|integer|min:0',
+            'jumlah_lulusan_bekerja' => 'required|integer|min:1',
             'jawaban'                => 'nullable|array',
             'jawaban.*'              => 'nullable',
             'mc'                     => 'nullable|array',
@@ -34,5 +36,55 @@ class SurveySubmitJawabanRequest extends FormRequest
             'mc_custom'              => 'nullable|array',
             'mc_custom.*'            => 'nullable|string|max:1000',
         ];
+    }
+
+    /**
+     * Persyaratan jawaban mengikuti soal yang memang dipilih untuk sesi survei,
+     * bukan hanya atribut HTML di halaman pengisian.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $survey = Survey::where('access_code', $this->route('code'))->first();
+
+            if (! $survey) {
+                return;
+            }
+
+            $soalWajib = $survey->soals()
+                ->with('jawaban:id,soal_id')
+                ->where('is_required', true)
+                ->get();
+
+            foreach ($soalWajib as $soal) {
+                $soalId = $soal->id;
+
+                if ($soal->jenis_soal === 'essay') {
+                    if (! filled($this->input("jawaban.{$soalId}"))) {
+                        $validator->errors()->add("jawaban.{$soalId}", 'Pertanyaan wajib ini harus diisi.');
+                    }
+
+                    continue;
+                }
+
+                if ($soal->jenis_soal === 'multiple_choice') {
+                    $jawabanTerpilih = collect($this->input("mc.{$soalId}", []))
+                        ->map(fn ($id) => (int) $id)
+                        ->intersect($soal->jawaban->pluck('id'));
+                    $jawabanLainnya = trim((string) $this->input("mc_custom.{$soalId}", ''));
+
+                    if ($jawabanTerpilih->isEmpty() && $jawabanLainnya === '') {
+                        $validator->errors()->add("mc.{$soalId}", 'Pilih minimal satu jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.');
+                    }
+
+                    continue;
+                }
+
+                $jawabanId = (int) $this->input("jawaban.{$soalId}");
+                if (! $soal->jawaban->contains('id', $jawabanId)) {
+                    $validator->errors()->add("jawaban.{$soalId}", 'Pilih salah satu jawaban untuk pertanyaan wajib ini.');
+                }
+            }
+        });
     }
 }

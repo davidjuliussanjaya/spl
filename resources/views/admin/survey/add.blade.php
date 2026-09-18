@@ -11,7 +11,7 @@
         </div>
 
         <section class="section">
-            <form action="{{ route('survey.store') }}" method="POST">
+            <form action="{{ route('survey.store') }}" method="POST" data-draft-key="spl:draft:survey-create">
                 @csrf
 
                 @if($errors->any())
@@ -45,15 +45,18 @@
                             </div>
 
                             <div class="col-md-3 mb-4">
-                                <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Tahun Survey
+                                <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Periode survei
                                     <span class="text-danger">*</span></label>
-                                <select name="tahun" class="form-select line-input fs-5" required>
-                                    @for($y = now()->year + 1; $y >= 2020; $y--)
-                                        <option value="{{ $y }}" {{ old('tahun', now()->year) == $y ? 'selected' : '' }}>
-                                            {{ $y }}
+                                <select name="periode_id" class="form-select line-input fs-5 @error('periode_id') is-invalid @enderror" required>
+                                    <option value="">-- Pilih periode --</option>
+                                    @foreach($periodes as $periode)
+                                        <option value="{{ $periode->id }}" @selected(old('periode_id') == $periode->id)>
+                                            {{ $periode->kode_periode }} — {{ $periode->nama_periode }}
                                         </option>
-                                    @endfor
+                                    @endforeach
                                 </select>
+                                @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode. Tambahkan melalui menu Periode terlebih dahulu.</div>@endif
                             </div>
 
                             <div class="col-md-12 mb-2">
@@ -179,7 +182,7 @@
                             <div class="alert alert-danger spl-alert">{{ $message }}</div>
                         @enderror
 
-                        <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" />
+                        <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" :selected-category-ids="old('kategori_urutan', [])" />
 
                         <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm rounded-pill">

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\ReportExport;
 use App\Models\SurveyArsip;
+use App\Models\Fakultas;
+use App\Models\ProgramStudi;
 use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,11 +22,7 @@ class ReportController extends Controller
             ->orderByDesc('tahun')
             ->pluck('tahun');
 
-        $prodiList = DB::table('lulusan')
-            ->whereNotNull('program_studi')
-            ->distinct()
-            ->orderBy('program_studi')
-            ->pluck('program_studi');
+        $prodiList = ProgramStudi::orderBy('nama')->get();
 
         $totalSurveySelesai = DB::table('survey')->where('is_completed', true)->count();
 
@@ -60,8 +58,8 @@ class ReportController extends Controller
     {
         $query = SurveyArsip::query()->latest('created_at');
 
-        if ($request->filled('tahun')) {
-            $query->where('tahun_instrumen', $request->tahun);
+        if ($request->filled('periode')) {
+            $query->where('periode_kode', $request->periode);
         }
         if ($request->filled('fakultas')) {
             $query->where('lulusan_fakultas', $request->fakultas);
@@ -81,11 +79,15 @@ class ReportController extends Controller
 
         $arsip = $query->paginate(10)->withQueryString();
 
-        $tahunList   = SurveyArsip::whereNotNull('tahun_instrumen')->distinct()->orderByDesc('tahun_instrumen')->pluck('tahun_instrumen');
-        $fakultasList = SurveyArsip::whereNotNull('lulusan_fakultas')->distinct()->orderBy('lulusan_fakultas')->pluck('lulusan_fakultas');
-        $prodiList   = SurveyArsip::whereNotNull('lulusan_program_studi')->distinct()->orderBy('lulusan_program_studi')->pluck('lulusan_program_studi');
+        $periodeList = SurveyArsip::whereNotNull('periode_kode')
+            ->orderByDesc('periode_tanggal_mulai')
+            ->get(['periode_kode', 'periode_nama'])
+            ->unique('periode_kode')
+            ->mapWithKeys(fn ($arsip) => [$arsip->periode_kode => $arsip->periode_nama ?: $arsip->periode_kode]);
+        $fakultasList = Fakultas::orderBy('kode')->get();
+        $prodiList = ProgramStudi::orderBy('nama')->get();
 
-        return view('admin.report.arsip', compact('arsip', 'tahunList', 'fakultasList', 'prodiList'));
+        return view('admin.report.arsip', compact('arsip', 'periodeList', 'fakultasList', 'prodiList'));
     }
 
     public function arsipDetail($id)

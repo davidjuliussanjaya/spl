@@ -537,6 +537,13 @@
     </footer>
 
     <script>
+        @if(session('clear_survey_draft'))
+            try {
+                localStorage.removeItem('spl:draft:survey-fill-{{ session('clear_survey_draft') }}');
+                sessionStorage.removeItem('spl:draft:pending');
+            } catch (error) {}
+        @endif
+
         // Navbar shadow on scroll
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {

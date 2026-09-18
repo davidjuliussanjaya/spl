@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LulusanStoreRequest;
 use App\Models\Lulusan;
 use App\Models\PenggunaLulusan;
+use App\Models\Fakultas;
+use App\Models\ProgramStudi;
 use App\Services\LulusanService;
 use Illuminate\Http\Request;
 
@@ -20,26 +22,30 @@ class LulusanController extends Controller
     public function index(Request $request)
     {
         $lulusan = $this->lulusanService->getFilteredLulusan($request);
+        $fakultasList = Fakultas::with('programStudis')->orderBy('kode')->get();
+        $prodiList = ProgramStudi::with('fakultas')->orderBy('nama')->get();
 
-        return view('admin.lulusan.index', compact('lulusan'));
+        return view('admin.lulusan.index', compact('lulusan', 'fakultasList', 'prodiList'));
     }
 
     public function add()
     {
         $perusahaan = \App\Models\PenggunaLulusan::select('id', 'nama_perusahaan')->get();
+        $fakultasList = Fakultas::with('programStudis')->orderBy('kode')->get();
         
-        return view('admin.lulusan.add', compact('perusahaan'));
+        return view('admin.lulusan.add', compact('perusahaan', 'fakultasList'));
     }
 
     public function create()
     {
         $perusahaan = PenggunaLulusan::select('id', 'nama_perusahaan')->get();
-        return view('lulusan.create', compact('perusahaan'));
+        $fakultasList = Fakultas::with('programStudis')->orderBy('kode')->get();
+        return view('lulusan.create', compact('perusahaan', 'fakultasList'));
     }
 
     public function show($id)
     {
-        $lulusan = Lulusan::with('pengguna')->findOrFail($id);
+        $lulusan = Lulusan::with(['pengguna', 'fakultasMaster', 'programStudi'])->findOrFail($id);
 
         return view('admin.lulusan.show', compact('lulusan'));
     }

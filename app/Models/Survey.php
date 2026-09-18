@@ -14,6 +14,7 @@ class Survey extends Model
         'pengguna_lulusan_id',
         'judul',
         'tahun',
+        'periode_id',
         'deskripsi',
         'is_completed',
         'is_active',
@@ -24,11 +25,18 @@ class Survey extends Model
      */
     public function soals() 
     {
-        return $this->belongsToMany(Soal::class, 'survey_soal', 'survey_id', 'soal_id');
+        return $this->belongsToMany(Soal::class, 'survey_soal', 'survey_id', 'soal_id')
+            ->withPivot('urutan')
+            ->withTimestamps();
     }
     public function lulusan()
     {
         return $this->belongsTo(Lulusan::class);
+    }
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class);
     }
 
     /**

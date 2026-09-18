@@ -70,8 +70,8 @@
                             <div class="border rounded p-2" style="max-height: 190px; overflow-y: auto;">
                                 @foreach($prodiList as $p)
                                     <div class="form-check mb-1">
-                                        <input class="form-check-input" type="checkbox" name="program_studi[]" value="{{ $p }}" id="prodi-{{ $loop->index }}" {{ in_array($p, $filters['program_studi'] ?? [], true) ? 'checked' : '' }}>
-                                        <label class="form-check-label small" for="prodi-{{ $loop->index }}">{{ $p }}</label>
+                                        <input class="form-check-input" type="checkbox" name="program_studi[]" value="{{ $p->id }}" id="prodi-{{ $loop->index }}" {{ in_array((string) $p->id, $filters['program_studi'] ?? [], true) ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="prodi-{{ $loop->index }}">{{ $p->nama }}</label>
                                     </div>
                                 @endforeach
                             </div>

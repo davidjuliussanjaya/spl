@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AccessControlSeeder::class,
-            CompletedSurveyPeriodsSeeder::class,
+            FakultasProgramStudiSeeder::class,
+            PengolahanPenggunaLulusanArchiveSeeder::class,
         ]);
     }
 }

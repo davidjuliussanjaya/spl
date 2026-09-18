@@ -43,9 +43,20 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-4">
+                        <div class="col-md-8 mb-4">
                             <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Judul Survey <span class="text-danger">*</span></label>
                             <input type="text" name="judul" class="form-control line-input fs-5" placeholder="Contoh: Survey Kepuasan..." required value="{{ old('judul', $survey->judul) }}" {{ $disabledAttr }}>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">Periode survei <span class="text-danger">*</span></label>
+                            <select name="periode_id" class="form-select line-input @error('periode_id') is-invalid @enderror" required {{ $disabledAttr }}>
+                                <option value="">-- Pilih periode --</option>
+                                @foreach($periodes as $periode)
+                                    <option value="{{ $periode->id }}" @selected(old('periode_id', $survey->periode_id) == $periode->id)>{{ $periode->kode_periode }} — {{ $periode->nama_periode }}</option>
+                                @endforeach
+                            </select>
+                            @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="col-md-12 mb-2">
@@ -103,10 +114,10 @@
                             
                             <div class="mb-3">
                                 <label class="form-label small text-secondary mb-1">Cari / Pilih Instansi <span class="text-danger">*</span></label>
-                                <select name="penggunalulusan_id" id="select_perusahaan" class="form-select line-input" required {{ $disabledAttr }}>
+                                <select name="pengguna_lulusan_id" id="select_perusahaan" class="form-select line-input" required {{ $disabledAttr }}>
                                     <option value="">-- Pilih Perusahaan --</option>
                                     @foreach($perusahaan as $p)
-                                        <option value="{{ $p->id }}" {{ $survey->penggunalulusan_id == $p->id ? 'selected' : '' }}>{{ $p->nama_perusahaan }}</option>
+                                        <option value="{{ $p->id }}" @selected(old('pengguna_lulusan_id', $survey->pengguna_lulusan_id) == $p->id)>{{ $p->nama_perusahaan }}</option>
                                     @endforeach
                                 </select>
                                 <input type="hidden" name="nama_perusahaan" id="nama_perusahaan_hidden" value="{{ $survey->penggunalulusan->nama_perusahaan ?? '' }}" {{ $disabledAttr }}>
@@ -144,7 +155,7 @@
                 </div>
 
                 <div class="card-body p-4">
-                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="$selectedSoalIds" :locked="$isLocked" />
+                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="$selectedSoalIds" :selected-category-ids="old('kategori_urutan', $selectedCategoryIds)" :locked="$isLocked" />
 
                     {{-- TOMBOL SUBMIT HANYA MUNCUL JIKA SURVEY BELUM DIISI --}}
                     @if(!$isLocked)

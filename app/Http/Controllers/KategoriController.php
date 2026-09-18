@@ -25,10 +25,11 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
+            'status' => 'required|in:utama,optional',
         ]);
 
-        Kategori::create($request->all());
+        Kategori::create($request->only(['nama_kategori', 'deskripsi', 'status']));
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
@@ -47,10 +48,11 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
+            'status' => 'required|in:utama,optional',
         ]);
 
-        $kategori->update($request->all());
+        $kategori->update($request->only(['nama_kategori', 'deskripsi', 'status']));
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui.');
     }

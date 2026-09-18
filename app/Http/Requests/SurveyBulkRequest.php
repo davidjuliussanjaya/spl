@@ -15,11 +15,13 @@ class SurveyBulkRequest extends FormRequest
     {
         return [
             'judul'          => 'required|string|max:255',
-            'tahun'          => 'required|digits:4|integer',
+            'periode_id'     => 'required|exists:periode,id',
             'deskripsi'      => 'nullable|string',
             'tahun_lulus'    => 'required|digits:4|integer',
             'soal_pilihan'   => 'required|array|min:1',
             'soal_pilihan.*' => 'exists:soal,id',
+            'kategori_urutan' => 'nullable|array',
+            'kategori_urutan.*' => 'distinct|exists:kategoris,id',
         ];
     }
 
