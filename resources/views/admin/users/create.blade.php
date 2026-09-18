@@ -13,7 +13,7 @@
         <a href="{{ route('users.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali</a>
     </div>
 
-    <form action="{{ route('users.store') }}" method="POST">
+    <form action="{{ route('users.store') }}" method="POST" data-draft-key="spl:draft:user-create">
         @csrf
         @include('admin.users.partials.form', ['submitLabel' => 'Simpan pengguna'])
     </form>

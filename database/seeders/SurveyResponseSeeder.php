@@ -33,7 +33,7 @@ class SurveyResponseSeeder extends Seeder
 
     public function run(): void
     {
-        $surveys = Survey::with(['lulusan', 'penggunaLulusan', 'soals.jawaban', 'soals.kategori', 'soals.instrumen'])
+        $surveys = Survey::with(['lulusan.programStudi', 'lulusan.fakultasMaster', 'penggunaLulusan', 'periode', 'soals.jawaban', 'soals.kategori', 'soals.instrumen'])
             ->where('is_completed', false)
             ->where('is_active', true)
             ->get();
@@ -80,10 +80,7 @@ class SurveyResponseSeeder extends Seeder
             : Carbon::create($survey->tahun ?? Carbon::now()->year, 1, 1);
         $isFirst = true;
 
-        $fakultas = $survey->lulusan->fakultas ?? null;
-
-        $soals = $survey->soals->filter(fn ($s) => $s->peruntukan_fakultas === 'Umum' || ($fakultas && $s->peruntukan_fakultas === $fakultas)
-        );
+        $soals = $survey->soals;
 
         // Rekam pilihan jawaban untuk arsip
         $jawabanArsip = [];
@@ -190,13 +187,17 @@ class SurveyResponseSeeder extends Seeder
             'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
             'access_code' => $survey->access_code,
             'judul' => $survey->judul,
+            'periode_kode' => $survey->periode?->kode_periode,
+            'periode_nama' => $survey->periode?->nama_periode,
+            'periode_tanggal_mulai' => $survey->periode?->tanggal_mulai,
+            'periode_tanggal_berakhir' => $survey->periode?->tanggal_berakhir,
             'submitted_at' => $now,
             'tahun_instrumen' => $survey->tahun,
 
             'lulusan_nama' => $lulus?->nama,
             'lulusan_nim' => $lulus?->nim,
-            'lulusan_program_studi' => $lulus?->program_studi,
-            'lulusan_fakultas' => $lulus?->fakultas,
+            'lulusan_program_studi' => $lulus?->programStudi?->nama,
+            'lulusan_fakultas' => $lulus?->fakultasMaster?->kode,
             'lulusan_tahun_lulus' => $lulus?->tahun_lulus
                 ? Carbon::parse($lulus->tahun_lulus)->format('Y')
                 : null,

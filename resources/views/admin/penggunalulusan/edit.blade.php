@@ -138,14 +138,6 @@
                             <hr>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-bold">Jumlah Lulusan yang Pernah Bekerja</label>
-                                <input type="number" name="jumlah_lulusan" class="form-control" min="0"
-                                       placeholder="Contoh: 5"
-                                       value="{{ old('jumlah_lulusan', $pengguna->jumlah_lulusan) }}">
-                                <div class="form-text">Diperbarui otomatis saat instansi mengisi survey.</div>
-                            </div>
-
-                            <div class="mb-3">
                                 <label class="form-label small fw-bold">Durasi Rata-rata Bekerja (Bulan)</label>
                                 <input type="number" name="durasi_lulusan_bekerja" class="form-control" min="0"
                                        placeholder="Contoh: 12"

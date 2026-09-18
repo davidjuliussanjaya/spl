@@ -5,6 +5,7 @@ namespace App\Exports;
 use Illuminate\Support\Facades\DB;
 use App\Services\SatisfactionScoreService;
 use App\Support\DatabaseYearExpression;
+use App\Models\Fakultas;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -142,13 +143,14 @@ class ReportExport
         $row++;
         $row++; // baris kosong
 
-        $fakultasList = ['FTI', 'FDIK', 'FEB'];
+        $fakultasList = Fakultas::orderBy('kode')->get();
 
         $summaryDataPerFakultas = [];
 
-        foreach ($fakultasList as $fakultas) {
-            $soalList = $this->getSoalForFakultas($fakultas);
-            $dataRows = $this->getDataRows($tahun, $fakultas);
+        foreach ($fakultasList as $fakultasMaster) {
+            $fakultas = $fakultasMaster->kode;
+            $soalList = $this->getSoalAktif();
+            $dataRows = $this->getDataRows($tahun, $fakultasMaster->id);
 
             if ($dataRows->isEmpty()) {
                 continue;
@@ -160,7 +162,7 @@ class ReportExport
 
             // ── Header Fakultas ────────────────────────────────────────────
             $sheet->mergeCells("A{$row}:{$colEnd}{$row}");
-            $sheet->setCellValue("A{$row}", "FAKULTAS: {$fakultas}");
+            $sheet->setCellValue("A{$row}", "FAKULTAS: {$fakultasMaster->nama} ({$fakultas})");
             $sheet->getStyle("A{$row}:{$colEnd}{$row}")->applyFromArray([
                 'font'      => ['bold' => true, 'size' => 11, 'color' => ['argb' => 'FFFFFFFF']],
                 'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $color]],
@@ -565,50 +567,47 @@ class ReportExport
             $q->whereYear('lulusan.tahun_lulus', '<=', $this->filters['tahun_sampai']);
         }
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
+            $q->whereIn('lulusan.program_studi_id', $this->filters['program_studi']);
         }
 
         return $q->orderBy('tahun')->pluck('tahun')->map(fn($v) => (int) $v)->toArray();
     }
 
-    private function getSoalForFakultas(string $fakultas)
+    private function getSoalAktif()
     {
         return DB::table('soal')
             ->leftJoin('kategoris', 'soal.kategori_id', '=', 'kategoris.id')
             ->where('soal.is_active', true)
             ->where('soal.jenis_soal', 'rating')
-            ->where(function ($q) use ($fakultas) {
-                $q->where('soal.peruntukan_fakultas', 'Umum')
-                  ->orWhere('soal.peruntukan_fakultas', $fakultas);
-            })
             ->orderBy('soal.kode')
             ->get(['soal.id', 'soal.kode', 'soal.soal', 'soal.kategori_id', 'kategoris.nama_kategori']);
     }
 
-    private function getDataRows(int $tahun, string $fakultas)
+    private function getDataRows(int $tahun, int $fakultasId)
     {
         $q = DB::table('survey')
             ->join('lulusan', 'survey.lulusan_id', '=', 'lulusan.id')
+            ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
             ->join('pengguna_lulusan', 'survey.pengguna_lulusan_id', '=', 'pengguna_lulusan.id')
             ->where('survey.is_completed', true)
-            ->where('lulusan.fakultas', $fakultas)
+            ->where('lulusan.fakultas_id', $fakultasId)
             ->whereYear('lulusan.tahun_lulus', $tahun)
             ->select(
                 'survey.id as survey_id',
                 'lulusan.nama',
                 'lulusan.nim',
-                'lulusan.program_studi',
+                'program_studi.nama as program_studi',
                 'pengguna_lulusan.nama_penyelia',
                 'pengguna_lulusan.nama_perusahaan',
                 'pengguna_lulusan.jenis_perusahaan',
                 'pengguna_lulusan.cabang_kota',
                 'pengguna_lulusan.cabang_negara'
             )
-            ->orderBy('lulusan.program_studi')
+            ->orderBy('program_studi.nama')
             ->orderBy('lulusan.nama');
 
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
+            $q->whereIn('lulusan.program_studi_id', $this->filters['program_studi']);
         }
 
         return $q->get();
@@ -617,8 +616,10 @@ class ReportExport
     private function getTotalLulusan(int $tahun, string $fakultas, string $programStudi): int
     {
         return DB::table('lulusan')
-            ->where('fakultas', $fakultas)
-            ->where('program_studi', $programStudi)
+            ->join('fakultas', 'lulusan.fakultas_id', '=', 'fakultas.id')
+            ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
+            ->where('fakultas.kode', $fakultas)
+            ->where('program_studi.nama', $programStudi)
             ->whereYear('tahun_lulus', $tahun)
             ->count();
     }

@@ -36,6 +36,16 @@
                             @enderror
                         </div>
 
+                        <div class="mb-4">
+                            <label for="status" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                <option value="utama" @selected(old('status', $kategori->status) === 'utama')>Utama</option>
+                                <option value="optional" @selected(old('status', $kategori->status) === 'optional')>Optional</option>
+                            </select>
+                            <div class="form-text">Tentukan status aspek evaluasi ini sebagai Utama atau Optional.</div>
+                            @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <a href="{{ route('kategori.index') }}" class="btn btn-light border px-4">Batal</a>
                             <button type="submit" class="btn btn-primary px-4 shadow-sm">Simpan Perubahan</button>

@@ -115,6 +115,10 @@
     .stat-unit { font-size: .76rem; font-weight: 400; color: var(--slate-500); margin-left: .25rem; }
     .stat-name { font-size: .88rem; font-weight: 700; color: var(--slate-900); line-height: 1.35; margin-bottom: .22rem; overflow-wrap: anywhere; }
     .stat-sub { font-size: .72rem; color: var(--slate-500); margin-top: .35rem; line-height: 1.4; overflow-wrap: anywhere; }
+    .stat-breakdown { display: flex; gap: .35rem; flex-wrap: wrap; margin-top: .55rem; }
+    .stat-breakdown span { border-radius: 999px; padding: .18rem .45rem; font-size: .67rem; font-weight: 700; }
+    .stat-breakdown .done { color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; }
+    .stat-breakdown .pending { color: #b45309; background: #fffbeb; border: 1px solid #fde68a; }
     .stat-bar-track { height: 4px; background: var(--slate-100); border-radius: 99px; margin-top: .55rem; overflow: hidden; }
     .stat-bar-fill { height: 100%; border-radius: 99px; background: #16a34a; }
 
@@ -220,6 +224,8 @@
     .period-score-value { display: block; margin-top: .32rem; color: var(--slate-900); font-size: 1.45rem; font-weight: 800; line-height: 1; }
     .period-score-note { display: block; color: var(--slate-500); font-size: .7rem; line-height: 1.45; margin-top: .35rem; }
     .period-content-grid { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr); gap: .85rem; padding: 0 1rem 1rem; }
+    .period-content-grid-clean { padding-top: 1rem; }
+    .trend-card { background: linear-gradient(145deg, var(--brand-50), #fff); border-color: var(--brand-100); }
     @media(max-width:991px) { .period-content-grid { grid-template-columns: 1fr; } }
     .period-chart { min-height: 250px; }
     .period-table-wrap { overflow-x: auto; border: 1px solid var(--slate-100); border-radius: 9px; }
@@ -255,6 +261,7 @@
 
 @php
     $activePeriode = $filters['periode'] ?? [];
+    $selectedFakultas = $filters['fakultas'] ?? null;
     $selectedProdi = $filters['program_studi'] ?? [];
     $availableProdi = $filterOptions['prodiList'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
@@ -280,7 +287,7 @@
                                 @if(empty($activePeriode))
                                     Semua Periode
                                 @elseif(count($activePeriode) === 1)
-                                    {{ $activePeriode[0] }}
+                                    {{ $filterOptions['periodeList'][$activePeriode[0]] ?? $activePeriode[0] }}
                                 @else
                                     {{ count($activePeriode) }} periode dipilih
                                 @endif
@@ -288,14 +295,25 @@
                             <i class="bi bi-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu periode-menu">
-                            @foreach($filterOptions['periodeList'] as $periode)
+                            @foreach($filterOptions['periodeList'] as $kodePeriode => $namaPeriode)
                                 <label class="periode-option">
-                                    <input type="checkbox" name="periode[]" value="{{ $periode }}" {{ in_array($periode, $activePeriode, true) ? 'checked' : '' }}>
-                                    <span>{{ $periode }}</span>
+                                    <input type="checkbox" name="periode[]" value="{{ $kodePeriode }}" {{ in_array($kodePeriode, $activePeriode, true) ? 'checked' : '' }}>
+                                    <span>{{ $namaPeriode }}</span>
                                 </label>
                             @endforeach
                         </div>
                 </div>
+            </div>
+            <div class="dashboard-filter-field">
+                <label class="form-label" for="filter-fakultas">Fakultas</label>
+                <select name="fakultas" id="filter-fakultas" class="form-select">
+                    <option value="">Semua fakultas</option>
+                    @foreach($filterOptions['fakultasList'] as $kodeFakultas)
+                        <option value="{{ $kodeFakultas }}" {{ $selectedFakultas === $kodeFakultas ? 'selected' : '' }}>
+                            {{ $filterOptions['fakultasLabels'][$kodeFakultas] ?? $kodeFakultas }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             <div class="dashboard-filter-field prodi">
                 <label class="form-label">Program Studi</label>
@@ -333,27 +351,30 @@
     <div class="stat-grid">
         <div class="stat-card">
             <div class="stat-top">
-                <span class="stat-label">Total Responden</span>
+                <span class="stat-label">Total Responden / NL</span>
                 <div class="stat-icon-wrap"><i class="bi bi-people-fill"></i></div>
             </div>
             <span class="stat-value">{{ $totalResponden ?? 0 }}</span>
-            <span class="stat-unit">orang</span>
-            <div class="stat-sub">Menilai {{ $totalSurvey ?? 0 }} lulusan</div>
+            <span class="stat-unit">NL</span>
+            <div class="stat-breakdown">
+                <span class="done"><i class="bi bi-check-circle-fill"></i> {{ $totalResponden ?? 0 }} sudah mengisi</span>
+                <span class="pending"><i class="bi bi-clock-history"></i> {{ $respondenBelumMengisi ?? 0 }} belum mengisi</span>
+            </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
-                <span class="stat-label">Total Lulusan</span>
+                <span class="stat-label">Total Lulusan / NJ</span>
                 <div class="stat-icon-wrap"><i class="bi bi-mortarboard-fill"></i></div>
             </div>
             <span class="stat-value">{{ $totalLulusan ?? 0 }}</span>
-            <span class="stat-unit">orang</span>
-            <div class="stat-sub">Lulusan dalam cakupan survei</div>
+            <span class="stat-unit">NJ</span>
+            <div class="stat-sub">Lulusan dalam cakupan filter survei</div>
         </div>
 
         <div class="stat-card green">
             <div class="stat-top">
-                <span class="stat-label">Indeks Gabungan Respons</span>
+                <span class="stat-label">Indeks Kepuasan Pengguna</span>
                 <div class="stat-icon-wrap"><i class="bi bi-star-fill"></i></div>
             </div>
             <span class="stat-value">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
@@ -361,7 +382,7 @@
             <div class="stat-bar-track">
                 <div class="stat-bar-fill" style="width:{{ $pct }}%;"></div>
             </div>
-            <div class="stat-sub">Pembanding: murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
+            <div class="stat-sub">Skor murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
         </div>
 
         <div class="stat-card amber">
@@ -451,7 +472,7 @@
             <div class="modal-body p-4">
                 <ol class="dashboard-info-list">
                     <li><strong>Sumber data.</strong> Jawaban, kategori, dan identitas pada respons dibaca dari <em>arsip survei</em> yang terbentuk saat perusahaan menyelesaikan pengisian. Jadi perubahan pada soal, kategori, data lulusan, atau perusahaan setelah survei selesai tidak mengubah isi respons historisnya.</li>
-                    <li><strong>Filter.</strong> Periode, program studi, dan fakultas membatasi arsip yang dibaca. NL adalah jumlah responden unik pada cakupan tersebut, sedangkan NJ adalah jumlah lulusan yang memiliki sesi survei pada cakupan/periode yang sama.</li>
+                    <li><strong>Filter.</strong> Periode, fakultas, dan program studi membatasi seluruh KPI, grafik, serta tabel. NL menampilkan responden unik yang sudah mengisi dan yang masih memiliki survei belum diisi; NJ adalah total lulusan dalam cakupan yang sama.</li>
                     <li><strong>Skor murni per periode.</strong> Setiap jawaban rating bernilai 1–4 dijumlahkan menurut bobotnya lalu dirata-ratakan. Nama pilihan jawaban boleh berubah pada tahun berikutnya; yang dipakai untuk perhitungan adalah nilai numeriknya.</li>
                 </ol>
                 <div class="dashboard-info-formula my-3">
@@ -460,9 +481,8 @@
                     Skor akhir periode = skor murni × faktor respons.
                 </div>
                 <ol class="dashboard-info-list" start="4">
-                    <li><strong>Indeks Global Tertimbang</strong> adalah rekomendasi untuk lintas tahun: setiap skor akhir periode dikalikan NJ periodenya, kemudian dibagi total NJ. Dengan cara ini, satu periode tidak menutupi periode lain hanya karena jumlah soalnya lebih banyak atau kategorinya berbeda.</li>
-                    <li><strong>Indeks Gabungan Respons</strong> dipertahankan sebagai pembanding. Metode ini menghitung semua respons pada filter sebagai satu kelompok, sehingga paling tepat dipakai bila instrumennya konsisten antarperiode.</li>
-                    <li><strong>Rincian kategori.</strong> Bandingkan kategori di dalam periode yang sama. Jika nama atau makna kategori berubah antarperiode, jangan menyimpulkan kenaikan/penurunan kategori secara langsung; gunakan tren skor periode atau selaraskan kode kategori terlebih dahulu.</li>
+                    <li><strong>Indeks Kepuasan Pengguna</strong> merangkum seluruh respons yang sesuai filter. Gunakan tren periode untuk melihat perubahan indeks dari waktu ke waktu.</li>
+                    <li><strong>Rincian kategori.</strong> Grafik dan tabel kepuasan membantu melihat area yang perlu ditingkatkan dalam cakupan filter aktif.</li>
                 </ol>
             </div>
         </div>

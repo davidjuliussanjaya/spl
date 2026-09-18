@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Lulusan;
 use App\Models\PenggunaLulusan;
+use App\Models\Periode;
+use App\Models\ProgramStudi;
 use App\Models\Soal;
 use App\Models\Survey;
 use App\Models\SurveyArsip;
@@ -87,6 +89,7 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(FakultasProgramStudiSeeder::class);
         $soalAktif = $this->ambilSoalAktif();
 
         // Database baru belum memiliki aspek evaluasi dan pertanyaan. Siapkan
@@ -112,6 +115,14 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
         DB::transaction(function () use ($soalAktif, $seededAt, &$totalSurvey): void {
             foreach (self::PERIODS as $periodIndex => $periode) {
+                $periodeMaster = Periode::firstOrCreate(
+                    ['kode_periode' => (string) $periode],
+                    [
+                        'nama_periode' => "Periode Survei {$periode}",
+                        'tanggal_mulai' => "{$periode}-01-01",
+                        'tanggal_berakhir' => "{$periode}-12-31",
+                    ],
+                );
                 for ($urutan = 1; $urutan <= 4; $urutan++) {
                     $nomorData = ($periodIndex * 4) + ($urutan - 1);
                     $profil = $this->profilLulusan[$urutan - 1];
@@ -122,18 +133,9 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
                     $perusahaan = $this->buatPerusahaan($periode, $urutan, $nomorData, $submittedAt);
                     $lulus = $this->buatLulusan($periode, $urutan, $nomorData, $profil, $perusahaan, $submittedAt);
-                    $survey = $this->buatSurvey($periode, $urutan, $lulus, $perusahaan, $submittedAt);
+                    $survey = $this->buatSurvey($periode, $periodeMaster, $urutan, $lulus, $perusahaan, $submittedAt);
 
-                    $soalUntukLulusan = $soalAktif
-                        ->filter(fn ($item) => $item->peruntukan_fakultas === 'Umum'
-                            || $item->peruntukan_fakultas === $lulus->fakultas)
-                        ->values();
-
-                    // Jika instalasi hanya memiliki soal dengan peruntukan yang berbeda,
-                    // tetap gunakan pertanyaan aktif agar survei demo dapat lengkap.
-                    if ($soalUntukLulusan->isEmpty()) {
-                        $soalUntukLulusan = $soalAktif;
-                    }
+                    $soalUntukLulusan = $soalAktif->values();
 
                     $survey->soals()->sync($soalUntukLulusan->pluck('id')->all());
                     DB::table('respon_jawaban')->where('survey_id', $survey->id)->delete();
@@ -158,13 +160,17 @@ class CompletedSurveyPeriodsSeeder extends Seeder
                             'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
                             'access_code' => $survey->access_code,
                             'judul' => $survey->judul,
+                            'periode_kode' => $periodeMaster->kode_periode,
+                            'periode_nama' => $periodeMaster->nama_periode,
+                            'periode_tanggal_mulai' => $periodeMaster->tanggal_mulai,
+                            'periode_tanggal_berakhir' => $periodeMaster->tanggal_berakhir,
                             'submitted_at' => $submittedAt,
                             'tahun_instrumen' => (string) $periode,
 
                             'lulusan_nama' => $lulus->nama,
                             'lulusan_nim' => $lulus->nim,
-                            'lulusan_program_studi' => $lulus->program_studi,
-                            'lulusan_fakultas' => $lulus->fakultas,
+                            'lulusan_program_studi' => $lulus->programStudi?->nama,
+                            'lulusan_fakultas' => $lulus->fakultasMaster?->kode,
                             'lulusan_tahun_lulus' => Carbon::parse($lulus->tahun_lulus)->format('Y'),
 
                             'perusahaan_nama' => $perusahaan->nama_perusahaan,
@@ -238,6 +244,11 @@ class CompletedSurveyPeriodsSeeder extends Seeder
     ): Lulusan {
         $nim = 'SPL' . $periode . str_pad((string) $urutan, 2, '0', STR_PAD_LEFT);
 
+        $programStudi = ProgramStudi::with('fakultas')
+            ->where('nama', $profil['program_studi'])
+            ->whereHas('fakultas', fn ($query) => $query->where('kode', $profil['fakultas']))
+            ->firstOrFail();
+
         return Lulusan::updateOrCreate(
             ['nim' => $nim],
             [
@@ -245,6 +256,8 @@ class CompletedSurveyPeriodsSeeder extends Seeder
                 'nama' => $this->namaLulusan[$nomorData],
                 'program_studi' => $profil['program_studi'],
                 'fakultas' => $profil['fakultas'],
+                'program_studi_id' => $programStudi->id,
+                'fakultas_id' => $programStudi->fakultas_id,
                 'tahun_lulus' => Carbon::create($periode - 1, 8, 15),
                 'status' => true,
                 'created_at' => $timestamp,
@@ -255,6 +268,7 @@ class CompletedSurveyPeriodsSeeder extends Seeder
 
     private function buatSurvey(
         int $periode,
+        Periode $periodeMaster,
         int $urutan,
         Lulusan $lulus,
         PenggunaLulusan $perusahaan,
@@ -269,6 +283,7 @@ class CompletedSurveyPeriodsSeeder extends Seeder
                 'pengguna_lulusan_id' => $perusahaan->id,
                 'judul' => "Survey Kepuasan Pengguna Lulusan {$periode}",
                 'tahun' => $periode,
+                'periode_id' => $periodeMaster->id,
                 'deskripsi' => 'Data demo survei selesai untuk evaluasi pengguna lulusan.',
                 'is_completed' => true,
                 'is_active' => true,

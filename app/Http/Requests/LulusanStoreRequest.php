@@ -6,17 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LulusanStoreRequest extends FormRequest
 {
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'fakultas' => [
-                'Fakultas Teknologi dan Informatika' => 'FTI',
-                'Fakultas Desain dan Industri Kreatif' => 'FDIK',
-                'Fakultas Ekonomi dan Bisnis' => 'FEB',
-            ][$this->input('fakultas')] ?? $this->input('fakultas'),
-        ]);
-    }
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -36,8 +25,8 @@ class LulusanStoreRequest extends FormRequest
             'pengguna_lulusan_id' => 'required|exists:pengguna_lulusan,id',
             'nama'                => 'required|string|max:255',
             'nim'                 => 'required|string|unique:lulusan,nim',
-            'program_studi'       => 'required|string',
-            'fakultas'            => 'required|in:FTI,FDIK,FEB',
+            'program_studi_id'    => 'required|exists:program_studi,id',
+            'fakultas_id'         => 'required|exists:fakultas,id',
             'tahun_lulus'         => 'required|date',
             'status'              => 'nullable',
         ];

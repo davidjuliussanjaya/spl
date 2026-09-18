@@ -124,6 +124,11 @@
                 <span class="badge spl-archive-code-badge">
                     Kode: {{ $arsip->access_code ?? '-' }}
                 </span>
+                @if($arsip->periode_kode)
+                <span class="badge spl-archive-instrument-badge">
+                    {{ $arsip->periode_nama ?: $arsip->periode_kode }}
+                </span>
+                @endif
                 @if($arsip->tahun_instrumen)
                 <span class="badge spl-archive-instrument-badge">
                     Instrumen {{ $arsip->tahun_instrumen }}

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Lulusan;
+use App\Models\Periode;
 use App\Models\PenggunaLulusan;
 use App\Models\ResponJawaban;
 use App\Models\Soal;
@@ -17,6 +18,7 @@ class SurveyService
     public function createSurvey(array $data)
     {
         return DB::transaction(function () use ($data) {
+            $periode = Periode::findOrFail($data['periode_id']);
             $pengguna = PenggunaLulusan::findOrFail($data['pengguna_lulusan_id']);
             
             $pengguna->update([
@@ -32,7 +34,9 @@ class SurveyService
 
             $survey = Survey::create([
                 'judul'               => $data['judul'],
-                'tahun'               => $data['tahun'] ?? now()->year,
+                // Kolom tahun dipertahankan untuk kompatibilitas data lama.
+                'tahun'               => $periode->tanggal_mulai->year,
+                'periode_id'          => $periode->id,
                 'deskripsi'           => $data['deskripsi'] ?? null,
                 'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
@@ -41,20 +45,14 @@ class SurveyService
                 'is_active'           => true,
             ]);
 
-            // Hanya simpan soal yang sesuai dengan fakultas lulusan
             $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])
-                ->where(function ($q) use ($lulus) {
-                    $q->where('peruntukan_fakultas', 'Umum');
-                    if ($lulus->fakultas) {
-                        $q->orWhere('peruntukan_fakultas', $lulus->fakultas);
-                    }
-                })
-                ->pluck('id');
+                ->get(['id', 'kategori_id', 'kode']);
 
-            foreach ($soalTerpilih as $soal_id) {
+            foreach ($this->urutkanSoal($soalTerpilih, $data['kategori_urutan'] ?? []) as $index => $soal) {
                 DB::table('survey_soal')->insert([
                     'survey_id'  => $survey->id,
-                    'soal_id'    => $soal_id,
+                    'soal_id'    => $soal->id,
+                    'urutan'     => $index + 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -178,7 +176,7 @@ class SurveyService
             $survey->update(['is_completed' => true]);
 
             // Tulis arsip permanen — tidak bergantung FK apapun
-            $this->buatArsip($survey->fresh(['lulusan', 'penggunaLulusan']), $data);
+            $this->buatArsip($survey->fresh(['lulusan.programStudi', 'lulusan.fakultasMaster', 'penggunaLulusan', 'periode']), $data);
 
             return $survey;
         });
@@ -251,6 +249,10 @@ class SurveyService
             'pengguna_lulusan_id' => $survey->pengguna_lulusan_id,
             'access_code'   => $survey->access_code,
             'judul'         => $survey->judul,
+            'periode_kode'  => $survey->periode?->kode_periode,
+            'periode_nama'  => $survey->periode?->nama_periode,
+            'periode_tanggal_mulai' => $survey->periode?->tanggal_mulai,
+            'periode_tanggal_berakhir' => $survey->periode?->tanggal_berakhir,
             'submitted_at'  => now(),
             'tahun_instrumen' => $survey->soals->first()?->instrumen_id
                 ? \App\Models\Instrumen::find($survey->soals->first()->instrumen_id)?->tahun
@@ -258,8 +260,8 @@ class SurveyService
 
             'lulusan_nama'          => $lulus?->nama,
             'lulusan_nim'           => $lulus?->nim,
-            'lulusan_program_studi' => $lulus?->program_studi,
-            'lulusan_fakultas'      => $lulus?->fakultas,
+            'lulusan_program_studi' => $lulus?->programStudi?->nama,
+            'lulusan_fakultas'      => $lulus?->fakultasMaster?->kode,
             'lulusan_tahun_lulus'   => $lulus?->tahun_lulus
                 ? \Carbon\Carbon::parse($lulus->tahun_lulus)->format('Y')
                 : null,
@@ -285,6 +287,7 @@ class SurveyService
     public function createBulkSurveys(array $data): array
     {
         return DB::transaction(function () use ($data) {
+            $periode = Periode::findOrFail($data['periode_id']);
             $tahunLulus = $data['tahun_lulus'];
 
             $lulusanList = Lulusan::whereYear('tahun_lulus', $tahunLulus)
@@ -297,19 +300,15 @@ class SurveyService
 
             $surveys = [];
 
-            // Ambil detail soal yang dipilih admin (termasuk peruntukan_fakultas)
-            $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])->get(['id', 'peruntukan_fakultas']);
+            $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])->get(['id', 'kategori_id', 'kode']);
 
             foreach ($lulusanList as $lulus) {
-                // Filter soal: hanya yang Umum atau sesuai fakultas lulusan ini
-                $soalUntukLulusan = $soalTerpilih->filter(function ($s) use ($lulus) {
-                    return $s->peruntukan_fakultas === 'Umum'
-                        || $s->peruntukan_fakultas === $lulus->fakultas;
-                });
+                $soalUntukLulusan = $soalTerpilih;
 
                 $survey = Survey::create([
                     'judul'               => $data['judul'],
-                    'tahun'               => $data['tahun'] ?? now()->year,
+                    'tahun'               => $periode->tanggal_mulai->year,
+                    'periode_id'          => $periode->id,
                     'deskripsi'           => $data['deskripsi'] ?? null,
                     'lulusan_id'          => $lulus->id,
                     'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
@@ -318,10 +317,11 @@ class SurveyService
                     'is_active'           => true,
                 ]);
 
-                foreach ($soalUntukLulusan as $s) {
+                foreach ($this->urutkanSoal($soalUntukLulusan, $data['kategori_urutan'] ?? []) as $index => $s) {
                     DB::table('survey_soal')->insert([
                         'survey_id'  => $survey->id,
                         'soal_id'    => $s->id,
+                        'urutan'     => $index + 1,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -337,6 +337,7 @@ class SurveyService
     public function updateSurvey(Survey $survey, array $data)
     {
         return DB::transaction(function () use ($survey, $data) {
+            $periode = Periode::findOrFail($data['periode_id']);
             $pengguna = PenggunaLulusan::find($data['pengguna_lulusan_id']);
             if ($pengguna) {
                 $pengguna->update([
@@ -353,26 +354,41 @@ class SurveyService
 
             $survey->update([
                 'judul'               => $data['judul'],
-                'tahun'               => $data['tahun'] ?? $survey->tahun ?? now()->year,
+                'tahun'               => $periode->tanggal_mulai->year,
+                'periode_id'          => $periode->id,
                 'deskripsi'           => $data['deskripsi'] ?? null,
                 'lulusan_id'          => $lulus->id,
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
             ]);
 
-            // Sync hanya soal yang sesuai dengan fakultas lulusan
             $soalValid = Soal::whereIn('id', $data['soal_pilihan'])
-                ->where(function ($q) use ($lulus) {
-                    $q->where('peruntukan_fakultas', 'Umum');
-                    if ($lulus->fakultas) {
-                        $q->orWhere('peruntukan_fakultas', $lulus->fakultas);
-                    }
-                })
-                ->pluck('id')
-                ->toArray();
+                ->get(['id', 'kategori_id', 'kode']);
 
-            $survey->soals()->sync($soalValid);
+            $pivotData = $this->urutkanSoal($soalValid, $data['kategori_urutan'] ?? [])
+                ->values()
+                ->mapWithKeys(fn ($soal, $index) => [$soal->id => ['urutan' => $index + 1]])
+                ->all();
+
+            $survey->soals()->sync($pivotData);
 
             return $survey;
         });
+    }
+
+    /**
+     * Menempatkan seluruh soal dari kategori yang sama secara berurutan.
+     * Prioritas kategori mengikuti susunan kartu pada form admin; soal di dalam
+     * kategori tetap mengikuti kode soal agar urutannya konsisten.
+     */
+    private function urutkanSoal($soals, array $kategoriUrutan)
+    {
+        $prioritasKategori = array_flip(array_map('intval', $kategoriUrutan));
+
+        return $soals->sort(function ($a, $b) use ($prioritasKategori) {
+            $urutanA = $prioritasKategori[$a->kategori_id] ?? PHP_INT_MAX;
+            $urutanB = $prioritasKategori[$b->kategori_id] ?? PHP_INT_MAX;
+
+            return [$urutanA, $a->kode ?? '', $a->id] <=> [$urutanB, $b->kode ?? '', $b->id];
+        })->values();
     }
 }

@@ -24,7 +24,8 @@ class PenggunaLulusanUpdateRequest extends FormRequest
             'alamat_perusahaan'      => 'nullable|string',
             'cabang_kota'            => 'nullable|integer|min:0',
             'cabang_negara'          => 'nullable|integer|min:0',
-            'jumlah_lulusan'         => 'nullable|integer|min:0',
+            // Admin tidak dapat mengubah angka yang dilaporkan perusahaan.
+            'jumlah_lulusan'         => 'prohibited',
             'durasi_lulusan_bekerja' => 'nullable|integer|min:0',
         ];
     }

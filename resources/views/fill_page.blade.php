@@ -11,16 +11,18 @@
 
     <style>
         :root {
-            --dinamika-maroon: #8B1A2A; /* Warna khas Universitas Dinamika */
-            --dinamika-maroon-dark: #6C0215;
-            --dinamika-gold: #C9A227;
-            --dinamika-light: #FFF5F7;
+            --spl-brand: #2563eb;
+            --spl-brand-dark: #1d4ed8;
+            --spl-brand-soft: #eff6ff;
+            --spl-border: #dbe5f1;
+            --spl-text: #0f172a;
+            --spl-muted: #64748b;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: #f8fafc;
+            color: var(--spl-text);
         }
 
         /* Container & Cards */
@@ -31,22 +33,22 @@
         .card-custom {
             background: #ffffff;
             border-radius: 16px;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid var(--spl-border);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
             margin-bottom: 2rem;
             overflow: hidden;
         }
 
         /* Header Survey */
         .survey-header {
-            background: linear-gradient(135deg, var(--dinamika-maroon) 0%, var(--dinamika-maroon-dark) 100%);
+            background: linear-gradient(135deg, var(--spl-brand) 0%, var(--spl-brand-dark) 100%);
             color: #fff;
             padding: 3rem 2rem;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        /* Aksen kotak-kotak dekoratif ala logo Dinamika */
+        /* Aksen latar selaras dengan panel administrasi. */
         .survey-header::before {
             content: '';
             position: absolute;
@@ -113,13 +115,13 @@
         }
 
         /* Utilities */
-        .text-dinamika { color: var(--dinamika-maroon) !important; }
-        .bg-dinamika-subtle { background-color: var(--dinamika-light) !important; color: var(--dinamika-maroon) !important;}
+        .text-dinamika { color: var(--spl-brand) !important; }
+        .bg-dinamika-subtle { background-color: var(--spl-brand-soft) !important; color: var(--spl-brand) !important;}
 
         /* Lulusan Card */
         .lulusan-card {
-            background: linear-gradient(135deg, #fff5f6 0%, #fff 60%);
-            border: 1.5px solid #f5c0c8;
+            background: linear-gradient(135deg, var(--spl-brand-soft) 0%, #fff 60%);
+            border: 1.5px solid #bfdbfe;
             border-radius: 14px;
             padding: 1.75rem 1.5rem;
             text-align: center;
@@ -131,18 +133,18 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--dinamika-maroon), var(--dinamika-gold));
+            background: linear-gradient(90deg, var(--spl-brand), #60a5fa);
         }
         .lulusan-avatar {
             width: 64px;
             height: 64px;
-            background: linear-gradient(135deg, var(--dinamika-maroon), #c0392b);
+            background: linear-gradient(135deg, var(--spl-brand), #60a5fa);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
-            box-shadow: 0 4px 14px rgba(154,3,30,0.25);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, .25);
         }
         .lulusan-avatar i {
             font-size: 1.75rem;
@@ -157,7 +159,7 @@
         .lulusan-nim {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--dinamika-maroon);
+            color: var(--spl-brand);
             letter-spacing: 0.5px;
             margin-bottom: 1rem;
         }
@@ -166,7 +168,7 @@
             align-items: center;
             gap: 0.75rem;
             background-color: #fff;
-            border: 1px solid #f5c0c8;
+            border: 1px solid #bfdbfe;
             border-radius: 50px;
             padding: 0.4rem 1.25rem;
             font-size: 0.82rem;
@@ -181,13 +183,13 @@
             font-weight: 500;
         }
         .lulusan-meta-item i {
-            color: var(--dinamika-maroon);
+            color: var(--spl-brand);
             font-size: 0.85rem;
         }
         .lulusan-meta-divider {
             width: 1px;
             height: 14px;
-            background-color: #f5c0c8;
+            background-color: #bfdbfe;
         }
 
         /* Kategori Title */
@@ -197,7 +199,7 @@
             background-color: #f1f5f9;
             padding: 1rem 1.5rem;
             border-radius: 10px;
-            border-left: 5px solid var(--dinamika-maroon);
+            border-left: 5px solid var(--spl-brand);
         }
 
         /* Form Elements */
@@ -208,8 +210,8 @@
             transition: all 0.2s;
         }
         .form-control:focus {
-            border-color: var(--dinamika-maroon);
-            box-shadow: 0 0 0 4px rgba(154, 3, 30, 0.1);
+            border-color: var(--spl-brand);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
         }
 
         /* Survey Table */
@@ -218,34 +220,34 @@
             font-size: 0.875rem;
         }
         .survey-table thead th {
-            background-color: #fce8eb;
-            color: #7a0117;
+            background-color: var(--spl-brand-soft);
+            color: var(--spl-brand-dark);
             text-align: center;
             vertical-align: middle;
             font-weight: 700;
-            border-color: #f5c0c8;
+            border-color: #bfdbfe;
             padding: 0.6rem 0.75rem;
         }
         .survey-table thead tr:first-child th {
-            background-color: var(--dinamika-maroon);
+            background-color: var(--spl-brand);
             color: #fff;
             font-size: 0.95rem;
             text-align: left;
             letter-spacing: 0.3px;
-            border-color: var(--dinamika-maroon-dark);
+            border-color: var(--spl-brand-dark);
         }
         .survey-table tbody tr td {
             vertical-align: middle;
-            border-color: #f5c0c8;
+            border-color: #bfdbfe;
             padding: 0.6rem 0.75rem;
         }
         .survey-table tbody tr:hover td {
-            background-color: #fff5f6;
+            background-color: var(--spl-brand-soft);
         }
         .survey-table .td-no {
             text-align: center;
             font-weight: 600;
-            color: var(--dinamika-maroon);
+            color: var(--spl-brand);
             width: 45px;
         }
         .survey-table .td-option {
@@ -256,7 +258,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: var(--dinamika-maroon);
+            accent-color: var(--spl-brand);
         }
         .survey-table .th-option {
             min-width: 60px;
@@ -274,7 +276,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: var(--dinamika-maroon);
+            accent-color: var(--spl-brand);
         }
         .mc-option .form-check-label {
             font-size: 0.9rem;
@@ -289,8 +291,8 @@
             transition: all 0.2s;
         }
         .mc-other-input:focus {
-            border-color: var(--dinamika-maroon);
-            box-shadow: 0 0 0 3px rgba(154, 3, 30, 0.1);
+            border-color: var(--spl-brand);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
             outline: none;
         }
         .mc-other-input:disabled {
@@ -300,7 +302,7 @@
 
         /* Button */
         .btn-submit {
-            background-color: var(--dinamika-maroon);
+            background-color: var(--spl-brand);
             color: white;
             border: none;
             border-radius: 10px;
@@ -313,9 +315,9 @@
             letter-spacing: 1px;
         }
         .btn-submit:hover {
-            background-color: var(--dinamika-maroon-dark);
+            background-color: var(--spl-brand-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(154, 3, 30, 0.2);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .22);
             color: white;
         }
 
@@ -358,6 +360,7 @@
                 <div class="survey-header-content">
                     <div class="univ-badge"><i class="bi bi-mortarboard-fill me-2 text-warning"></i> Universitas Dinamika</div>
                     <h2>{{ $survey->judul }}</h2>
+                    <p class="text-white-50 mb-1">{{ $survey->periode?->nama_periode }} · {{ $survey->periode?->tanggal_mulai?->translatedFormat('d M Y') }}–{{ $survey->periode?->tanggal_berakhir?->translatedFormat('d M Y') }}</p>
                     <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
                 </div>
             </div>
@@ -380,7 +383,7 @@
                     <div class="lulusan-meta">
                         <div class="lulusan-meta-item">
                             <i class="bi bi-building-fill-check"></i>
-                            <span>{{ $survey->lulusan->program_studi ?? '-' }}</span>
+                            <span>{{ $survey->lulusan->programStudi?->nama ?? '-' }}</span>
                         </div>
                         <div class="lulusan-meta-divider"></div>
                         <div class="lulusan-meta-item">
@@ -392,8 +395,15 @@
             </div>
         </div>
 
-        <form action="{{ route('survey.submit', $survey->access_code) }}" method="POST">
+        <form action="{{ route('survey.submit', $survey->access_code) }}" method="POST" data-draft-key="spl:draft:survey-fill-{{ $survey->access_code }}">
             @csrf
+
+            @if($errors->any())
+                <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Lengkapi seluruh isian wajib sebelum mengirim survei.
+                </div>
+            @endif
             
             <div class="card-custom p-4 p-md-5">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -404,9 +414,8 @@
                 </div>
 
                 @php
-                    $autoJumlah = $survey->penggunalulusan->lulusans->count();
+                    $jumlahSistem = $survey->penggunalulusan->lulusans->count();
                     $storedJumlah = $survey->penggunalulusan->jumlah_lulusan;
-                    $defaultJumlah = $storedJumlah ?? $autoJumlah;
                 @endphp
 
                 <div class="p-3 bg-light rounded border mb-3">
@@ -417,8 +426,8 @@
                             <div class="small text-muted">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
                         </div>
                         <div class="text-end ms-3">
-                            <div class="fw-bold text-primary fs-4">{{ $defaultJumlah }}</div>
-                            <div class="small text-muted">lulusan tercatat</div>
+                            <div class="fw-bold text-primary fs-4">{{ $jumlahSistem }}</div>
+                            <div class="small text-muted">lulusan tercatat sistem</div>
                         </div>
                     </div>
                 </div>
@@ -426,20 +435,21 @@
                 <div class="mb-3 p-3 border rounded bg-white">
                     <label class="form-label small text-secondary fw-bold mb-1">
                         <i class="bi bi-people-fill me-1 text-primary"></i>
-                        Jumlah Lulusan yang Pernah Bekerja di Instansi Ini
+                        Jumlah Lulusan yang Saat Ini Bekerja di Instansi Ini <span class="text-danger">*</span>
                     </label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="number" name="jumlah_lulusan_bekerja" class="form-control"
                                style="max-width: 160px"
-                               min="0" value="{{ $defaultJumlah }}"
-                               placeholder="Jumlah orang...">
-                        @if($autoJumlah > 0)
+                               min="1" step="1" required value="{{ old('jumlah_lulusan_bekerja', $storedJumlah) }}"
+                               placeholder="Minimal 1 orang">
+                        @if($jumlahSistem > 0)
                         <span class="text-muted small">
-                            (sistem mencatat <strong>{{ $autoJumlah }}</strong> lulusan)
+                            (sistem mencatat <strong>{{ $jumlahSistem }}</strong> lulusan)
                         </span>
                         @endif
                     </div>
-                    <div class="form-text">Ubah jika jumlah sebenarnya berbeda dari data sistem.</div>
+                    <div class="form-text">Diisi oleh perusahaan sesuai jumlah lulusan yang bekerja saat ini, minimal 1 orang.</div>
+                    @error('jumlah_lulusan_bekerja')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                 </div>
 
                 <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerusahaan" aria-expanded="false" aria-controls="collapsePerusahaan">
@@ -605,6 +615,7 @@
                                                     <input type="radio"
                                                            name="jawaban[{{ $s->id }}]"
                                                            value="{{ $j->id }}"
+                                                           @checked(old('jawaban.' . $s->id) == $j->id)
                                                            {{ $s->is_required ? 'required' : '' }}>
                                                 </td>
                                             @endforeach
@@ -613,6 +624,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        @foreach($ratingSoal->filter(fn($s) => $s->is_required) as $s)
+                            @error('jawaban.' . $s->id)<div class="text-danger small mt-2">{{ $message }}</div>@enderror
+                        @endforeach
                     @endif
 
                     {{-- MULTIPLE CHOICE: checkbox beberapa pilihan + kolom "Lainnya" teks bebas --}}
@@ -625,7 +639,7 @@
                             @endif
 
                             @foreach($multiChoiceSoal as $s)
-                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
+                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}" data-required-multiple="{{ $s->is_required ? 'true' : 'false' }}">
                                     <p class="fw-bold text-dark mb-3">
                                         <span class="text-dinamika me-1">{{ $loop->iteration }}.</span>
                                         {{ $s->soal }}
@@ -637,6 +651,7 @@
                                                 <input class="form-check-input" type="checkbox"
                                                        name="mc[{{ $s->id }}][]"
                                                        value="{{ $j->id }}"
+                                                       @checked(in_array($j->id, old('mc.' . $s->id, [])))
                                                        id="mc_{{ $s->id }}_{{ $j->id }}">
                                                 <label class="form-check-label" for="mc_{{ $s->id }}_{{ $j->id }}">
                                                     {{ $j->jawaban }}
@@ -650,6 +665,7 @@
                                         <div class="form-check mc-option mb-2">
                                             <input class="form-check-input" type="checkbox"
                                                    id="mc_other_check_{{ $s->id }}"
+                                                   @checked(old('mc_custom.' . $s->id))
                                                    onchange="
                                                        var txt = document.getElementById('mc_other_text_{{ $s->id }}');
                                                        txt.disabled = !this.checked;
@@ -666,7 +682,10 @@
                                                class="mc-other-input ms-4 d-block"
                                                style="max-width: 420px"
                                                placeholder="Tuliskan jawaban Anda..."
-                                               disabled>
+                                               value="{{ old('mc_custom.' . $s->id) }}"
+                                               {{ old('mc_custom.' . $s->id) ? '' : 'disabled' }}>
+                                        <div class="text-danger small mt-2" data-multiple-error hidden>Pilih minimal satu jawaban untuk pertanyaan wajib ini.</div>
+                                        @error('mc.' . $s->id)<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                             @endforeach
@@ -690,7 +709,8 @@
                                     </label>
                                     <textarea name="jawaban[{{ $s->id }}]" class="form-control" rows="3"
                                               placeholder="Tuliskan umpan balik Anda di sini..."
-                                              {{ $s->is_required ? 'required' : '' }}></textarea>
+                                              {{ $s->is_required ? 'required' : '' }}>{{ old('jawaban.' . $s->id) }}</textarea>
+                                    @error('jawaban.' . $s->id)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                 </div>
                             @endforeach
                         </div>
@@ -713,5 +733,34 @@
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let firstInvalidGroup = null;
+
+            document.querySelectorAll('[data-required-multiple="true"]').forEach(function (group) {
+                const hasCheckedAnswer = Array.from(group.querySelectorAll('input[name^="mc["]')).some(function (input) {
+                    return input.checked;
+                });
+                const otherAnswer = group.querySelector('.mc-other-input')?.value.trim() ?? '';
+                const error = group.querySelector('[data-multiple-error]');
+                const isValid = hasCheckedAnswer || otherAnswer !== '';
+
+                error.hidden = isValid;
+                group.classList.toggle('border', !isValid);
+                group.classList.toggle('border-danger', !isValid);
+
+                if (!isValid && !firstInvalidGroup) {
+                    firstInvalidGroup = group;
+                }
+            });
+
+            if (firstInvalidGroup) {
+                event.preventDefault();
+                firstInvalidGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidGroup.querySelector('input[type="checkbox"]')?.focus();
+            }
+        });
+    </script>
+    <x-form-draft-cache />
 </body>
 </html>

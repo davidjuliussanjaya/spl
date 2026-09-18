@@ -18,6 +18,8 @@ class Lulusan extends Model
         'nim',
         'program_studi',
         'fakultas',
+        'program_studi_id',
+        'fakultas_id',
         'tahun_lulus',
         'status',
     ];
@@ -30,5 +32,15 @@ class Lulusan extends Model
     public function pengguna(): BelongsTo
     {
         return $this->belongsTo(PenggunaLulusan::class, 'pengguna_lulusan_id');
+    }
+
+    public function fakultasMaster(): BelongsTo
+    {
+        return $this->belongsTo(Fakultas::class, 'fakultas_id');
+    }
+
+    public function programStudi(): BelongsTo
+    {
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_id');
     }
 }

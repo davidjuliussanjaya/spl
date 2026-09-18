@@ -13,6 +13,10 @@ class SurveyArsip extends Model
         'pengguna_lulusan_id',
         'access_code',
         'judul',
+        'periode_kode',
+        'periode_nama',
+        'periode_tanggal_mulai',
+        'periode_tanggal_berakhir',
         'submitted_at',
         'tahun_instrumen',
 
@@ -41,6 +45,8 @@ class SurveyArsip extends Model
 
     protected $casts = [
         'submitted_at' => 'datetime',
+        'periode_tanggal_mulai' => 'date',
+        'periode_tanggal_berakhir' => 'date',
         'jawaban_json' => 'array',
     ];
 }

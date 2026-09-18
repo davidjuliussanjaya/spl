@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Lulusan;
+use App\Models\ProgramStudi;
 use Illuminate\Support\Facades\DB;
 
 class LulusanService
@@ -13,7 +14,14 @@ class LulusanService
     public function storeLulusan(array $data): Lulusan
     {
         return DB::transaction(function () use ($data) {
-            $data['fakultas'] = $this->normalizeFakultas($data['fakultas']);
+            $programStudi = ProgramStudi::findOrFail($data['program_studi_id']);
+            if ((int) $programStudi->fakultas_id !== (int) $data['fakultas_id']) {
+                throw new \InvalidArgumentException('Program studi tidak terdaftar pada fakultas yang dipilih.');
+            }
+
+            // Kolom teks lama dipertahankan sebagai snapshot kompatibilitas.
+            $data['program_studi'] = $programStudi->nama;
+            $data['fakultas'] = $programStudi->fakultas->kode;
 
             // Logika tambahan: pastikan status menjadi boolean false jika tidak dicentang
             $data['status'] = isset($data['status']) ? true : false;
@@ -27,7 +35,7 @@ class LulusanService
      */
     public function getFilteredLulusan(\Illuminate\Http\Request $request)
     {
-        $query = Lulusan::query();
+        $query = Lulusan::with(['fakultasMaster', 'programStudi']);
 
         // Filter Nama
         if ($request->has('nama') && $request->nama != '') {
@@ -40,13 +48,13 @@ class LulusanService
         }
 
         // Filter Prodi
-        if ($request->has('prodi') && $request->prodi != 'Select') {
-            $query->where('program_studi', $request->prodi);
+        if ($request->filled('program_studi_id')) {
+            $query->where('program_studi_id', $request->integer('program_studi_id'));
         }
 
         // Filter Fakultas
-        if ($request->has('fakultas') && $request->fakultas != 'Select') {
-            $query->where('fakultas', $request->fakultas);
+        if ($request->filled('fakultas_id')) {
+            $query->where('fakultas_id', $request->integer('fakultas_id'));
         }
 
         // Filter Tahun Lulus (Range)
@@ -61,14 +69,5 @@ class LulusanService
         }
 
         return $query->latest('created_at')->paginate(10)->withQueryString();
-    }
-
-    private function normalizeFakultas(string $fakultas): string
-    {
-        return [
-            'Fakultas Teknologi dan Informatika' => 'FTI',
-            'Fakultas Desain dan Industri Kreatif' => 'FDIK',
-            'Fakultas Ekonomi dan Bisnis' => 'FEB',
-        ][$fakultas] ?? $fakultas;
     }
 }

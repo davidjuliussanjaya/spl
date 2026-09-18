@@ -12,7 +12,7 @@
     </div>
 
     <section class="section">
-        <form action="{{ route('pengguna.store') }}" method="POST">
+        <form action="{{ route('pengguna.store') }}" method="POST" data-draft-key="spl:draft:company-create">
             @csrf
             <div class="row">
                 <div class="col-lg-8">
@@ -116,12 +116,6 @@
                             </div>
 
                             <hr>
-
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Jumlah Lulusan yang Pernah Bekerja</label>
-                                <input type="number" name="jumlah_lulusan" class="form-control" min="0" placeholder="Contoh: 5">
-                                <div class="form-text">Dapat diisi oleh sistem secara otomatis saat survey disubmit.</div>
-                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Durasi Rata-rata Bekerja (Bulan)</label>

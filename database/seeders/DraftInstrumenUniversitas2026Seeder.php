@@ -199,7 +199,6 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                         'kode' => $kode,
                         'kategori_id' => $kategoriId,
                         'jenis_soal' => $soalData['jenis'],
-                        'peruntukan_fakultas' => 'Umum',
                         'is_required' => true,
                         'is_active' => true,
                         'created_at' => $now,

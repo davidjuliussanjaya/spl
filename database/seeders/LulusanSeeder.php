@@ -5,11 +5,13 @@ namespace Database\Seeders;
 use App\Models\Lulusan;
 use App\Models\PenggunaLulusan;
 use Illuminate\Database\Seeder;
+use App\Models\ProgramStudi;
 
 class LulusanSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(FakultasProgramStudiSeeder::class);
         $dataset = [
             // PT. Solusi Digital Nusantara → FTI
             'rendra@sdn.co.id' => [
@@ -70,6 +72,11 @@ class LulusanSeeder extends Seeder
             }
 
             foreach ($lulusanList as $l) {
+                $programStudi = ProgramStudi::with('fakultas')
+                    ->where('nama', $l['program_studi'])
+                    ->whereHas('fakultas', fn ($query) => $query->where('kode', $l['fakultas']))
+                    ->firstOrFail();
+
                 Lulusan::updateOrCreate(
                     ['nim' => $l['nim']],
                     [
@@ -77,6 +84,8 @@ class LulusanSeeder extends Seeder
                         'nama'                => $l['nama'],
                         'program_studi'       => $l['program_studi'],
                         'fakultas'            => $l['fakultas'],
+                        'program_studi_id'    => $programStudi->id,
+                        'fakultas_id'         => $programStudi->fakultas_id,
                         'tahun_lulus'         => $l['tahun_lulus'],
                         'status'              => true,
                     ]

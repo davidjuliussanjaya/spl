@@ -14,7 +14,6 @@ class Soal extends Model
         'kode',
         'jenis_soal',
         'kategori_id',
-        'peruntukan_fakultas',
         'is_required',
         'is_active',
     ];
@@ -36,6 +35,8 @@ class Soal extends Model
 
     public function surveys()
     {
-        return $this->belongsToMany(Survey::class, 'survey_soal', 'soal_id', 'survey_id');
+        return $this->belongsToMany(Survey::class, 'survey_soal', 'soal_id', 'survey_id')
+            ->withPivot('urutan')
+            ->withTimestamps();
     }
 }

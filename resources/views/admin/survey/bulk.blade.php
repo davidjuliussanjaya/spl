@@ -27,7 +27,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <form action="{{ route('survey.bulk.store') }}" method="POST" id="bulkForm">
+        <form action="{{ route('survey.bulk.store') }}" method="POST" id="bulkForm" data-draft-key="spl:draft:survey-bulk-create">
             @csrf
 
             {{-- Card A: Info Survey --}}
@@ -54,16 +54,18 @@
 
                         <div class="col-md-3 mb-4">
                             <label class="form-label small text-secondary mb-1 fw-bold text-uppercase">
-                                Tahun Survey <span class="text-danger">*</span>
+                                Periode survei <span class="text-danger">*</span>
                             </label>
-                            <select name="tahun" class="form-select line-input fs-5 @error('tahun') is-invalid @enderror" required>
-                                @for($y = now()->year + 1; $y >= 2020; $y--)
-                                    <option value="{{ $y }}" {{ old('tahun', now()->year) == $y ? 'selected' : '' }}>
-                                        {{ $y }}
+                            <select name="periode_id" class="form-select line-input fs-5 @error('periode_id') is-invalid @enderror" required>
+                                <option value="">-- Pilih periode --</option>
+                                @foreach($periodes as $periode)
+                                    <option value="{{ $periode->id }}" @selected(old('periode_id') == $periode->id)>
+                                        {{ $periode->kode_periode }} — {{ $periode->nama_periode }}
                                     </option>
-                                @endfor
+                                @endforeach
                             </select>
-                            @error('tahun')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @if($periodes->isEmpty())<div class="form-text text-danger">Tambahkan periode terlebih dahulu melalui menu Periode.</div>@endif
                         </div>
 
                         <div class="col-md-12 mb-2">
@@ -164,7 +166,7 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
 
-                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" />
+                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" :selected-category-ids="old('kategori_urutan', [])" />
 
                     <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
                         <a href="{{ route('survey') }}" class="btn btn-outline-secondary px-4">

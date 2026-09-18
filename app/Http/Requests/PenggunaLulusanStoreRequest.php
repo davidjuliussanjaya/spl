@@ -32,7 +32,8 @@ class PenggunaLulusanStoreRequest extends FormRequest
             'alamat_perusahaan'      => 'nullable|string',
             'cabang_kota'            => 'nullable|integer|min:0',
             'cabang_negara'          => 'nullable|integer|min:0',
-            'jumlah_lulusan'         => 'nullable|integer|min:0',
+            // Jumlah lulusan bekerja hanya dapat dilaporkan oleh perusahaan saat mengisi survei.
+            'jumlah_lulusan'         => 'prohibited',
             'durasi_lulusan_bekerja' => 'nullable|integer|min:0',
         ];
     }

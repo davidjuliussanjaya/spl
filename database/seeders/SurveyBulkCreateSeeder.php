@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Lulusan;
+use App\Models\Periode;
 use App\Models\Soal;
 use App\Models\Survey;
 use Carbon\Carbon;
@@ -37,7 +38,7 @@ class SurveyBulkCreateSeeder extends Seeder
 
         $semuaSoal = Soal::where('instrumen_id', $instrumenId)
             ->where('is_active', true)
-            ->get(['id', 'peruntukan_fakultas']);
+            ->get(['id']);
 
         if ($semuaSoal->isEmpty()) {
             $this->command->error("Tidak ada soal aktif di instrumen {$tahunInstrumen}. Seeder dihentikan.");
@@ -64,10 +65,22 @@ class SurveyBulkCreateSeeder extends Seeder
         $this->command->info("Membuat survey periode {$periode} untuk {$lulusanList->count()} lulusan...");
 
         $now = Carbon::now();
+        $periodeIds = collect($tahunSurveyList)->mapWithKeys(function ($tahunSurvey) {
+            $periode = Periode::firstOrCreate(
+                ['kode_periode' => (string) $tahunSurvey],
+                [
+                    'nama_periode' => "Periode Survei {$tahunSurvey}",
+                    'tanggal_mulai' => "{$tahunSurvey}-01-01",
+                    'tanggal_berakhir' => "{$tahunSurvey}-12-31",
+                ],
+            );
+
+            return [$tahunSurvey => $periode->id];
+        });
         $berhasil = 0;
         $rekap = array_fill_keys($tahunSurveyList, 0);
 
-        DB::transaction(function () use ($lulusanList, $semuaSoal, $now, &$berhasil, &$rekap) {
+        DB::transaction(function () use ($lulusanList, $semuaSoal, $now, $periodeIds, &$berhasil, &$rekap) {
             foreach ($lulusanList as $lulus) {
                 $tahunLulus = Carbon::parse($lulus->tahun_lulus)->year;
                 $tahunSurvey = $tahunLulus + 1;
@@ -75,6 +88,7 @@ class SurveyBulkCreateSeeder extends Seeder
                 $survey = Survey::create([
                     'judul' => "Survey Kepuasan Pengguna Lulusan {$tahunSurvey}",
                     'tahun' => $tahunSurvey,
+                    'periode_id' => $periodeIds[$tahunSurvey],
                     'deskripsi' => 'Survey tracer study untuk penilaian kinerja dan kompetensi lulusan oleh pengguna lulusan (mitra industri).',
                     'lulusan_id' => $lulus->id,
                     'pengguna_lulusan_id' => $lulus->pengguna_lulusan_id,
@@ -83,10 +97,7 @@ class SurveyBulkCreateSeeder extends Seeder
                     'is_active' => true,
                 ]);
 
-                // Hanya masukkan soal 'Umum' atau sesuai fakultas lulusan
-                $soalUntukLulusan = $semuaSoal->filter(fn ($s) => $s->peruntukan_fakultas === 'Umum'
-                    || $s->peruntukan_fakultas === $lulus->fakultas
-                );
+                $soalUntukLulusan = $semuaSoal;
 
                 $rows = $soalUntukLulusan->map(fn ($s) => [
                     'survey_id' => $survey->id,
@@ -109,6 +120,6 @@ class SurveyBulkCreateSeeder extends Seeder
         foreach ($rekap as $tahunSurvey => $jumlah) {
             $this->command->line("  {$tahunSurvey}: {$jumlah} survey");
         }
-        $this->command->line("  Soal per survey: Umum + spesifik fakultas dari instrumen {$tahunInstrumen}");
+        $this->command->line("  Soal per survey: seluruh soal aktif dari instrumen {$tahunInstrumen}");
     }
 }

@@ -25,7 +25,7 @@
         <div class="alert alert-danger spl-alert" role="alert"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}</div>
     @endif
 
-    @if(! $selectedTahun)
+    @if(! $selectedPeriode)
         <section class="card spl-period-selector">
             <div class="card-header spl-period-selector-header">
                 <div class="spl-period-heading">
@@ -35,16 +35,17 @@
                         <p class="spl-toolbar-subtitle">Pilih periode untuk melihat daftar sesi, status respons, dan kode akses.</p>
                     </div>
                 </div>
-                <span class="spl-period-count">{{ $tahunList->count() }} periode tersedia</span>
+                <span class="spl-period-count">{{ $periodeList->count() }} periode tersedia</span>
             </div>
             <div class="card-body spl-period-selector-body">
                 <div class="spl-period-grid">
-                    @forelse($tahunList as $tahun)
-                        <a href="{{ route('survey', ['tahun' => $tahun]) }}" class="spl-period-option" aria-label="Buka survei periode {{ $tahun }}">
+                    @forelse($periodeList as $periode)
+                        <a href="{{ route('survey', ['periode_id' => $periode->id]) }}" class="spl-period-option" aria-label="Buka survei periode {{ $periode->nama_periode }}">
                             <span class="spl-period-option-icon" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
                             <span class="spl-period-option-copy">
                                 <span class="spl-period-option-label">Periode survei</span>
-                                <strong>{{ $tahun }}</strong>
+                                <strong>{{ $periode->nama_periode }}</strong>
+                                <span class="spl-row-meta">{{ $periode->kode_periode }} · {{ $periode->tanggal_mulai->format('d M Y') }}–{{ $periode->tanggal_berakhir->format('d M Y') }}</span>
                                 <span class="spl-period-option-action">Lihat daftar sesi <i class="bi bi-arrow-right"></i></span>
                             </span>
                             <span class="spl-period-option-arrow" aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
@@ -59,14 +60,14 @@
     <section class="card">
         <div class="card-header spl-toolbar">
             <div>
-                <h4 class="spl-toolbar-title">Daftar sesi survei periode {{ $selectedTahun }} <span class="spl-filter-count">{{ $surveys->total() }} hasil</span></h4>
+                <h4 class="spl-toolbar-title">Daftar sesi {{ $selectedPeriode->nama_periode }} <span class="spl-filter-count">{{ $surveys->total() }} hasil</span></h4>
                 <p class="spl-toolbar-subtitle">Cari berdasarkan judul, lulusan, perusahaan, atau kode akses.</p>
             </div>
             <a href="{{ route('survey') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Pilih periode lain</a>
         </div>
 
         <form action="{{ route('survey') }}" method="GET" class="spl-filter-panel">
-            <input type="hidden" name="tahun" value="{{ $selectedTahun }}">
+            <input type="hidden" name="periode_id" value="{{ $selectedPeriode->id }}">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-lg-7">
                     <label for="cari" class="form-label">Cari survei</label>
@@ -85,7 +86,7 @@
                 </div>
                 <div class="col-12 col-lg-3 spl-filter-actions">
                     <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Terapkan</button>
-                    <a href="{{ route('survey', ['tahun' => $selectedTahun]) }}" class="btn btn-outline-secondary">Reset</a>
+                    <a href="{{ route('survey', ['periode_id' => $selectedPeriode->id]) }}" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </div>
         </form>
@@ -101,7 +102,7 @@
                     @forelse($surveys as $survey)
                         <tr>
                             <td><span class="spl-row-title">{{ $survey->judul }}</span></td>
-                            <td><span class="badge bg-primary">{{ $survey->tahun ?? 'Tidak ada' }}</span></td>
+                            <td><span class="badge bg-primary">{{ $survey->periode?->kode_periode ?? '-' }}</span><span class="spl-row-meta">{{ $survey->periode?->nama_periode ?? 'Tidak ada' }}</span></td>
                             <td>{{ $survey->penggunalulusan->nama_perusahaan ?? '-' }}</td>
                             <td>
                                 <span class="spl-row-title">{{ $survey->lulusan->nama ?? '-' }}</span>
