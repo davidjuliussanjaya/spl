@@ -22,6 +22,7 @@
             border: 1px solid var(--spl-border);
             box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 16px 32px rgba(15,23,42,.08);
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center relative overflow-hidden p-4" style="background:#F6F8FC;">
@@ -47,7 +48,10 @@
                 <p class="text-sm text-gray-500 mt-1 font-medium">Portal Tracer Study & Evaluasi Lulusan</p>
             </div>
 
-            <div x-data="{ activeTab: 'survey' }" class="w-full">
+            <div x-data="{ activeTab: 'survey', showPassword: false }"
+                 @pointerup.window="showPassword = false"
+                 @pointercancel.window="showPassword = false"
+                 class="w-full">
                 <!-- Tab Navigation (Pill style inside glass) -->
                 <div class="flex p-1.5 mb-8 bg-gray-100/60 rounded-2xl shadow-inner">
                     <button @click="activeTab = 'survey'"
@@ -144,7 +148,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
-                            <input id="password" class="block w-full pl-12 pr-4 py-3.5 bg-white/70 border-0 rounded-xl shadow-sm transition-all duration-200 text-gray-800 placeholder-gray-400 font-medium" style="outline:none;" onfocus="this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.15)';this.style.background='white';" onblur="this.style.boxShadow='';this.style.background='rgba(255,255,255,0.7)';" type="password" name="password" placeholder="Password" required />
+                            <input id="password" class="block w-full pl-12 pr-12 py-3.5 bg-white/70 border-0 rounded-xl shadow-sm transition-all duration-200 text-gray-800 placeholder-gray-400 font-medium" style="outline:none;" onfocus="this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.15)';this.style.background='white';" onblur="this.style.boxShadow='';this.style.background='rgba(255,255,255,0.7)';" :type="showPassword ? 'text' : 'password'" name="password" placeholder="Password" required />
+                            <button type="button"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 transition-colors hover:text-blue-600 focus:outline-none focus:text-blue-600"
+                                    aria-label="Tahan untuk menampilkan password"
+                                    title="Tahan untuk menampilkan password"
+                                    @pointerdown.prevent="showPassword = true"
+                                    @keydown.space.prevent="showPassword = true"
+                                    @keyup.space="showPassword = false"
+                                    @keydown.enter.prevent="showPassword = true"
+                                    @keyup.enter="showPassword = false"
+                                    @blur="showPassword = false">
+                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <svg x-show="showPassword" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 012.442-4.568M6.223 6.223A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.978 9.978 0 01-4.132 5.411M6.223 6.223L3 3m3.223 3.223l3.65 3.65m0 0A3 3 0 0014.12 14.12m-4.247-4.247L14.12 14.12M21 21l-3.588-3.589" />
+                                </svg>
+                            </button>
                         </div>
 
                         <div class="flex items-center justify-between mt-2 px-1">
