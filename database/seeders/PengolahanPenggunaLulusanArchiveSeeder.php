@@ -11,12 +11,15 @@ use ZipArchive;
  * Mengimpor arsip hasil pengolahan pengguna lulusan dari berkas Excel kampus.
  *
  * Seluruh respons disimpan sebagai snapshot pada survey_arsip. Format jawaban
- * diseragamkan agar laporan 2014--2024 memakai kategori, pertanyaan, dan opsi
+ * diseragamkan agar laporan 2016--2024 memakai kategori, pertanyaan, dan opsi
  * jawaban yang sama walaupun format formulir sumber berubah dari tahun ke tahun.
  */
 class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
 {
     private const ARCHIVE_FILE = 'docs/Pengolahan Pengguna Lulusan ALL.xlsx';
+
+    /** @var array<int, int> Baris tabel sumber yang tidak mencantumkan alumni. */
+    private array $skippedRowsWithoutAlumni = [];
 
     /**
      * Definisi instrumen bersama untuk data arsip dan pertanyaan aktif.
@@ -105,6 +108,7 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             throw new \RuntimeException('Berkas arsip tidak ditemukan: ' . self::ARCHIVE_FILE);
         }
 
+        $this->skippedRowsWithoutAlumni = [];
         $rows = $this->readWorkbook($sourcePath);
         $imported = 0;
 
@@ -161,7 +165,12 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
 
         $years = collect($rows)->pluck('year')->unique()->sort()->implode(', ');
         $this->command->info("Arsip pengguna lulusan berhasil di-seed: {$imported} respons ({$years}).");
-        $this->command->warn('Berkas sumber tidak memuat respons tahun 2014 dan 2015; dua periode tersebut tidak direkayasa.');
+        if ($this->skippedRowsWithoutAlumni !== []) {
+            $summary = collect($this->skippedRowsWithoutAlumni)
+                ->map(fn (int $count, int $year) => "{$year}: {$count}")
+                ->implode(', ');
+            $this->command->warn("Baris tanpa nama alumni tidak diimpor ({$summary}). Tidak ada lulusan yang dibuat dari jumlah responden.");
+        }
     }
 
     /** Membuat seluruh periode yang dapat dipilih di menu Survei. */
@@ -170,7 +179,7 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         $ids = [];
         $now = now();
 
-        foreach (range(2014, 2024) as $year) {
+        foreach (range(2016, 2024) as $year) {
             DB::table('periode')->updateOrInsert(
                 ['kode_periode' => (string) $year],
                 [
@@ -218,8 +227,14 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
     /** Menghubungkan setiap arsip ke lulusan agar relasi Survey lengkap. */
     private function upsertLulusan(array $record, int $perusahaanId, Carbon $timestamp): int
     {
+        if ($record['alumni'] === null) {
+            throw new \LogicException('Lulusan hanya dapat diimpor dari baris yang memiliki nama alumni.');
+        }
+
+        // Sejumlah tabel sumber tidak menyediakan NIM. Kode ini hanya menjadi
+        // pengenal impor yang stabil; nama lulusan tetap selalu dari tabel sumber.
         $nim = $record['nim'] ?? sprintf('ARS%d%04d', $record['year'], $record['source_row']);
-        $nama = $record['alumni'] ?? sprintf('Lulusan Arsip %d-%d', $record['year'], $record['source_row']);
+        $nama = $record['alumni'];
 
         DB::table('lulusan')->updateOrInsert(
             ['nim' => $nim],
@@ -332,7 +347,12 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         return $catalog;
     }
 
-    /** @return array<int, array{year:int,source_row:int,cells:array,headers:array,alumni:?string,nim:?string,program_studi:?string,responden:?string,perusahaan:string,jenis_perusahaan:?string,alamat:?string,kontak_perusahaan:?string,kontak_penyelia:?string,email:?string,jumlah_lulusan:?string,cabang_kota:?string,cabang_negara:?string}> */
+    /**
+     * Membaca hanya Excel Table yang posisinya paling atas dari setiap tab 2016--2024.
+     * Tabel lain pada tab yang sama serta sheet Grafik Dashboard sengaja tidak dibaca.
+     *
+     * @return array<int, array{year:int,source_row:int,cells:array,headers:array,alumni:?string,nim:?string,program_studi:?string,responden:?string,perusahaan:string,jenis_perusahaan:?string,alamat:?string,kontak_perusahaan:?string,kontak_penyelia:?string,email:?string,jumlah_lulusan:?string,cabang_kota:?string,cabang_negara:?string}>
+     */
     private function readWorkbook(string $path): array
     {
         $zip = new ZipArchive();
@@ -356,18 +376,25 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             }
 
             $relationship = $sheetMeta->attributes($relationshipNamespace);
-            $sheet = simplexml_load_string((string) $zip->getFromName($targets[(string) $relationship['id']]));
-            $rows = [];
-            foreach ($sheet->sheetData->row as $row) {
-                $rows[] = $row;
-            }
-            if (count($rows) < 3) {
+            $sheetPath = $targets[(string) $relationship['id']];
+            $sheet = simplexml_load_string((string) $zip->getFromName($sheetPath));
+            $bounds = $this->firstTableBounds($zip, $sheetPath, $sheet);
+            if ($bounds === null) {
                 continue;
             }
 
-            $headers = $this->rowCells($rows[1], $strings);
             $year = (int) $matches[1];
-            foreach (array_slice($rows, 2) as $row) {
+            $headers = [];
+            foreach ($sheet->sheetData->row as $row) {
+                $rowNumber = (int) $row['r'];
+                if ($rowNumber === $bounds['header_row']) {
+                    $headers = $this->rowCells($row, $strings);
+                    continue;
+                }
+                if ($rowNumber <= $bounds['header_row'] || $rowNumber > $bounds['last_row']) {
+                    continue;
+                }
+
                 $cells = $this->rowCells($row, $strings);
                 $record = $this->normaliseRecord($year, (int) $row['r'], $cells, $headers);
                 if ($record !== null) {
@@ -378,6 +405,48 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         $zip->close();
 
         return $records;
+    }
+
+    /** @return array{header_row:int,last_row:int}|null */
+    private function firstTableBounds(ZipArchive $zip, string $sheetPath, \SimpleXMLElement $sheet): ?array
+    {
+        $relationshipNamespace = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+        $relationshipPath = dirname($sheetPath) . '/_rels/' . basename($sheetPath) . '.rels';
+        $relationshipsXml = $zip->getFromName($relationshipPath);
+        if ($relationshipsXml === false) {
+            return null;
+        }
+
+        $relationships = simplexml_load_string($relationshipsXml);
+        $tablePaths = [];
+        foreach ($relationships->Relationship as $relationship) {
+            if (str_contains((string) $relationship['Type'], '/table')) {
+                $tablePaths[(string) $relationship['Id']] = 'xl/' . ltrim(str_replace('../', '', (string) $relationship['Target']), '/');
+            }
+        }
+
+        $tables = [];
+        foreach ($sheet->tableParts->tablePart as $tablePart) {
+            $relationship = $tablePart->attributes($relationshipNamespace);
+            $tablePath = $tablePaths[(string) $relationship['id']] ?? null;
+            if ($tablePath === null || ($tableXml = $zip->getFromName($tablePath)) === false) {
+                continue;
+            }
+
+            $table = simplexml_load_string($tableXml);
+            if (! preg_match('/^[A-Z]+(\d+):[A-Z]+(\d+)$/', (string) $table['ref'], $range)) {
+                continue;
+            }
+            $tables[] = ['header_row' => (int) $range[1], 'last_row' => (int) $range[2]];
+        }
+
+        if ($tables === []) {
+            return null;
+        }
+
+        usort($tables, fn (array $left, array $right) => $left['header_row'] <=> $right['header_row']);
+
+        return $tables[0];
     }
 
     private function sharedStrings(ZipArchive $zip): array
@@ -442,10 +511,12 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             ];
         }
 
-        // Beberapa sheet menyimpan tabel ringkasan/grafik setelah daftar respons.
-        // Respons selalu memiliki nama program studi (D3/D4/S1/Sarjana/Diploma);
-        // ringkasan tersebut harus tidak ikut menjadi data perusahaan.
+        // Pertahankan hanya baris respons yang memuat program studi dan perusahaan.
         if ($record['perusahaan'] === null || ! preg_match('/(?:^S[1-4]\\b|^D[1-4]\\b|sarjana|diploma)/i', (string) $record['program_studi'])) {
+            return null;
+        }
+        if ($record['alumni'] === null) {
+            $this->skippedRowsWithoutAlumni[$year] = ($this->skippedRowsWithoutAlumni[$year] ?? 0) + 1;
             return null;
         }
 
@@ -454,7 +525,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
 
     private function buildAnswers(array $cells, array $headers, array $catalog): array
     {
-        $firstRating = $this->firstRating($cells);
         $answers = [];
 
         foreach ($catalog as $code => $question) {
@@ -466,13 +536,23 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             };
 
             if ($question['jenis'] === 'essay') {
-                $answer = $this->nullable($source) ?? '-';
+                $answer = $this->nullable($source);
+                if ($answer === null) {
+                    continue;
+                }
                 $score = null;
             } elseif ($code === 'L1') {
+                if ($this->nullable($source) === null) {
+                    continue;
+                }
                 $answer = $this->normaliseImprovementAreas((string) $source);
                 $score = null;
             } else {
-                [$answer, $score] = $this->normaliseRating($source) ?? $firstRating;
+                $rating = $this->normaliseRating($source);
+                if ($rating === null) {
+                    continue;
+                }
+                [$answer, $score] = $rating;
             }
 
             $answers[] = [
@@ -516,17 +596,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         }
 
         return null;
-    }
-
-    private function firstRating(array $cells): array
-    {
-        foreach ($cells as $value) {
-            if ($rating = $this->normaliseRating($value)) {
-                return $rating;
-            }
-        }
-
-        return ['Baik', 3];
     }
 
     private function normaliseRating(?string $value): ?array

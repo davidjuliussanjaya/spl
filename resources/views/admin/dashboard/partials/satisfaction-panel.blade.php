@@ -3,9 +3,13 @@
         <div>
             <h6 class="panel-title">Indeks Kepuasan Pengguna</h6>
             <p class="panel-subtitle">
-                {{ $totalResponKepuasan }} respons penilaian dari {{ $totalResponden }} responden.
-                NL {{ $skorKepuasan['jumlah_responden'] }} / NJ {{ $skorKepuasan['total_lulusan'] }} = {{ number_format($skorKepuasan['response_rate_pct'], 1) }}%
-                — {{ $skorKepuasan['rumus'] }}.
+                @if($isAdmin)
+                    {{ $totalResponKepuasan }} respons penilaian dari {{ $totalResponden }} responden.
+                    {{ $skorKepuasan['jumlah_responden'] }} responden mengisi dari {{ $skorKepuasan['total_lulusan'] }} alumni yang dinilai ({{ number_format($skorKepuasan['response_rate_pct'], 1) }}%)
+                    — {{ $skorKepuasan['rumus'] }}.
+                @else
+                    Ringkasan nilai kepuasan pengguna lulusan berdasarkan data survei anonim.
+                @endif
             </p>
         </div>
         @if(!$kepuasanPerKategori->isEmpty())
@@ -28,7 +32,6 @@
                         <th>Baik (3)</th>
                         <th>Cukup (2)</th>
                         <th>Kurang (1)</th>
-                        <th>Skor Murni</th>
                         <th>Skor Akhir</th>
                     </tr>
                 </thead>
@@ -36,11 +39,10 @@
                     @foreach($kepuasanPerKategori as $kat)
                         <tr data-kategori-row="{{ $kat['kategori'] }}">
                             <td>{{ $kat['kategori'] }}</td>
-                            <td>{{ $kat['pct_sb'] }}% <small class="text-muted">({{ $kat['total_respon'] }})</small></td>
-                            <td>{{ $kat['pct_b'] }}% <small class="text-muted">({{ $kat['total_respon'] }})</small></td>
-                            <td>{{ $kat['pct_k'] }}% <small class="text-muted">({{ $kat['total_respon'] }})</small></td>
-                            <td>{{ $kat['pct_sk'] }}% <small class="text-muted">({{ $kat['total_respon'] }})</small></td>
-                            <td>{{ number_format($kat['skor_murni'], 2) }}</td>
+                            <td>{{ $kat['pct_sb'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_b'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_k'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_sk'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
                             <td class="fw-bold">{{ number_format($kat['skor_akhir'], 2) }}</td>
                         </tr>
                     @endforeach
@@ -52,7 +54,7 @@
                         <td>{{ $kepuasanRingkasan['total']['b'] }}%</td>
                         <td>{{ $kepuasanRingkasan['total']['k'] }}%</td>
                         <td>{{ $kepuasanRingkasan['total']['sk'] }}%</td>
-                        <td colspan="2">{{ $skorKepuasan['rumus'] }}</td>
+                        <td>{{ $skorKepuasan['rumus'] }}</td>
                     </tr>
                     <tr>
                         <td>Rata-Rata</td>
@@ -60,7 +62,6 @@
                         <td>{{ $kepuasanRingkasan['rata']['b'] }}%</td>
                         <td>{{ $kepuasanRingkasan['rata']['k'] }}%</td>
                         <td>{{ $kepuasanRingkasan['rata']['sk'] }}%</td>
-                        <td>{{ number_format($skorKepuasan['skor_murni'], 2) }}</td>
                         <td>{{ number_format($skorKepuasan['skor_akhir'], 2) }}</td>
                     </tr>
                 </tfoot>

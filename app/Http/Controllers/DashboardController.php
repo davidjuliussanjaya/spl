@@ -18,9 +18,9 @@ class DashboardController extends Controller
     {
         $data = $this->dashboardService->getDashboardData($request->only([
             'periode',
-            'fakultas',
             'program_studi',
         ]));
+        $data['isAdmin'] = $request->user()?->hasRole('admin') ?? false;
 
         return view('admin.dashboard.index', $data);
     }

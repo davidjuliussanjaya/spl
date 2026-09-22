@@ -120,6 +120,7 @@
                                         <option value="{{ $p->id }}" @selected(old('pengguna_lulusan_id', $survey->pengguna_lulusan_id) == $p->id)>{{ $p->nama_perusahaan }}</option>
                                     @endforeach
                                 </select>
+                                <div class="form-text">Ketik nama instansi untuk mencari. Daftar hasil dapat digulir ke bawah.</div>
                                 <input type="hidden" name="nama_perusahaan" id="nama_perusahaan_hidden" value="{{ $survey->penggunalulusan->nama_perusahaan ?? '' }}" {{ $disabledAttr }}>
                             </div>
 
@@ -314,6 +315,14 @@
     @media (min-width: 992px) {
         .border-end-lg { border-right: 1px solid #dee2e6; }
     }
+    .select2-container .select2-results__options {
+        max-height: 220px;
+        overflow-y: auto;
+    }
+    .select2-container .select2-results__option {
+        padding: .5rem .75rem;
+        white-space: normal;
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -327,6 +336,7 @@ $(document).ready(function() {
         theme: 'bootstrap-5',
         placeholder: '-- Pilih Perusahaan --',
         width: '100%',
+        minimumResultsForSearch: 0,
         disabled: {{ $isLocked ? 'true' : 'false' }}
     });
 

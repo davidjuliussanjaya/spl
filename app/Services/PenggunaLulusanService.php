@@ -11,8 +11,10 @@ class PenggunaLulusanService
      */
     public function storePengguna(array $data, \Illuminate\Http\Request $request)
     {
-        $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
-        $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
+        // Nilai cabang dilaporkan oleh responden saat survei, bukan oleh admin.
+        unset($data['cabang_kota'], $data['cabang_negara'], $data['durasi_lulusan_bekerja']);
+        $data['cabang_kota'] = 0;
+        $data['cabang_negara'] = 0;
 
         return PenggunaLulusan::create($data);
     }
@@ -23,9 +25,9 @@ class PenggunaLulusanService
     public function updatePengguna(int $id, array $data, \Illuminate\Http\Request $request)
     {
         $pengguna = PenggunaLulusan::findOrFail($id);
-        
-        $data['cabang_kota'] = (int) ($data['cabang_kota'] ?? 0);
-        $data['cabang_negara'] = (int) ($data['cabang_negara'] ?? 0);
+
+        // Jangan menimpa data cabang yang sudah diisi responden melalui survei.
+        unset($data['cabang_kota'], $data['cabang_negara'], $data['durasi_lulusan_bekerja']);
 
         $pengguna->update($data);
         

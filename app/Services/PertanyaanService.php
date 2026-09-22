@@ -26,8 +26,8 @@ class PertanyaanService
             'is_active'           => true
         ]);
 
-        // 3. Simpan Jawaban jika Multiple Choice / Radio
-        if ($jenis === 'multiple_choice' && isset($data['jawaban'])) {
+        // Rating dan pilihan ganda sama-sama membutuhkan daftar opsi jawaban.
+        if ($jenis !== 'essay' && isset($data['jawaban'])) {
             $this->saveJawaban($soal->id, $data['jawaban'], $data['nilai'] ?? []);
         }
 
@@ -55,7 +55,7 @@ class PertanyaanService
             // Hapus jawaban lama dan simpan yang baru
             $soal->jawaban()->delete();
 
-            if ($jenis === 'multiple_choice' && isset($data['jawaban'])) {
+            if ($jenis !== 'essay' && isset($data['jawaban'])) {
                 $this->saveJawaban($soal->id, $data['jawaban'], $data['nilai'] ?? []);
             }
 
@@ -81,7 +81,8 @@ class PertanyaanService
         return match ($type) {
             'radio' => 'multiple_choice',
             'text'  => 'essay',
-            default => 'rating',
+            'rating' => 'rating',
+            default => throw new \InvalidArgumentException('Tipe pertanyaan tidak dikenali.'),
         };
     }
 

@@ -15,8 +15,8 @@
         <form action="{{ route('penggunalulusan.update', $pengguna->id) }}" method="POST">
             @csrf
             @method('PUT')
-            <div class="row">
-                <div class="col-lg-8">
+            <div class="row g-4">
+                <div class="col-lg-12">
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-4 text-uppercase small text-muted tracking-wider">Informasi Perusahaan</h6>
@@ -116,42 +116,11 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-4 text-uppercase small text-muted tracking-wider">Cakupan Wilayah</h6>
-                            
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Jumlah Cabang Nasional</label>
-                                <input type="number" name="cabang_kota" class="form-control" min="0"
-                                       placeholder="Contoh: 3"
-                                       value="{{ old('cabang_kota', $pengguna->cabang_kota ?? 0) }}">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label small fw-bold">Jumlah Cabang Luar Negeri</label>
-                                <input type="number" name="cabang_negara" class="form-control" min="0"
-                                       placeholder="Contoh: 2"
-                                       value="{{ old('cabang_negara', $pengguna->cabang_negara ?? 0) }}">
-                            </div>
-
-                            <hr>
-
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Durasi Rata-rata Bekerja (Bulan)</label>
-                                <input type="number" name="durasi_lulusan_bekerja" class="form-control" min="0"
-                                       placeholder="Contoh: 12"
-                                       value="{{ old('durasi_lulusan_bekerja', $pengguna->durasi_lulusan_bekerja) }}">
-                            </div>
-
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm">
-                                    <i class="bi bi-cloud-arrow-up me-2"></i> Perbarui Instansi
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div class="company-form-actions">
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm">
+                    <i class="bi bi-cloud-arrow-up me-2"></i> Perbarui Instansi
+                </button>
             </div>
         </form>
     </section>
@@ -169,5 +138,7 @@
         box-shadow: 0 0 0 0.25 row rgba(67, 94, 190, 0.1);
     }
     .tracking-wider { letter-spacing: 0.05em; }
+    .company-form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #e2e8f0; }
+    @media (max-width: 576px) { .company-form-actions .btn { width: 100%; } }
 </style>
 @endsection

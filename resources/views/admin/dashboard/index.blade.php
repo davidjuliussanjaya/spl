@@ -79,8 +79,9 @@
         color: var(--brand-700); border: 1px solid var(--brand-100);
     }
 
-    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .85rem; }
-    @media(max-width:1199px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .85rem; }
+    @media(max-width:1399px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media(max-width:991px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
     @media(max-width:575px) { .stat-grid { grid-template-columns: 1fr; gap: .7rem; } }
 
     .panel, .stat-card {
@@ -98,6 +99,30 @@
     .stat-card.green::before { background: #0f766e; }
     .stat-card.amber::before { background: #2563eb; }
     .stat-card.red::before { background: #64748b; }
+    .stat-card.kpi-card {
+        isolation: isolate; border-color: var(--kpi-border); background: linear-gradient(135deg, #fff 0%, var(--kpi-soft) 100%);
+        animation: kpi-card-enter .45s ease both;
+    }
+    .stat-card.kpi-card::before { height: 4px; background: var(--kpi-accent); }
+    .stat-card.kpi-card::after {
+        content: ''; position: absolute; z-index: -1; width: 115px; height: 115px; right: -48px; bottom: -64px;
+        border-radius: 50%; background: var(--kpi-glow); filter: blur(3px);
+    }
+    .stat-card.kpi-card > * { position: relative; z-index: 1; }
+    .kpi-respondents { --kpi-accent: #2563eb; --kpi-soft: #eff6ff; --kpi-border: #bfdbfe; --kpi-glow: rgba(37, 99, 235, .12); }
+    .kpi-alumni { --kpi-accent: #7c3aed; --kpi-soft: #f5f3ff; --kpi-border: #ddd6fe; --kpi-glow: rgba(124, 58, 237, .12); }
+    .kpi-response-minimum { --kpi-accent: #d97706; --kpi-soft: #fffbeb; --kpi-border: #fde68a; --kpi-glow: rgba(217, 119, 6, .12); }
+    .kpi-index { --kpi-accent: #0f766e; --kpi-soft: #f0fdfa; --kpi-border: #99f6e4; --kpi-glow: rgba(15, 118, 110, .12); }
+    .kpi-categories { --kpi-accent: #db2777; --kpi-soft: #fdf2f8; --kpi-border: #fbcfe8; --kpi-glow: rgba(219, 39, 119, .11); }
+    .kpi-respondents .stat-icon-wrap { background: #dbeafe; color: #2563eb; }
+    .kpi-alumni .stat-icon-wrap { background: #ede9fe; color: #7c3aed; }
+    .kpi-response-minimum .stat-icon-wrap { background: #fef3c7; color: #b45309; }
+    .kpi-index .stat-icon-wrap { background: #ccfbf1; color: #0f766e; }
+    .kpi-categories .stat-icon-wrap { background: #fce7f3; color: #db2777; }
+    .kpi-count, .kpi-inline-count { font-variant-numeric: tabular-nums; }
+    .kpi-inline-count { font-weight: 700; color: var(--slate-900); }
+    @keyframes kpi-card-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .stat-card.kpi-card { animation: none; } }
     .stat-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; margin-bottom: .7rem; }
     .stat-label {
         font-size: .7rem; font-weight: 700; text-transform: uppercase;
@@ -156,6 +181,12 @@
         border: 1px solid var(--brand-100); border-radius: 99px;
     }
     .feedback-modal-body { max-height: 70vh; overflow-y: auto; padding: 0; }
+    .pagination-nav { display: flex; align-items: center; justify-content: center; gap: .4rem; flex-wrap: wrap; }
+    .modal-footer.pagination-nav { padding: .75rem 1rem; border-top: 1px solid var(--slate-100); }
+    .pagination-button { min-width: 32px; padding: .3rem .5rem; border: 1px solid var(--slate-200); border-radius: 7px; background: #fff; color: var(--slate-700); font-size: .75rem; font-weight: 700; }
+    .pagination-button:hover, .pagination-button.active { border-color: var(--brand-500); background: var(--brand-500); color: #fff; }
+    .pagination-button:disabled { opacity: .45; cursor: not-allowed; }
+    .pagination-ellipsis { min-width: 20px; color: var(--slate-500); font-size: .8rem; font-weight: 700; text-align: center; }
 
     .drill-card { padding: 1rem; display: grid; grid-template-columns: 220px 1fr; gap: 1rem; align-items: center; }
     @media(max-width:767px) { .drill-card { grid-template-columns: 1fr; } }
@@ -227,13 +258,30 @@
     .period-content-grid-clean { padding-top: 1rem; }
     .trend-card { background: linear-gradient(145deg, var(--brand-50), #fff); border-color: var(--brand-100); }
     @media(max-width:991px) { .period-content-grid { grid-template-columns: 1fr; } }
-    .period-chart { min-height: 250px; }
+    .period-chart { height: 250px; }
+    .period-table-section { padding-top: .15rem; }
+    .period-table-section-header { margin-bottom: .65rem; }
+    .period-table-section-header h6 { margin: 0; color: var(--slate-700); font-size: .82rem; font-weight: 700; }
+    .period-table-section-header p { margin: .15rem 0 0; color: var(--slate-500); font-size: .72rem; }
     .period-table-wrap { overflow-x: auto; border: 1px solid var(--slate-100); border-radius: 9px; }
-    .period-table { width: 100%; min-width: 690px; border-collapse: collapse; font-size: .76rem; }
+    .period-table { width: 100%; min-width: 570px; border-collapse: collapse; font-size: .76rem; }
     .period-table th { color: var(--slate-500); background: var(--slate-50); font-size: .66rem; font-weight: 700; letter-spacing: .3px; padding: .55rem .65rem; text-align: right; text-transform: uppercase; white-space: nowrap; }
+    .period-table th.metric-col { min-width: 145px; white-space: normal; line-height: 1.35; }
     .period-table td { border-top: 1px solid var(--slate-100); color: var(--slate-700); padding: .55rem .65rem; text-align: right; white-space: nowrap; }
     .period-table th:first-child, .period-table td:first-child { text-align: left; font-weight: 700; }
     .period-table tbody tr:hover td { background: var(--slate-50); }
+    .period-table-footer { display: flex; align-items: center; justify-content: space-between; gap: .65rem; padding: .65rem .75rem; border-top: 1px solid var(--slate-100); background: #fff; }
+    .period-table-footer span { color: var(--slate-500); font-size: .7rem; }
+    .period-modal-body { max-height: 70vh; overflow: auto; padding: 0; }
+    .category-period-comparison { border-color: var(--brand-100); }
+    .category-comparison-chart-wrap { min-height: 320px; padding: 1rem; }
+    .category-comparison-table-wrap { overflow-x: auto; border-top: 1px solid var(--slate-100); }
+    .category-comparison-table { width: 100%; min-width: 700px; border-collapse: collapse; font-size: .78rem; }
+    .category-comparison-table th { padding: .65rem .75rem; background: var(--slate-50); color: var(--slate-500); font-size: .68rem; font-weight: 700; letter-spacing: .3px; text-align: center; text-transform: uppercase; white-space: nowrap; }
+    .category-comparison-table th:first-child, .category-comparison-table td:first-child { min-width: 190px; text-align: left; }
+    .category-comparison-table td { padding: .6rem .75rem; border-top: 1px solid var(--slate-100); color: var(--slate-700); text-align: center; }
+    .category-comparison-table td:first-child { color: var(--slate-900); font-weight: 600; }
+    .category-comparison-table tbody tr:hover td { background: var(--slate-50); }
     .period-category-list { display: grid; gap: .65rem; padding: 0 1rem 1rem; }
     .period-detail { border: 1px solid var(--slate-200); border-radius: 10px; overflow: hidden; }
     .period-detail summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: .75rem; list-style: none; padding: .7rem .85rem; background: #fff; }
@@ -261,7 +309,6 @@
 
 @php
     $activePeriode = $filters['periode'] ?? [];
-    $selectedFakultas = $filters['fakultas'] ?? null;
     $selectedProdi = $filters['program_studi'] ?? [];
     $availableProdi = $filterOptions['prodiList'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
@@ -304,17 +351,6 @@
                         </div>
                 </div>
             </div>
-            <div class="dashboard-filter-field">
-                <label class="form-label" for="filter-fakultas">Fakultas</label>
-                <select name="fakultas" id="filter-fakultas" class="form-select">
-                    <option value="">Semua fakultas</option>
-                    @foreach($filterOptions['fakultasList'] as $kodeFakultas)
-                        <option value="{{ $kodeFakultas }}" {{ $selectedFakultas === $kodeFakultas ? 'selected' : '' }}>
-                            {{ $filterOptions['fakultasLabels'][$kodeFakultas] ?? $kodeFakultas }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
             <div class="dashboard-filter-field prodi">
                 <label class="form-label">Program Studi</label>
                 <div class="dropdown periode-dropdown">
@@ -349,35 +385,47 @@
     </div>
 
     <div class="stat-grid">
-        <div class="stat-card">
+        @if($isAdmin)
+        <div class="stat-card kpi-card kpi-respondents">
             <div class="stat-top">
-                <span class="stat-label">Total Responden / NL</span>
+                <span class="stat-label">Jumlah Responden yang Mengisi</span>
                 <div class="stat-icon-wrap"><i class="bi bi-people-fill"></i></div>
             </div>
-            <span class="stat-value">{{ $totalResponden ?? 0 }}</span>
-            <span class="stat-unit">NL</span>
+            <span class="stat-value kpi-count" data-count-up data-count="{{ $totalResponden ?? 0 }}" data-count-decimals="0" aria-live="polite">{{ $totalResponden ?? 0 }}</span>
+            <span class="stat-unit">responden</span>
             <div class="stat-breakdown">
                 <span class="done"><i class="bi bi-check-circle-fill"></i> {{ $totalResponden ?? 0 }} sudah mengisi</span>
                 <span class="pending"><i class="bi bi-clock-history"></i> {{ $respondenBelumMengisi ?? 0 }} belum mengisi</span>
             </div>
         </div>
 
-        <div class="stat-card">
+        <div class="stat-card kpi-card kpi-alumni">
             <div class="stat-top">
-                <span class="stat-label">Total Lulusan / NJ</span>
+                <span class="stat-label">Jumlah Alumni yang Dinilai</span>
                 <div class="stat-icon-wrap"><i class="bi bi-mortarboard-fill"></i></div>
             </div>
-            <span class="stat-value">{{ $totalLulusan ?? 0 }}</span>
-            <span class="stat-unit">NJ</span>
+            <span class="stat-value kpi-count" data-count-up data-count="{{ $totalLulusan ?? 0 }}" data-count-decimals="0" aria-live="polite">{{ $totalLulusan ?? 0 }}</span>
+            <span class="stat-unit">alumni</span>
             <div class="stat-sub">Lulusan dalam cakupan filter survei</div>
         </div>
 
-        <div class="stat-card green">
+        <div class="stat-card kpi-card kpi-response-minimum">
+            <div class="stat-top">
+                <span class="stat-label">Response Rate Minimum</span>
+                <div class="stat-icon-wrap"><i class="bi bi-bullseye"></i></div>
+            </div>
+            <span class="stat-value kpi-count" data-count-up data-count="{{ $skorKepuasan['minimum_response_rate_pct'] ?? 0 }}" data-count-decimals="1" aria-live="polite">{{ number_format($skorKepuasan['minimum_response_rate_pct'] ?? 0, 1) }}</span>
+            <span class="stat-unit">%</span>
+            <div class="stat-sub">Target minimal {{ number_format($skorKepuasan['minimum_response_count'] ?? 0) }} responden dari {{ number_format($totalLulusan ?? 0) }} alumni pada filter aktif.</div>
+        </div>
+        @endif
+
+        <div class="stat-card kpi-card kpi-index">
             <div class="stat-top">
                 <span class="stat-label">Indeks Kepuasan Pengguna</span>
                 <div class="stat-icon-wrap"><i class="bi bi-star-fill"></i></div>
             </div>
-            <span class="stat-value">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
+            <span class="stat-value kpi-count" data-count-up data-count="{{ $rataKeseluruhan ?? 0 }}" data-count-decimals="2" aria-live="polite">{{ number_format($rataKeseluruhan ?? 0, 2) }}</span>
             <span class="stat-unit">/ 4.00</span>
             <div class="stat-bar-track">
                 <div class="stat-bar-fill" style="width:{{ $pct }}%;"></div>
@@ -385,54 +433,42 @@
             <div class="stat-sub">Skor murni {{ number_format($skorKepuasan['skor_murni'] ?? 0, 2) }} × faktor {{ number_format($skorKepuasan['faktor_pembobot'] ?? 0, 2) }}</div>
         </div>
 
-        <div class="stat-card amber">
+        <div class="stat-card kpi-card kpi-categories">
             <div class="stat-top">
                 <span class="stat-label">Kategori Terbaik &amp; Terendah</span>
                 <div class="stat-icon-wrap"><i class="bi bi-trophy-fill"></i></div>
             </div>
-            <div class="stat-sub"><strong>Terbaik:</strong> {{ $kategoriTerbaik->kategori ?? '-' }} ({{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }} / 4.00)</div>
-            <div class="stat-sub"><strong>Terendah:</strong> {{ $kategoriTerlemah->kategori ?? '-' }} ({{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }} / 4.00)</div>
+            <div class="stat-sub"><strong>Terbaik:</strong> {{ $kategoriTerbaik->kategori ?? '-' }} (<span class="kpi-inline-count" data-count-up data-count="{{ $kategoriTerbaik->rata_rata ?? 0 }}" data-count-decimals="2">{{ number_format($kategoriTerbaik->rata_rata ?? 0, 2) }}</span> / 4.00)</div>
+            <div class="stat-sub"><strong>Terendah:</strong> {{ $kategoriTerlemah->kategori ?? '-' }} (<span class="kpi-inline-count" data-count-up data-count="{{ $kategoriTerlemah->rata_rata ?? 0 }}" data-count-decimals="2">{{ number_format($kategoriTerlemah->rata_rata ?? 0, 2) }}</span> / 4.00)</div>
         </div>
     </div>
 
     @include('admin.dashboard.partials.period-dashboard')
 
+    @include('admin.dashboard.partials.category-period-comparison')
+
     @include('admin.dashboard.partials.satisfaction-panel')
 
     <div class="chart-grid">
+        @if($isAdmin)
         <div class="panel">
             <div class="panel-header">
                 <div>
                     <h6 class="panel-title" id="prodiPanelTitle">Responden Berdasarkan Program Studi</h6>
-                    <p class="panel-subtitle" id="prodiPanelSubtitle">Klik bar untuk melihat detail jenis perusahaan pada prodi tersebut</p>
-                </div>
-                <div class="panel-actions">
-                    <button type="button" class="btn-back" id="backProdiChart">
-                        <i class="bi bi-arrow-left"></i> Ringkasan
-                    </button>
-                    <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#prodiChartModal">
-                        <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
-                    </button>
+                    <p class="panel-subtitle" id="prodiPanelSubtitle">Ringkasan jumlah responden menurut program studi</p>
                 </div>
             </div>
             <div class="panel-body">
                 <div id="chart-prodi" class="chart-wrap chart-compact"></div>
             </div>
         </div>
+        @endif
 
         <div class="panel">
             <div class="panel-header">
                 <div>
                     <h6 class="panel-title" id="kinerjaPanelTitle">Skor Kepuasan Terkonversi per Kategori</h6>
-                    <p class="panel-subtitle" id="kinerjaPanelSubtitle">Klik bar untuk melihat distribusi jawaban kategori tersebut</p>
-                </div>
-                <div class="panel-actions">
-                    <button type="button" class="btn-back" id="backKinerjaChart">
-                        <i class="bi bi-arrow-left"></i> Ringkasan
-                    </button>
-                    <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#kinerjaChartModal">
-                        <i class="bi bi-arrows-fullscreen"></i> Lihat Selengkapnya
-                    </button>
+                    <p class="panel-subtitle" id="kinerjaPanelSubtitle">Ringkasan skor kepuasan untuk setiap kategori</p>
                 </div>
             </div>
             <div class="panel-body">
@@ -473,13 +509,13 @@
                 <p class="mb-3 text-muted" style="font-size:.84rem;">Dashboard ini membantu melihat penilaian perusahaan terhadap lulusan. Gunakan filter di bagian atas bila ingin melihat data tertentu.</p>
                 <ol class="dashboard-info-list">
                     <li><strong>Dari mana datanya?</strong> Angka di dashboard berasal dari survei yang sudah dikirim oleh perusahaan. Setelah survei selesai, jawabannya menjadi arsip sehingga data lama tetap sama meskipun pertanyaan atau profil perusahaan diperbarui.</li>
-                    <li><strong>Arti NL dan NJ.</strong> <strong>NL</strong> adalah jumlah responden unik, yaitu perusahaan atau penyelia yang mengisi survei. Kartu NL juga menunjukkan yang sudah dan belum mengisi. <strong>NJ</strong> adalah jumlah lulusan yang mendapat sesi survei pada filter yang dipilih.</li>
+                    <li><strong>Arti jumlah responden dan jumlah alumni.</strong> Jumlah responden adalah perusahaan atau penyelia unik yang mengisi survei. Kartu ini juga menunjukkan yang sudah dan belum mengisi. Jumlah alumni adalah lulusan yang mendapat sesi survei pada filter yang dipilih.</li>
                     <li><strong>Cara nilai dihitung.</strong> Jawaban penilaian memakai angka 1 sampai 4, lalu sistem mencari nilai rata-ratanya. Nama pilihan jawaban boleh berbeda pada tiap periode, tetapi angka nilainya tetap dipakai agar hasilnya konsisten.</li>
                 </ol>
                 <div class="dashboard-info-formula my-3">
                     <strong>Ringkasnya:</strong> skor murni adalah rata-rata nilai jawaban. Skor akhir adalah skor murni yang disesuaikan dengan tingkat respons.<br>
-                    Sistem membandingkan NL dengan NJ. Jika jumlah respons masih sedikit, nilai akhir ikut disesuaikan agar hasilnya lebih adil.<br>
-                    Target tingkat respons yang digunakan sistem adalah 30%.
+                    Sistem membandingkan jumlah responden yang mengisi dengan jumlah alumni yang dinilai. Jika jumlah respons masih sedikit, nilai akhir ikut disesuaikan agar hasilnya lebih adil.<br>
+                    Target tingkat respons minimum mengikuti jumlah alumni dalam filter: 20% - (10% / 5.000 × jumlah alumni) untuk jumlah alumni di bawah 5.000, atau 10% untuk 5.000 alumni atau lebih.
                 </div>
                 <ol class="dashboard-info-list" start="4">
                     <li><strong>Indeks Kepuasan Pengguna.</strong> Nilai ini memakai jawaban penilaian dari 1 sampai 4. Semakin dekat ke 4, semakin baik penilaian pengguna lulusan. Gunakan tren periode untuk melihat perubahan dari tahun ke tahun.</li>
@@ -490,7 +526,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
+{{-- Tampilan detail grafik dihapus karena isinya mengulang data ringkasan. --}}
+{{-- <div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -526,7 +563,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -535,13 +572,18 @@
                 <h5 class="modal-title" id="feedbackModalLabel">Seluruh Umpan Balik</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body feedback-modal-body">
+            <div class="modal-body feedback-modal-body" id="feedbackModalBody">
                 @forelse($komentarTerbaru as $komen)
-                    @include('admin.dashboard.partials.feedback-item', ['komen' => $komen])
+                    <div data-feedback-item>
+                        @include('admin.dashboard.partials.feedback-item', ['komen' => $komen])
+                    </div>
                 @empty
                     <div class="empty-state"><i class="bi bi-chat-dots"></i>Belum ada umpan balik.</div>
                 @endforelse
             </div>
+            @if($komentarTerbaru->count() > 10)
+                <div class="modal-footer pagination-nav" id="feedbackPagination"></div>
+            @endif
         </div>
     </div>
 </div>
@@ -552,12 +594,18 @@
     const chartLabels = @json($chartLabels);
     const periodTrendLabels = @json($periodTrendLabels);
     const periodTrendData = @json($periodTrendData);
+    const categoryComparisonPeriods = @json($categoryComparisonPeriods);
+    const categoryPeriodComparison = @json($categoryPeriodComparison);
+    const isAdmin = @json($isAdmin);
     const respondenProdiData = @json($respondenProdiData);
     const respondenProdiLabels = @json($respondenProdiLabels);
     const prodiDetails = @json($prodiDetails);
     const kategoriDetails = @json($kategoriDetails);
     const initialKategori = @json($activeKategori);
     const compactLimit = 6;
+    const periodTrendLimit = 6;
+    const periodTrendPreviewLabels = periodTrendLabels.slice(-periodTrendLimit);
+    const periodTrendPreviewData = periodTrendData.slice(-periodTrendLimit);
     const kategoriDetailMap = new Map(kategoriDetails.map((item) => [item.kategori, item]));
     const prodiDetailMap = new Map(prodiDetails.map((item) => [item.prodi, item]));
 
@@ -565,6 +613,38 @@
         labels: labels.slice(0, limit),
         data: data.slice(0, limit)
     });
+
+    const animateKpiCounts = () => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        document.querySelectorAll('[data-count-up]').forEach((element) => {
+            const target = Number(element.dataset.count || 0);
+            const decimals = Number(element.dataset.countDecimals || 0);
+            const format = (value) => Number(value).toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals,
+            });
+
+            if (reduceMotion || !Number.isFinite(target)) {
+                element.textContent = format(target);
+                return;
+            }
+
+            const duration = 700;
+            const startedAt = performance.now();
+            const update = (now) => {
+                const progress = Math.min((now - startedAt) / duration, 1);
+                const easedProgress = 1 - Math.pow(1 - progress, 3);
+                element.textContent = format(target * easedProgress);
+
+                if (progress < 1) requestAnimationFrame(update);
+            };
+
+            requestAnimationFrame(update);
+        });
+    };
+
+    animateKpiCounts();
 
     const emptyChart = (selector, message) => {
         const target = document.querySelector(selector);
@@ -730,7 +810,7 @@
     });
 
     const periodTrendOptions = () => ({
-        series: [{ name: 'Skor akhir', data: periodTrendData }],
+        series: [{ name: 'Skor akhir', data: periodTrendPreviewData }],
         chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: 'inherit' },
         stroke: { width: 3, curve: 'smooth' },
         markers: { size: 5, strokeWidth: 3, hover: { size: 7 } },
@@ -742,7 +822,7 @@
             style: { colors: ['#334155'], fontSize: '10px', fontWeight: 700 }
         },
         xaxis: {
-            categories: periodTrendLabels,
+            categories: periodTrendPreviewLabels,
             labels: { style: { colors: '#64748b', fontSize: '11px' } },
             axisBorder: { show: false },
             axisTicks: { show: false }
@@ -757,6 +837,46 @@
         tooltip: { y: { formatter: value => `${Number(value).toFixed(2)} / 4.00` } }
     });
 
+    const categoryPeriodComparisonOptions = () => ({
+        series: categoryPeriodComparison.map((item) => ({
+            name: item.kategori,
+            data: item.scores.map((score, index) => ({ x: categoryComparisonPeriods[index].label, y: score }))
+        })),
+        chart: {
+            type: 'heatmap',
+            height: Math.min(560, Math.max(320, categoryPeriodComparison.length * 42 + 90)),
+            toolbar: { show: false },
+            fontFamily: 'inherit'
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: value => value === null ? '-' : Number(value).toFixed(2),
+            style: { colors: ['#fff'], fontSize: '10px', fontWeight: 700 }
+        },
+        plotOptions: {
+            heatmap: {
+                radius: 4,
+                colorScale: {
+                    ranges: [
+                        { from: 0, to: 2, color: '#dc2626', name: 'Kurang' },
+                        { from: 2.01, to: 3, color: '#d97706', name: 'Cukup' },
+                        { from: 3.01, to: 3.49, color: '#2563eb', name: 'Baik' },
+                        { from: 3.5, to: 4, color: '#16a34a', name: 'Sangat Baik' },
+                    ]
+                }
+            }
+        },
+        xaxis: {
+            labels: { trim: true, style: { colors: '#64748b', fontSize: '11px' } },
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+        },
+        yaxis: { labels: { style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
+        legend: { position: 'top', fontSize: '12px', markers: { radius: 4 } },
+        grid: { padding: { right: 10 } },
+        tooltip: { y: { formatter: value => value === null ? 'Tidak ada data' : `${Number(value).toFixed(2)} / 4.00` } }
+    });
+
     const kategoriDetailOptions = (detail, expanded = false) => {
         const keys = ['sb', 'b', 'k', 'sk'];
 
@@ -769,7 +889,7 @@
                 enabled: true,
                 formatter: (value, opts) => {
                     const key = keys[opts.dataPointIndex];
-                    return `${formatPct(value)} (${detail.counts?.[key] || 0})`;
+                    return isAdmin ? `${formatPct(value)} (${detail.counts?.[key] || 0})` : formatPct(value);
                 },
                 style: { colors: ['#fff'], fontSize: '11px', fontWeight: 700 }
             },
@@ -814,6 +934,8 @@
     let kinerjaFullChart = null;
     let kepuasanStackChart = null;
     let periodTrendChart = null;
+    let categoryPeriodComparisonChart = null;
+    const feedbackPageSize = 10;
     const compactProdi = sliceData(respondenProdiLabels, respondenProdiData);
     const compactKinerja = sliceData(chartLabels, chartData);
 
@@ -837,12 +959,11 @@
             'prodiPanelTitle',
             'prodiPanelSubtitle',
             'Responden Berdasarkan Program Studi',
-            'Klik bar untuk melihat detail jenis perusahaan pada prodi tersebut'
+            'Ringkasan jumlah responden menurut program studi'
         );
-        setBackVisible('backProdiChart', false);
 
         if (compactProdi.data.length) {
-            prodiChart = renderChart(prodiChart, '#chart-prodi', prodiOptions(compactProdi.labels, compactProdi.data, false, renderProdiDetail));
+            prodiChart = renderChart(prodiChart, '#chart-prodi', prodiOptions(compactProdi.labels, compactProdi.data));
         } else {
             emptyChart('#chart-prodi', 'Belum ada data responden per Prodi.');
         }
@@ -867,12 +988,11 @@
             'kinerjaPanelTitle',
             'kinerjaPanelSubtitle',
             'Skor Kepuasan Terkonversi per Kategori',
-            'Klik bar untuk melihat distribusi jawaban kategori tersebut'
+            'Ringkasan skor kepuasan untuk setiap kategori'
         );
-        setBackVisible('backKinerjaChart', false);
 
         if (compactKinerja.data.length) {
-            kinerjaChart = renderChart(kinerjaChart, '#chart-kinerja', kinerjaOptions(compactKinerja.labels, compactKinerja.data, false, renderKategoriDetail));
+            kinerjaChart = renderChart(kinerjaChart, '#chart-kinerja', kinerjaOptions(compactKinerja.labels, compactKinerja.data));
         } else {
             emptyChart('#chart-kinerja', 'Belum ada data penilaian.');
         }
@@ -887,7 +1007,9 @@
             'kinerjaPanelTitle',
             'kinerjaPanelSubtitle',
             `Detail ${detail.kategori}`,
-            `Skor rata-rata ${Number(detail.rata_rata || 0).toFixed(2)} dari ${detail.total_respon || 0} respon penilaian`
+            isAdmin
+                ? `Skor rata-rata ${Number(detail.rata_rata || 0).toFixed(2)} dari ${detail.total_respon || 0} respon penilaian`
+                : `Skor rata-rata ${Number(detail.rata_rata || 0).toFixed(2)} / 4.00`
         );
         setBackVisible('backKinerjaChart', true);
         kinerjaChart = renderChart(kinerjaChart, '#chart-kinerja', kategoriDetailOptions(detail));
@@ -949,30 +1071,85 @@
     renderProdiSummary();
     renderKinerjaSummary();
 
-    if (periodTrendData.length) {
+    if (periodTrendPreviewData.length) {
         periodTrendChart = renderChart(periodTrendChart, '#chart-period-trend', periodTrendOptions());
     } else {
         emptyChart('#chart-period-trend', 'Belum ada periode yang dapat dibandingkan.');
     }
 
-    document.getElementById('prodiChartModal').addEventListener('shown.bs.modal', () => {
-        if (!prodiFullChart) renderProdiFullSummary();
-    });
+    if (categoryComparisonPeriods.length > 1 && categoryPeriodComparison.length) {
+        categoryPeriodComparisonChart = renderChart(
+            categoryPeriodComparisonChart,
+            '#chart-category-period-comparison',
+            categoryPeriodComparisonOptions()
+        );
+    }
 
-    document.getElementById('kinerjaChartModal').addEventListener('shown.bs.modal', () => {
-        if (!kinerjaFullChart) renderKinerjaFullSummary();
-    });
-
-    document.getElementById('backProdiChart')?.addEventListener('click', renderProdiSummary);
-    document.getElementById('backKinerjaChart')?.addEventListener('click', renderKinerjaSummary);
-    document.getElementById('backProdiFullChart')?.addEventListener('click', renderProdiFullSummary);
-    document.getElementById('backKinerjaFullChart')?.addEventListener('click', renderKinerjaFullSummary);
-
-    document.querySelectorAll('[data-kategori-row]').forEach((row) => {
-        row.addEventListener('click', () => {
-            renderKategoriDetail(row.dataset.kategoriRow);
+    const feedbackItems = [...document.querySelectorAll('[data-feedback-item]')];
+    const feedbackPagination = document.getElementById('feedbackPagination');
+    const paginationMarkup = (currentPage, totalPages, pageAttribute) => {
+        const pageNumbers = [...new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages]
+            .filter((page) => page >= 1 && page <= totalPages))].sort((a, b) => a - b);
+        const pageItems = pageNumbers.flatMap((page, index) => {
+            const previous = pageNumbers[index - 1];
+            return index > 0 && page - previous > 1 ? ['ellipsis', page] : [page];
         });
+
+        return `
+            <button type="button" class="pagination-button" ${pageAttribute}="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''} aria-label="Halaman sebelumnya"><i class="bi bi-chevron-left"></i></button>
+            ${pageItems.map((item) => item === 'ellipsis'
+                ? '<span class="pagination-ellipsis" aria-hidden="true">&hellip;</span>'
+                : `<button type="button" class="pagination-button ${item === currentPage ? 'active' : ''}" ${pageAttribute}="${item}" aria-label="Halaman ${item}">${item}</button>`
+            ).join('')}
+            <button type="button" class="pagination-button" ${pageAttribute}="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''} aria-label="Halaman berikutnya"><i class="bi bi-chevron-right"></i></button>`;
+    };
+
+    const renderFeedbackPage = (page = 1) => {
+        const totalPages = Math.ceil(feedbackItems.length / feedbackPageSize);
+        const safePage = Math.min(Math.max(page, 1), totalPages || 1);
+
+        feedbackItems.forEach((item, index) => {
+            item.hidden = index < (safePage - 1) * feedbackPageSize || index >= safePage * feedbackPageSize;
+        });
+
+        if (!feedbackPagination) return;
+
+        feedbackPagination.innerHTML = paginationMarkup(safePage, totalPages, 'data-feedback-page');
+    };
+
+    feedbackPagination?.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-feedback-page]');
+        if (button && !button.disabled) renderFeedbackPage(Number(button.dataset.feedbackPage));
     });
+    document.getElementById('feedbackModal')?.addEventListener('shown.bs.modal', () => renderFeedbackPage(1));
+
+    const periodRows = [...document.querySelectorAll('[data-period-row]')];
+    const periodPagination = document.getElementById('periodPagination');
+    const periodPaginationSummary = document.getElementById('periodPaginationSummary');
+    const periodPageSize = 6;
+    const renderPeriodPage = (page = 1) => {
+        const totalPages = Math.ceil(periodRows.length / periodPageSize);
+        const safePage = Math.min(Math.max(page, 1), totalPages || 1);
+        const firstItem = (safePage - 1) * periodPageSize;
+        const lastItem = Math.min(firstItem + periodPageSize, periodRows.length);
+
+        periodRows.forEach((row, index) => {
+            row.hidden = index < firstItem || index >= lastItem;
+        });
+
+        if (periodPaginationSummary) {
+            periodPaginationSummary.textContent = `Menampilkan ${firstItem + 1} hingga ${lastItem} dari ${periodRows.length} periode.`;
+        }
+        if (periodPagination) {
+            periodPagination.innerHTML = paginationMarkup(safePage, totalPages, 'data-period-page');
+        }
+    };
+
+    periodPagination?.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-period-page]');
+        if (button && !button.disabled) renderPeriodPage(Number(button.dataset.periodPage));
+    });
+    if (periodPagination && periodRows.length) renderPeriodPage();
 
     document.querySelectorAll('[data-view-mode]').forEach((button) => {
         button.addEventListener('click', () => {

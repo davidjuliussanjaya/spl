@@ -30,9 +30,10 @@ class PenggunaLulusanStoreRequest extends FormRequest
             'nomor_badan_hukum'      => 'nullable|string|max:255',
             'jenis_perusahaan'       => 'required|string|max:255',
             'alamat_perusahaan'      => 'nullable|string',
+            // Dipertahankan untuk kompatibilitas request lama; nilainya diabaikan oleh layanan admin.
             'cabang_kota'            => 'nullable|integer|min:0',
             'cabang_negara'          => 'nullable|integer|min:0',
-            // Jumlah lulusan bekerja hanya dapat dilaporkan oleh perusahaan saat mengisi survei.
+            // Data ketenagakerjaan diisi sendiri oleh responden saat mengisi survei.
             'jumlah_lulusan'         => 'prohibited',
             'durasi_lulusan_bekerja' => 'nullable|integer|min:0',
         ];

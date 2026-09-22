@@ -81,16 +81,20 @@
             letter-spacing: -0.5px;
         }
         .univ-badge {
-            display: inline-block;
-            background-color: rgba(255,255,255,0.15);
-            padding: 0.4rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            padding: .4rem .85rem;
             border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 1px;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,.35);
+            box-shadow: 0 3px 10px rgba(15, 23, 42, .15);
+        }
+        .univ-logo {
+            display: block;
+            width: 190px;
+            height: auto;
         }
 
         /* Info Box */
@@ -329,7 +333,8 @@
             .card-custom { margin-bottom: 1rem; }
             .survey-header { padding: 2rem 1.25rem; }
             .survey-header h2 { font-size: 1.35rem; line-height: 1.35; overflow-wrap: anywhere; }
-            .univ-badge { font-size: .7rem; letter-spacing: .06em; margin-bottom: 1rem; padding: .35rem .7rem; }
+            .univ-badge { margin-bottom: 1rem; padding: .3rem .65rem; }
+            .univ-logo { width: 155px; }
             .lulusan-card { padding: 1.35rem 1rem; }
             .lulusan-name, .info-value { overflow-wrap: anywhere; }
             .lulusan-meta { align-items: flex-start; border-radius: 12px; flex-direction: column; padding: .6rem .8rem; text-align: left; width: 100%; }
@@ -358,7 +363,9 @@
         <div class="card-custom">
             <div class="survey-header">
                 <div class="survey-header-content">
-                    <div class="univ-badge"><i class="bi bi-mortarboard-fill me-2 text-warning"></i> Universitas Dinamika</div>
+                    <div class="univ-badge">
+                        <img src="{{ asset('assets/images/logo/undika.png') }}" class="univ-logo" alt="Universitas Dinamika">
+                    </div>
                     <h2>{{ $survey->judul }}</h2>
                     <p class="text-white-50 mb-1">{{ $survey->periode?->nama_periode }} · {{ $survey->periode?->tanggal_mulai?->translatedFormat('d M Y') }}–{{ $survey->periode?->tanggal_berakhir?->translatedFormat('d M Y') }}</p>
                     <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
