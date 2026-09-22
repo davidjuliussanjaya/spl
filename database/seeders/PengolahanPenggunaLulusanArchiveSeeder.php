@@ -18,9 +18,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
 {
     private const ARCHIVE_FILE = 'docs/Pengolahan Pengguna Lulusan ALL.xlsx';
 
-    /** @var array<int, int> Baris tabel sumber yang tidak mencantumkan alumni. */
-    private array $skippedRowsWithoutAlumni = [];
-
     /**
      * Definisi instrumen bersama untuk data arsip dan pertanyaan aktif.
      * Total: 12 kategori dan 35 pertanyaan.
@@ -108,7 +105,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             throw new \RuntimeException('Berkas arsip tidak ditemukan: ' . self::ARCHIVE_FILE);
         }
 
-        $this->skippedRowsWithoutAlumni = [];
         $rows = $this->readWorkbook($sourcePath);
         $imported = 0;
 
@@ -137,7 +133,7 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
                         'periode_tanggal_berakhir' => "{$year}-12-31",
                         'submitted_at' => $submittedAt,
                         'tahun_instrumen' => '2024',
-                        'lulusan_nama' => $record['alumni'],
+                        'lulusan_nama' => $this->displayAlumniName($record),
                         'lulusan_nim' => $record['nim'],
                         'lulusan_program_studi' => $record['program_studi'],
                         'lulusan_fakultas' => 'FTI',
@@ -165,12 +161,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
 
         $years = collect($rows)->pluck('year')->unique()->sort()->implode(', ');
         $this->command->info("Arsip pengguna lulusan berhasil di-seed: {$imported} respons ({$years}).");
-        if ($this->skippedRowsWithoutAlumni !== []) {
-            $summary = collect($this->skippedRowsWithoutAlumni)
-                ->map(fn (int $count, int $year) => "{$year}: {$count}")
-                ->implode(', ');
-            $this->command->warn("Baris tanpa nama alumni tidak diimpor ({$summary}). Tidak ada lulusan yang dibuat dari jumlah responden.");
-        }
     }
 
     /** Membuat seluruh periode yang dapat dipilih di menu Survei. */
@@ -227,14 +217,11 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
     /** Menghubungkan setiap arsip ke lulusan agar relasi Survey lengkap. */
     private function upsertLulusan(array $record, int $perusahaanId, Carbon $timestamp): int
     {
-        if ($record['alumni'] === null) {
-            throw new \LogicException('Lulusan hanya dapat diimpor dari baris yang memiliki nama alumni.');
-        }
-
-        // Sejumlah tabel sumber tidak menyediakan NIM. Kode ini hanya menjadi
-        // pengenal impor yang stabil; nama lulusan tetap selalu dari tabel sumber.
+        // Tab 2020 dan 2021 mencatat satu respons perusahaan secara agregat,
+        // tanpa identitas alumni. Tetap buat relasi teknis yang jelas ditandai
+        // sebagai agregat agar respons historisnya tidak hilang.
         $nim = $record['nim'] ?? sprintf('ARS%d%04d', $record['year'], $record['source_row']);
-        $nama = $record['alumni'];
+        $nama = $this->displayAlumniName($record);
 
         DB::table('lulusan')->updateOrInsert(
             ['nim' => $nim],
@@ -251,6 +238,15 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         );
 
         return (int) DB::table('lulusan')->where('nim', $nim)->value('id');
+    }
+
+    private function displayAlumniName(array $record): string
+    {
+        return $record['alumni'] ?? sprintf(
+            'Data agregat tanpa nama alumni (%d, baris %d)',
+            $record['year'],
+            $record['source_row'],
+        );
     }
 
     /** Membuat sesi survei selesai agar arsip ikut tampil pada menu Survei. */
@@ -350,6 +346,7 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
     /**
      * Membaca hanya Excel Table yang posisinya paling atas dari setiap tab 2016--2024.
      * Tabel lain pada tab yang sama serta sheet Grafik Dashboard sengaja tidak dibaca.
+     * Baris agregat tanpa nama alumni (format 2020--2021) tetap dipertahankan.
      *
      * @return array<int, array{year:int,source_row:int,cells:array,headers:array,alumni:?string,nim:?string,program_studi:?string,responden:?string,perusahaan:string,jenis_perusahaan:?string,alamat:?string,kontak_perusahaan:?string,kontak_penyelia:?string,email:?string,jumlah_lulusan:?string,cabang_kota:?string,cabang_negara:?string}>
      */
@@ -515,11 +512,6 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         if ($record['perusahaan'] === null || ! preg_match('/(?:^S[1-4]\\b|^D[1-4]\\b|sarjana|diploma)/i', (string) $record['program_studi'])) {
             return null;
         }
-        if ($record['alumni'] === null) {
-            $this->skippedRowsWithoutAlumni[$year] = ($this->skippedRowsWithoutAlumni[$year] ?? 0) + 1;
-            return null;
-        }
-
         return array_merge($record, ['year' => $year, 'source_row' => $sourceRow, 'cells' => $cells, 'headers' => $headers]);
     }
 

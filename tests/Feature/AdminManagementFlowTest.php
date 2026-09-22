@@ -13,6 +13,7 @@ use App\Models\Survey;
 use App\Models\SurveyArsip;
 use App\Models\User;
 use App\Services\DashboardService;
+use Database\Seeders\PengolahanPenggunaLulusanArchiveSeeder;
 
 beforeEach(function () {
     $role = Role::create(['code' => 'admin', 'name' => 'Administrator']);
@@ -327,6 +328,22 @@ test('dashboard applies active filters to every data set used by its cards, char
         ])
         ->and($dashboard['komentarTerbaru'])->toHaveCount(1)
         ->and($dashboard['komentarTerbaru']->first()->jawaban_text)->toBe('Feedback terpilih');
+});
+
+test('archive seeder imports 2020 and 2021 company responses that do not identify individual alumni', function () {
+    $this->seed(PengolahanPenggunaLulusanArchiveSeeder::class);
+
+    foreach (['2020', '2021'] as $year) {
+        expect(Survey::query()
+            ->whereHas('periode', fn ($query) => $query->where('kode_periode', $year))
+            ->count())->toBeGreaterThan(0);
+        expect(SurveyArsip::where('periode_kode', $year)->count())->toBeGreaterThan(0);
+    }
+
+    $this->assertDatabaseHas('lulusan', [
+        'nama' => 'Data agregat tanpa nama alumni (2020, baris 13)',
+        'nim' => 'ARS20200013',
+    ]);
 });
 
 test('regular users see anonymous feedback and no respondent or graduate totals', function () {

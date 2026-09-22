@@ -11,98 +11,139 @@
 
     <style>
         :root {
-            --spl-brand: #2563eb;
-            --spl-brand-dark: #1d4ed8;
-            --spl-brand-soft: #eff6ff;
-            --spl-border: #dbe5f1;
-            --spl-text: #0f172a;
-            --spl-muted: #64748b;
+            --spl-brand: #1f5ed8;
+            --spl-brand-dark: #163f98;
+            --spl-brand-deep: #102d68;
+            --spl-brand-soft: #edf4ff;
+            --spl-accent: #ed1c24;
+            --spl-border: #d9e2ef;
+            --spl-text: #172033;
+            --spl-muted: #5f6c80;
+            --spl-surface: #ffffff;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            background: radial-gradient(circle at top right, #e8f0ff 0, transparent 29rem), #f6f8fc;
             color: var(--spl-text);
+            font-size: 0.9375rem;
+            line-height: 1.55;
         }
 
         /* Container & Cards */
         .survey-container {
-            max-width: 850px;
+            max-width: 920px;
             margin: 0 auto;
         }
         .card-custom {
-            background: #ffffff;
-            border-radius: 16px;
+            background: var(--spl-surface);
+            border-radius: 18px;
             border: 1px solid var(--spl-border);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
-            margin-bottom: 2rem;
+            box-shadow: 0 12px 30px rgba(16, 45, 104, .07);
+            margin-bottom: 1.5rem;
             overflow: hidden;
         }
 
         /* Header Survey */
         .survey-header {
-            background: linear-gradient(135deg, var(--spl-brand) 0%, var(--spl-brand-dark) 100%);
+            background: linear-gradient(135deg, var(--spl-brand-deep) 0%, var(--spl-brand-dark) 48%, var(--spl-brand) 100%);
             color: #fff;
-            padding: 3rem 2rem;
+            padding: 2.75rem 2rem 2.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        /* Aksen latar selaras dengan panel administrasi. */
         .survey-header::before {
             content: '';
             position: absolute;
-            top: -20%;
-            right: -10%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.05);
-            transform: rotate(45deg);
+            inset: 0 0 auto;
+            height: 4px;
+            background: var(--spl-accent);
             z-index: 0;
         }
         .survey-header::after {
             content: '';
             position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 150px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.05);
-            transform: rotate(45deg);
+            right: -5rem;
+            bottom: -8rem;
+            width: 23rem;
+            height: 23rem;
+            border: 2.5rem solid rgba(255, 255, 255, .055);
+            border-radius: 50%;
             z-index: 0;
         }
         .survey-header-content {
             position: relative;
             z-index: 1;
         }
-        .survey-header h2 {
+        .survey-header h1 {
+            max-width: 760px;
+            margin: 0 auto .85rem;
+            font-size: clamp(1.65rem, 3.7vw, 2.4rem);
             font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            letter-spacing: -.035em;
+            line-height: 1.18;
         }
+        .survey-header p.text-white-50 {
+            color: #dce9ff !important;
+            font-size: .84rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .survey-header p.text-white-50 + p.text-white-50 { margin-top: .3rem; }
+        .survey-header p.text-white-50 .text-white { color: #fff !important; letter-spacing: .05em; }
         .univ-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #fff;
-            padding: .4rem .85rem;
-            border-radius: 50px;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255,255,255,.35);
-            box-shadow: 0 3px 10px rgba(15, 23, 42, .15);
+            width: min(280px, 76vw);
+            min-height: 86px;
+            background: #fff;
+            padding: .85rem 1.15rem;
+            border-radius: 15px;
+            margin-bottom: 1.35rem;
+            border: 1px solid rgba(255,255,255,.75);
+            box-shadow: 0 10px 22px rgba(5, 19, 49, .24);
         }
         .univ-logo {
             display: block;
-            width: 190px;
+            width: 100%;
+            max-width: 230px;
             height: auto;
         }
+        .survey-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            margin-bottom: .7rem;
+            color: #dce9ff;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+        }
+        .survey-eyebrow::before { width: 22px; height: 2px; background: var(--spl-accent); content: ''; }
+        .survey-header-meta { display: flex; justify-content: center; gap: .5rem; flex-wrap: wrap; }
+        .survey-header-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .35rem .65rem;
+            border: 1px solid rgba(255,255,255,.17);
+            border-radius: 999px;
+            background: rgba(255,255,255,.08);
+            color: #e4eeff;
+            font-size: .78rem;
+            font-weight: 500;
+        }
+        .survey-header-meta strong { color: #fff; font-size: .8rem; letter-spacing: .04em; }
 
         /* Info Box */
         .info-box {
-            background-color: #f8fafc;
-            border-radius: 12px;
+            background-color: #f7faff;
+            border-radius: 14px;
             padding: 1.5rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #dce7f7;
         }
         .info-label {
             font-size: 0.75rem;
@@ -124,10 +165,10 @@
 
         /* Lulusan Card */
         .lulusan-card {
-            background: linear-gradient(135deg, var(--spl-brand-soft) 0%, #fff 60%);
-            border: 1.5px solid #bfdbfe;
-            border-radius: 14px;
-            padding: 1.75rem 1.5rem;
+            background: linear-gradient(135deg, #f2f7ff 0%, #fff 68%);
+            border: 1px solid #cdddf5;
+            border-radius: 16px;
+            padding: 1.55rem 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -137,12 +178,12 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--spl-brand), #60a5fa);
+            background: linear-gradient(90deg, var(--spl-accent), var(--spl-brand));
         }
         .lulusan-avatar {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--spl-brand), #60a5fa);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--spl-brand), #4a83ec);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -155,7 +196,7 @@
             color: #fff;
         }
         .lulusan-name {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 0.25rem;
@@ -199,51 +240,53 @@
         /* Kategori Title */
         .kategori-title {
             font-weight: 700;
-            color: #1e293b;
-            background-color: #f1f5f9;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            border-left: 5px solid var(--spl-brand);
+            color: var(--spl-brand-deep);
+            background-color: var(--spl-brand-soft);
+            padding: .9rem 1.1rem;
+            border-radius: 11px;
+            border-left: 4px solid var(--spl-accent);
         }
 
         /* Form Elements */
         .form-control {
-            border: 1.5px solid #cbd5e1;
+            border: 1px solid #bdcadd;
             border-radius: 10px;
-            padding: 0.75rem 1rem;
+            padding: .68rem .85rem;
+            color: var(--spl-text);
+            font-size: .9rem;
             transition: all 0.2s;
         }
         .form-control:focus {
             border-color: var(--spl-brand);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+            box-shadow: 0 0 0 3px rgba(31, 94, 216, .14);
         }
 
         /* Survey Table */
         .survey-table {
             border-collapse: collapse;
-            font-size: 0.875rem;
+            font-size: .86rem;
         }
         .survey-table thead th {
-            background-color: var(--spl-brand-soft);
-            color: var(--spl-brand-dark);
+            background-color: #edf4ff;
+            color: var(--spl-brand-deep);
             text-align: center;
             vertical-align: middle;
             font-weight: 700;
-            border-color: #bfdbfe;
-            padding: 0.6rem 0.75rem;
+            border-color: #d5e2f6;
+            padding: .68rem .75rem;
         }
         .survey-table thead tr:first-child th {
-            background-color: var(--spl-brand);
+            background-color: var(--spl-brand-deep);
             color: #fff;
-            font-size: 0.95rem;
+            font-size: .92rem;
             text-align: left;
             letter-spacing: 0.3px;
-            border-color: var(--spl-brand-dark);
+            border-color: var(--spl-brand-deep);
         }
         .survey-table tbody tr td {
             vertical-align: middle;
-            border-color: #bfdbfe;
-            padding: 0.6rem 0.75rem;
+            border-color: #d5e2f6;
+            padding: .7rem .75rem;
         }
         .survey-table tbody tr:hover td {
             background-color: var(--spl-brand-soft);
@@ -306,35 +349,81 @@
 
         /* Button */
         .btn-submit {
-            background-color: var(--spl-brand);
+            background: linear-gradient(135deg, var(--spl-brand-dark), var(--spl-brand));
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            padding: .95rem 2rem;
+            font-weight: 700;
+            font-size: .95rem;
             width: 100%;
             transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: .045em;
         }
         .btn-submit:hover {
-            background-color: var(--spl-brand-dark);
+            background: var(--spl-brand-deep);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(37, 99, 235, .22);
             color: white;
         }
 
         .border-bottom-dashed { border-bottom: 2px dashed #e2e8f0; }
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            margin: 0 0 1.25rem;
+            color: var(--spl-brand-deep);
+            font-size: 1.16rem;
+            font-weight: 800;
+            letter-spacing: -.015em;
+        }
+        .section-heading::before {
+            width: 8px;
+            height: 28px;
+            border-radius: 99px;
+            background: linear-gradient(var(--spl-accent), var(--spl-brand));
+            content: '';
+        }
+        .section-description { color: var(--spl-muted); font-size: .84rem; line-height: 1.55; margin: -.8rem 0 1.25rem 1rem; }
+        .company-summary {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #d9e5f7;
+            border-radius: 13px;
+            background: #f7faff;
+        }
+        .company-summary-icon {
+            display: grid;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--spl-brand-soft);
+            color: var(--spl-brand);
+            font-size: 1.15rem;
+        }
+        .company-summary-name { color: var(--spl-text); font-size: .94rem; font-weight: 700; }
+        .company-summary-address { color: var(--spl-muted); font-size: .79rem; line-height: 1.45; margin-top: .15rem; }
+        .company-stat { margin-left: auto; min-width: 92px; padding-left: .9rem; border-left: 1px solid #d6e1f2; text-align: center; }
+        .company-stat strong { display: block; color: var(--spl-brand-deep); font-size: 1.38rem; font-weight: 800; line-height: 1; }
+        .company-stat span { display: block; color: var(--spl-muted); font-size: .68rem; line-height: 1.35; margin-top: .3rem; }
+        .employee-count-box { padding: 1rem; border: 1px solid var(--spl-border); border-radius: 12px; background: #fff; }
 
         /* Layar kecil: pertahankan ruang baca dan cegah isi survei terpotong. */
         @media (max-width: 575.98px) {
             .survey-container { padding-left: .875rem; padding-right: .875rem; }
             .card-custom { margin-bottom: 1rem; }
             .survey-header { padding: 2rem 1.25rem; }
-            .survey-header h2 { font-size: 1.35rem; line-height: 1.35; overflow-wrap: anywhere; }
-            .univ-badge { margin-bottom: 1rem; padding: .3rem .65rem; }
-            .univ-logo { width: 155px; }
+            .survey-header h1 { font-size: 1.45rem; line-height: 1.26; overflow-wrap: anywhere; }
+            .univ-badge { min-height: 70px; margin-bottom: 1rem; padding: .6rem .8rem; }
+            .survey-header-meta { gap: .35rem; }
+            .survey-header-meta span { font-size: .7rem; }
             .lulusan-card { padding: 1.35rem 1rem; }
             .lulusan-name, .info-value { overflow-wrap: anywhere; }
             .lulusan-meta { align-items: flex-start; border-radius: 12px; flex-direction: column; padding: .6rem .8rem; text-align: left; width: 100%; }
@@ -347,6 +436,9 @@
             .d-flex.justify-content-between.align-items-center { align-items: flex-start !important; gap: .75rem; }
             .d-flex.align-items-center.gap-2 { align-items: flex-start !important; flex-direction: column; }
             .d-flex.align-items-center.gap-2 .form-control { max-width: 100% !important; width: 100%; }
+            .company-summary { align-items: flex-start; }
+            .company-stat { min-width: 72px; padding-left: .65rem; }
+            .section-heading { font-size: 1.03rem; }
         }
     </style>
 </head>
@@ -366,7 +458,8 @@
                     <div class="univ-badge">
                         <img src="{{ asset('assets/images/logo/undika.png') }}" class="univ-logo" alt="Universitas Dinamika">
                     </div>
-                    <h2>{{ $survey->judul }}</h2>
+                    <div class="survey-eyebrow">Survey pengguna lulusan</div>
+                    <h1>{{ $survey->judul }}</h1>
                     <p class="text-white-50 mb-1">{{ $survey->periode?->nama_periode }} · {{ $survey->periode?->tanggal_mulai?->translatedFormat('d M Y') }}–{{ $survey->periode?->tanggal_berakhir?->translatedFormat('d M Y') }}</p>
                     <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
                 </div>
@@ -379,7 +472,7 @@
                     </div>
                 @endif
 
-                <h5 class="fw-bold mb-4 text-dark">A. Informasi tentang Lulusan Terkait</h5>
+                <h2 class="section-heading">Informasi tentang lulusan terkait</h2>
 
                 <div class="lulusan-card">
                     <div class="lulusan-avatar">
@@ -413,10 +506,10 @@
             @endif
             
             <div class="card-custom p-4 p-md-5">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="mb-2">
                     <div>
-                        <label class="form-label fs-5 fw-bold text-dark mb-0">Identitas Perusahaan <span class="text-danger">*</span></label>
-                        <p class="text-muted small mb-0 mt-1">Data institusi/perusahaan Anda sudah terisi dari sistem.</p>
+                        <h2 class="section-heading mb-2">Identitas perusahaan <span class="text-danger">*</span></h2>
+                        <p class="section-description">Data institusi/perusahaan Anda sudah terisi dari sistem.</p>
                     </div>
                 </div>
 
@@ -425,21 +518,19 @@
                     $storedJumlah = $survey->penggunalulusan->jumlah_lulusan;
                 @endphp
 
-                <div class="p-3 bg-light rounded border mb-3">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-building fs-3 text-secondary me-3"></i>
+                <div class="company-summary">
+                    <div class="company-summary-icon"><i class="bi bi-building"></i></div>
                         <div class="flex-grow-1">
-                            <div class="fw-bold">{{ $survey->penggunalulusan->nama_perusahaan ?? 'Nama Perusahaan Belum Tersedia' }}</div>
-                            <div class="small text-muted">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
+                            <div class="company-summary-name">{{ $survey->penggunalulusan->nama_perusahaan ?? 'Nama Perusahaan Belum Tersedia' }}</div>
+                            <div class="company-summary-address">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
                         </div>
-                        <div class="text-end ms-3">
-                            <div class="fw-bold text-primary fs-4">{{ $jumlahSistem }}</div>
-                            <div class="small text-muted">lulusan tercatat sistem</div>
+                        <div class="company-stat">
+                            <strong>{{ $jumlahSistem }}</strong>
+                            <span>lulusan tercatat<br>di sistem</span>
                         </div>
-                    </div>
                 </div>
 
-                <div class="mb-3 p-3 border rounded bg-white">
+                <div class="employee-count-box mb-3">
                     <label class="form-label small text-secondary fw-bold mb-1">
                         <i class="bi bi-people-fill me-1 text-primary"></i>
                         Jumlah Lulusan yang Saat Ini Bekerja di Instansi Ini <span class="text-danger">*</span>
@@ -546,8 +637,8 @@
 
             <div class="card-custom p-4 p-md-5">
                 <div class="mb-2">
-                    <label class="form-label fs-5 fw-bold text-dark">Konfirmasi Identitas Responden <span class="text-danger">*</span></label>
-                    <p class="text-muted small mb-3">Mohon konfirmasi atau lengkapi data Anda sebagai perwakilan instansi yang mengisi kuesioner ini.</p>
+                    <h2 class="section-heading mb-2">Konfirmasi identitas responden <span class="text-danger">*</span></h2>
+                    <p class="section-description">Mohon konfirmasi atau lengkapi data Anda sebagai perwakilan instansi yang mengisi kuesioner ini.</p>
                 </div>
                 
                 <div class="row g-3">
