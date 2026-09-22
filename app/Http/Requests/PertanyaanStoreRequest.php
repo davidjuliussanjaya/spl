@@ -24,9 +24,12 @@ class PertanyaanStoreRequest extends FormRequest
         return [
             'question'  => 'required|string',
             'kategori_id'  => 'required|exists:kategoris,id',
-            'type'      => 'required',
+            'type'      => 'required|in:radio,rating,text',
             'kode'      => 'nullable|string',
-            'jawaban.*' => 'required_if:type,radio'
+            'jawaban'   => 'required_unless:type,text|array|min:1',
+            'jawaban.*' => 'required_unless:type,text|string',
+            'nilai'     => 'required_if:type,rating|array',
+            'nilai.*'   => 'nullable|numeric',
         ];
     }
 }

@@ -44,7 +44,8 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Tipe Masukan <span class="text-danger">*</span></label>
                             <select class="form-select modern-input" name="type" id="typeSelect">
-                                <option value="radio" {{ $soal->jenis_soal == 'multiple_choice' ? 'selected' : '' }}>Pilihan Ganda (Radio / Rating)</option>
+                                <option value="rating" {{ $soal->jenis_soal == 'rating' ? 'selected' : '' }}>Rating / Skala Penilaian</option>
+                                <option value="radio" {{ $soal->jenis_soal == 'multiple_choice' ? 'selected' : '' }}>Pilihan Ganda (Satu Jawaban)</option>
                                 <option value="text" {{ $soal->jenis_soal == 'essay' ? 'selected' : '' }}>Teks Bebas (Essay)</option>
                             </select>
                         </div>
@@ -74,6 +75,12 @@
                         </div>
 
                         <div class="bg-light p-4 rounded-4 border" style="border-style: dashed !important;">
+                            <div class="option-column-headings" aria-hidden="true">
+                                <span></span>
+                                <span>Opsi Jawaban</span>
+                                <span class="text-center">Bobot Nilai</span>
+                                <span></span>
+                            </div>
                             <div id="options">
                                 @if($soal->jawaban && $soal->jawaban->count() > 0)
                                     @foreach($soal->jawaban as $j)
@@ -149,6 +156,20 @@
     /* Option Item Animation */
     .option-item {
         animation: fadeIn 0.3s ease-in-out;
+    }
+    .option-column-headings {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 100px 34px;
+        column-gap: .5rem;
+        margin: 0 .15rem .45rem;
+        color: #475569;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+    @media (max-width: 575.98px) {
+        .option-column-headings { display: none; }
     }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }

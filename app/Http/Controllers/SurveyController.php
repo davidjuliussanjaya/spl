@@ -94,10 +94,11 @@ class SurveyController extends Controller
 {
     $survey = Survey::with('periode')->where('access_code', $request->code)
                     ->where('is_completed', false)
+                    ->where('is_active', true)
                     ->first();
 
     if (! $survey || ! $survey->periode?->isBerlangsung()) {
-        return back()->with('error', 'Kode akses tidak valid, survei telah selesai, atau periode pengisian belum berlangsung.');
+        return back()->with('error', 'Kode akses tidak valid, survei tidak aktif atau telah selesai, atau periode pengisian belum berlangsung.');
     }
 
     return redirect()->route('survey.fill', $survey->access_code);
@@ -130,7 +131,7 @@ public function fill($code)
             $this->surveyService->submitJawaban($survey, $request->validated());
 
             return redirect('/')
-                ->with('success', 'Terima kasih, kuesioner evaluasi berhasil terkirim dan data Anda telah dicatat!')
+                ->with('success', 'Jawaban Anda telah tersimpan dengan aman.')
                 ->with('clear_survey_draft', $survey->access_code);
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menyimpan jawaban: ' . $e->getMessage())->withInput();
@@ -198,10 +199,17 @@ public function edit($id)
     public function bulkStore(SurveyBulkRequest $request)
     {
         try {
-            $surveys = $this->surveyService->createBulkSurveys($request->validated());
-            $count = count($surveys);
+            $result = $this->surveyService->createBulkSurveys($request->validated());
+            $count = count($result['surveys']);
+            $skipped = $result['skipped'];
+            $message = "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.";
+
+            if ($skipped > 0) {
+                $message .= " {$skipped} lulusan dilewati karena sudah memiliki survei pada periode ini.";
+            }
+
             return redirect()->route('survey', ['periode_id' => $request->periode_id])
-                ->with('success', "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.");
+                ->with('success', $message);
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
@@ -259,6 +267,14 @@ public function edit($id)
 
     private function ensurePeriodIsOpen(Survey $survey): void
     {
+        if ($survey->is_completed) {
+            abort(403, 'Survei ini sudah selesai diisi.');
+        }
+
+        if (! $survey->is_active) {
+            abort(403, 'Survei ini tidak aktif.');
+        }
+
         if (! $survey->periode || ! $survey->periode->isBerlangsung()) {
             abort(403, 'Survei tidak dapat diisi di luar tanggal periode yang ditentukan.');
         }

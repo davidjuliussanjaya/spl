@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ $assetBaseUrl }}/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="{{ $assetBaseUrl }}/assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ $assetBaseUrl }}/assets/css/app.css?v=20260906-2">
-    <link rel="stylesheet" href="{{ $assetBaseUrl }}/assets/css/spl-admin.css?v=20260917-1">
+    <link rel="stylesheet" href="{{ $assetBaseUrl }}/assets/css/spl-admin.css?v=20260922-2">
     @stack('styles')
     <link rel="shortcut icon" href="{{ $assetBaseUrl }}/assets/images/favicon.svg">
 </head>

@@ -5,6 +5,7 @@
         <div class="sidebar-header pt-3 pb-3 spl-sidebar-header">
             <div class="d-flex justify-content-between align-items-center px-3">
                 <a href="{{ route('dashboard') }}" class="text-decoration-none d-flex align-items-center spl-brand">
+                    <span class="spl-brand-mark" aria-hidden="true"><i class="bi bi-bar-chart-line-fill"></i></span>
                     <div class="spl-brand-copy">
                         <div class="spl-brand-name">SPL</div>
                         <div class="spl-brand-product">Sistem Pelacakan Lulusan</div>

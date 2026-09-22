@@ -20,6 +20,9 @@ class SurveyService
         return DB::transaction(function () use ($data) {
             $periode = Periode::findOrFail($data['periode_id']);
             $pengguna = PenggunaLulusan::findOrFail($data['pengguna_lulusan_id']);
+            $lulus = Lulusan::findOrFail($data['lulusan_id']);
+
+            $this->ensureLulusanHasNoSurveyInPeriod($lulus->id, $periode->id);
             
             $pengguna->update([
                 'nama_penyelia'     => $data['nama'] ?? $pengguna->nama_penyelia,
@@ -29,8 +32,6 @@ class SurveyService
                 'kontak_perusahaan' => $data['telp_perusahaan'] ?? $pengguna->kontak_perusahaan,
                 'alamat_perusahaan' => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
             ]);
-
-            $lulus = Lulusan::findOrFail($data['lulusan_id']);
 
             $survey = Survey::create([
                 'judul'               => $data['judul'],
@@ -65,6 +66,18 @@ class SurveyService
     public function submitJawaban(Survey $survey, array $data)
     {
         return DB::transaction(function () use ($survey, $data) {
+            // Mengunci baris survei agar dua kiriman yang tiba bersamaan tidak
+            // dapat menghasilkan respons dan arsip ganda.
+            $survey = Survey::query()->lockForUpdate()->findOrFail($survey->id);
+
+            if ($survey->is_completed) {
+                throw new \DomainException('Survei ini sudah selesai diisi.');
+            }
+
+            if (! $survey->is_active) {
+                throw new \DomainException('Survei ini tidak aktif.');
+            }
+
             if ($survey->pengguna_lulusan_id) {
                 $pengguna = PenggunaLulusan::find($survey->pengguna_lulusan_id);
                 if ($pengguna) {
@@ -298,11 +311,18 @@ class SurveyService
                 throw new \Exception("Tidak ada lulusan dengan tahun lulus {$tahunLulus} yang memiliki data perusahaan.");
             }
 
+            $existingLulusanIds = Survey::query()
+                ->where('periode_id', $periode->id)
+                ->whereIn('lulusan_id', $lulusanList->pluck('id'))
+                ->pluck('lulusan_id')
+                ->all();
+            $lulusanBaru = $lulusanList->reject(fn (Lulusan $lulus) => in_array($lulus->id, $existingLulusanIds, true));
+            $skipped = $lulusanList->count() - $lulusanBaru->count();
             $surveys = [];
 
             $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])->get(['id', 'kategori_id', 'kode']);
 
-            foreach ($lulusanList as $lulus) {
+            foreach ($lulusanBaru as $lulus) {
                 $soalUntukLulusan = $soalTerpilih;
 
                 $survey = Survey::create([
@@ -330,7 +350,10 @@ class SurveyService
                 $surveys[] = $survey;
             }
 
-            return $surveys;
+            return [
+                'surveys' => $surveys,
+                'skipped' => $skipped,
+            ];
         });
     }
 
@@ -338,6 +361,10 @@ class SurveyService
     {
         return DB::transaction(function () use ($survey, $data) {
             $periode = Periode::findOrFail($data['periode_id']);
+            $lulus = Lulusan::findOrFail($data['lulusan_id']);
+
+            $this->ensureLulusanHasNoSurveyInPeriod($lulus->id, $periode->id, $survey->id);
+
             $pengguna = PenggunaLulusan::find($data['pengguna_lulusan_id']);
             if ($pengguna) {
                 $pengguna->update([
@@ -349,8 +376,6 @@ class SurveyService
                     'alamat_perusahaan' => $data['alamat_perusahaan'] ?? $pengguna->alamat_perusahaan,
                 ]);
             }
-
-            $lulus = Lulusan::findOrFail($data['lulusan_id']);
 
             $survey->update([
                 'judul'               => $data['judul'],
@@ -390,5 +415,18 @@ class SurveyService
 
             return [$urutanA, $a->kode ?? '', $a->id] <=> [$urutanB, $b->kode ?? '', $b->id];
         })->values();
+    }
+
+    private function ensureLulusanHasNoSurveyInPeriod(int $lulusanId, int $periodeId, ?int $ignoreSurveyId = null): void
+    {
+        $exists = Survey::query()
+            ->where('lulusan_id', $lulusanId)
+            ->where('periode_id', $periodeId)
+            ->when($ignoreSurveyId, fn ($query) => $query->where('id', '!=', $ignoreSurveyId))
+            ->exists();
+
+        if ($exists) {
+            throw new \DomainException('Lulusan ini sudah memiliki survei pada periode yang dipilih.');
+        }
     }
 }

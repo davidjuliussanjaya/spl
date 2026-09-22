@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\SurveyArsip;
 use App\Models\Lulusan;
-use App\Models\Fakultas;
 use App\Models\ProgramStudi;
 use App\Models\Survey;
 use Illuminate\Support\Arr;
@@ -24,27 +23,16 @@ class DashboardService
 
         $filters['periode'] = $periode;
 
-        $fakultas = $filters['fakultas'] ?? null;
         $programStudi = collect(Arr::wrap($filters['program_studi'] ?? []))
             ->filter(fn ($value) => filled($value))
             ->values()
             ->all();
         $filters['program_studi'] = $programStudi;
-        $fakultasProdi = $this->getFakultasProdiOptions();
-
-        if ($fakultas && !empty($programStudi)) {
-            $programStudi = array_values(array_intersect($programStudi, $fakultasProdi[$fakultas] ?? []));
-            $filters['program_studi'] = $programStudi;
-        }
 
         $arsipQuery = SurveyArsip::query();
 
         if (!empty($periode)) {
             $arsipQuery->whereIn('periode_kode', $periode);
-        }
-
-        if ($fakultas) {
-            $arsipQuery->where('lulusan_fakultas', $fakultas);
         }
 
         if (!empty($programStudi)) {
@@ -57,8 +45,8 @@ class DashboardService
             ->whereIn('id', $arsipList->pluck('survey_id')->filter()->unique())
             ->pluck('pengguna_lulusan_id', 'id');
         $totalResponden = $this->countUniqueRespondents($arsipList, $penggunaBySurvey);
-        $totalLulusan = $this->getTotalLulusanDalamCakupan($periode, $fakultas, $programStudi);
-        $respondenBelumMengisi = $this->getTotalRespondenBelumMengisi($periode, $fakultas, $programStudi);
+        $totalLulusan = $this->getTotalLulusanDalamCakupan($periode, $programStudi);
+        $respondenBelumMengisi = $this->getTotalRespondenBelumMengisi($periode, $programStudi);
 
         $ratingByKategori = [];
         $allRatings = [];
@@ -90,7 +78,7 @@ class DashboardService
         $periodSatisfactionSummaries = $arsipList
             ->filter(fn ($arsip) => filled($arsip->periode_kode))
             ->groupBy(fn ($arsip) => (string) $arsip->periode_kode)
-            ->map(function ($periodArsip, $period) use ($fakultas, $programStudi, $penggunaBySurvey) {
+            ->map(function ($periodArsip, $period) use ($programStudi, $penggunaBySurvey) {
                 $ratings = [];
 
                 foreach ($periodArsip as $arsip) {
@@ -105,7 +93,7 @@ class DashboardService
                 }
 
                 $totalRespondenPeriode = $this->countUniqueRespondents($periodArsip, $penggunaBySurvey);
-                $totalLulusanPeriode = $this->getTotalLulusanDalamCakupan([$period], $fakultas, $programStudi);
+                $totalLulusanPeriode = $this->getTotalLulusanDalamCakupan([$period], $programStudi);
                 $skorPeriode = $this->satisfactionScoreService->calculate(
                     $ratings,
                     $totalRespondenPeriode,
@@ -149,6 +137,49 @@ class DashboardService
         $periodTrend = $periodSatisfactionSummaries->sortBy('tanggal_mulai')->values();
         $periodTrendLabels = $periodTrend->pluck('periode_label')->all();
         $periodTrendData = $periodTrend->pluck('skor_akhir')->all();
+
+        // Nilai kategori juga perlu dihitung per periode agar perubahan penilaian
+        // dari tahun/periode sebelumnya dapat dibandingkan secara langsung.
+        $periodCategoryScores = $periodTrend->map(function (array $periodSummary) use ($arsipList) {
+            $ratingsByCategory = [];
+
+            foreach ($arsipList->where('periode_kode', $periodSummary['periode']) as $arsip) {
+                foreach ($arsip->jawaban_json ?? [] as $item) {
+                    if (($item['jenis'] ?? '') !== 'rating' || !isset($item['nilai']) || $item['nilai'] === null) {
+                        continue;
+                    }
+
+                    $ratingsByCategory[$item['kategori'] ?? 'Lainnya'][] = (int) $item['nilai'];
+                }
+            }
+
+            return [
+                'periode' => $periodSummary['periode'],
+                'label' => $periodSummary['periode_label'],
+                'scores' => collect($ratingsByCategory)
+                    ->map(fn (array $ratings) => round($this->satisfactionScoreService->calculate(
+                        $ratings,
+                        $periodSummary['total_responden'],
+                        $periodSummary['total_lulusan'],
+                    )['skor_akhir'], 2))
+                    ->all(),
+            ];
+        });
+        $categoryComparisonPeriods = $periodCategoryScores
+            ->map(fn (array $period) => ['periode' => $period['periode'], 'label' => $period['label']])
+            ->all();
+        $categoryPeriodComparison = $periodCategoryScores
+            ->flatMap(fn (array $period) => array_keys($period['scores']))
+            ->unique()
+            ->sort()
+            ->values()
+            ->map(fn (string $kategori) => [
+                'kategori' => $kategori,
+                'scores' => $periodCategoryScores
+                    ->map(fn (array $period) => $period['scores'][$kategori] ?? null)
+                    ->all(),
+            ])
+            ->values();
 
         $kategoriStats = collect($ratingByKategori)
             ->map(function ($nilai, $kategori) use ($totalResponden, $totalLulusan) {
@@ -319,6 +350,8 @@ class DashboardService
             'globalPeriodScore',
             'periodTrendLabels',
             'periodTrendData',
+            'categoryComparisonPeriods',
+            'categoryPeriodComparison',
             'kategoriDetails',
             'komentarTerbaru',
             'filterOptions',
@@ -355,7 +388,7 @@ class DashboardService
             ->count();
     }
 
-    private function getTotalLulusanDalamCakupan(array $periode, ?string $fakultas, array $programStudi): int
+    private function getTotalLulusanDalamCakupan(array $periode, array $programStudi): int
     {
         $query = Lulusan::query()
             ->join('survey', 'lulusan.id', '=', 'survey.lulusan_id')
@@ -366,9 +399,6 @@ class DashboardService
             $query->join('periode', 'periode.id', '=', 'survey.periode_id')
                 ->whereIn('periode.kode_periode', $periode);
         }
-        if ($fakultas) {
-            $query->where('lulusan.fakultas', $fakultas);
-        }
         if (!empty($programStudi)) {
             $query->whereIn('lulusan.program_studi', $programStudi);
         }
@@ -377,7 +407,7 @@ class DashboardService
     }
 
     /** Jumlah perusahaan/responden unik yang masih mempunyai survei belum diisi dalam cakupan filter. */
-    private function getTotalRespondenBelumMengisi(array $periode, ?string $fakultas, array $programStudi): int
+    private function getTotalRespondenBelumMengisi(array $periode, array $programStudi): int
     {
         $query = Survey::query()
             ->join('lulusan', 'lulusan.id', '=', 'survey.lulusan_id')
@@ -386,9 +416,6 @@ class DashboardService
         if (!empty($periode)) {
             $query->join('periode', 'periode.id', '=', 'survey.periode_id')
                 ->whereIn('periode.kode_periode', $periode);
-        }
-        if ($fakultas) {
-            $query->where('lulusan.fakultas', $fakultas);
         }
         if (!empty($programStudi)) {
             $query->whereIn('lulusan.program_studi', $programStudi);
@@ -399,24 +426,16 @@ class DashboardService
 
     private function getFilterOptions(): array
     {
-        $fakultasMaster = Fakultas::with('programStudis')->orderBy('kode')->get();
-        $fakultasProdi = $fakultasMaster->mapWithKeys(fn ($fakultas) => [
-            $fakultas->kode => $fakultas->programStudis->pluck('nama')->sort()->values()->all(),
-        ])->all();
-        $arsipProdi = SurveyArsip::query()
-            ->whereNotNull('lulusan_program_studi')
-            ->get(['lulusan_fakultas', 'lulusan_program_studi']);
-        foreach ($arsipProdi as $arsip) {
-            if (filled($arsip->lulusan_fakultas) && filled($arsip->lulusan_program_studi)) {
-                $fakultasProdi[$arsip->lulusan_fakultas] = array_values(array_unique([
-                    ...($fakultasProdi[$arsip->lulusan_fakultas] ?? []),
-                    $arsip->lulusan_program_studi,
-                ]));
-            }
-        }
-        $fakultasList = collect(array_keys($fakultasProdi))->sort()->values();
-        $prodiList = collect($fakultasProdi)->flatten()->unique()->sort()->values();
-        $fakultasLabels = $fakultasMaster->pluck('nama', 'kode')->all();
+        $prodiList = ProgramStudi::query()
+            ->orderBy('nama')
+            ->pluck('nama')
+            ->merge(SurveyArsip::query()
+                ->whereNotNull('lulusan_program_studi')
+                ->pluck('lulusan_program_studi'))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
 
         $periodeList = SurveyArsip::whereNotNull('periode_kode')
             ->orderByDesc('periode_tanggal_mulai')
@@ -424,28 +443,6 @@ class DashboardService
             ->unique('periode_kode')
             ->mapWithKeys(fn ($arsip) => [$arsip->periode_kode => $arsip->periode_nama ?: $arsip->periode_kode]);
 
-        return compact('periodeList', 'fakultasList', 'prodiList', 'fakultasProdi', 'fakultasLabels');
-    }
-
-    private function getFakultasProdiOptions(): array
-    {
-        $options = Fakultas::with('programStudis')->orderBy('kode')->get()
-            ->mapWithKeys(fn ($fakultas) => [
-                $fakultas->kode => $fakultas->programStudis->pluck('nama')->sort()->values()->all(),
-            ])
-            ->all();
-
-        SurveyArsip::query()
-            ->whereNotNull('lulusan_fakultas')
-            ->whereNotNull('lulusan_program_studi')
-            ->get(['lulusan_fakultas', 'lulusan_program_studi'])
-            ->each(function ($arsip) use (&$options): void {
-                $options[$arsip->lulusan_fakultas] = array_values(array_unique([
-                    ...($options[$arsip->lulusan_fakultas] ?? []),
-                    $arsip->lulusan_program_studi,
-                ]));
-            });
-
-        return $options;
+        return compact('periodeList', 'prodiList');
     }
 }
