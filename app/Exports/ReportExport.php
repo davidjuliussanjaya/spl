@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
 use App\Services\SatisfactionScoreService;
-use App\Support\DatabaseYearExpression;
 use App\Models\Fakultas;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -145,7 +144,7 @@ class ReportExport
         foreach ($fakultasList as $fakultasMaster) {
             $fakultas = $fakultasMaster->kode;
             $soalList = $this->getSoalAktif();
-            $dataRows = $this->getDataRows($tahun, $fakultasMaster->id);
+            $dataRows = $this->getDataRows($tahun, $fakultas);
 
             if ($dataRows->isEmpty()) {
                 continue;
@@ -153,7 +152,10 @@ class ReportExport
 
             $color      = $this->fakultasColors[$fakultas]       ?? 'FF1B4F8A';
             $colorLight = $this->fakultasHeaderLight[$fakultas]   ?? 'FF2E75B6';
-            $colEnd     = $this->colLetter(9 + count($soalList) - 1);
+            // Sembilan kolom identitas diikuti seluruh kolom soal.
+            // Jangan kurangi satu: kolom soal terakhir juga perlu ikut style,
+            // border, dan area merge pada header fakultas.
+            $colEnd     = $this->colLetter(9 + count($soalList));
 
             // ── Header Fakultas ────────────────────────────────────────────
             $sheet->mergeCells("A{$row}:{$colEnd}{$row}");
@@ -188,7 +190,6 @@ class ReportExport
 
             // ── Baris Data ─────────────────────────────────────────────────
             $no         = 1;
-            $soalIdList = $soalList->pluck('id')->toArray();
             $peProdi    = [];
 
             foreach ($dataRows as $lulusan) {
@@ -203,7 +204,9 @@ class ReportExport
                 $sheet->setCellValue("{$col}{$row}", $lulusan->cabang_kota ? 'Ya' : 'Tidak'); $col++;
                 $sheet->setCellValue("{$col}{$row}", $lulusan->cabang_negara ? 'Ya' : 'Tidak'); $col++;
 
-                $jawabanMap = $this->getJawabanForSurvey($lulusan->survey_id, $soalIdList);
+                // Gunakan snapshot arsip sebagai sumber laporan. Data master/respons
+                // dapat berubah atau tidak lagi tersedia setelah survei selesai.
+                $jawabanMap = $this->getJawabanFromArsip($lulusan->jawaban_json, $soalList);
 
                 foreach ($soalList as $soal) {
                     $nilai = $jawabanMap[$soal->id] ?? null;
@@ -549,18 +552,16 @@ class ReportExport
 
     private function getTahunList(): array
     {
-        $q = DB::table('lulusan')
-            ->join('survey', 'lulusan.id', '=', 'survey.lulusan_id')
-            ->join('periode', 'periode.id', '=', 'survey.periode_id')
-            ->where('survey.is_completed', true)
-            ->selectRaw(DatabaseYearExpression::fromDateColumn('lulusan.tahun_lulus') . ' as tahun')
+        $q = DB::table('survey_arsip')
+            ->whereNotNull('lulusan_tahun_lulus')
+            ->selectRaw('lulusan_tahun_lulus as tahun')
             ->distinct();
 
         if (!empty($this->filters['periode'])) {
-            $q->whereIn('periode.kode_periode', $this->filters['periode']);
+            $q->whereIn('periode_kode', $this->filters['periode']);
         }
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
+            $q->whereIn('lulusan_program_studi', $this->filters['program_studi']);
         }
 
         return $q->orderBy('tahun')->pluck('tahun')->map(fn($v) => (int) $v)->toArray();
@@ -576,35 +577,30 @@ class ReportExport
             ->get(['soal.id', 'soal.kode', 'soal.soal', 'soal.kategori_id', 'kategoris.nama_kategori']);
     }
 
-    private function getDataRows(int $tahun, int $fakultasId)
+    private function getDataRows(int $tahun, string $fakultas)
     {
-        $q = DB::table('survey')
-            ->join('lulusan', 'survey.lulusan_id', '=', 'lulusan.id')
-            ->join('periode', 'periode.id', '=', 'survey.periode_id')
-            ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
-            ->join('pengguna_lulusan', 'survey.pengguna_lulusan_id', '=', 'pengguna_lulusan.id')
-            ->where('survey.is_completed', true)
-            ->where('lulusan.fakultas_id', $fakultasId)
-            ->whereYear('lulusan.tahun_lulus', $tahun)
+        $q = DB::table('survey_arsip')
+            ->where('lulusan_fakultas', $fakultas)
+            ->where('lulusan_tahun_lulus', (string) $tahun)
             ->select(
-                'survey.id as survey_id',
-                'lulusan.nama',
-                'lulusan.nim',
-                'program_studi.nama as program_studi',
-                'pengguna_lulusan.nama_penyelia',
-                'pengguna_lulusan.nama_perusahaan',
-                'pengguna_lulusan.jenis_perusahaan',
-                'pengguna_lulusan.cabang_kota',
-                'pengguna_lulusan.cabang_negara'
+                'lulusan_nama as nama',
+                'lulusan_nim as nim',
+                'lulusan_program_studi as program_studi',
+                'penyelia_nama as nama_penyelia',
+                'perusahaan_nama as nama_perusahaan',
+                'perusahaan_jenis as jenis_perusahaan',
+                'perusahaan_cabang_kota as cabang_kota',
+                'perusahaan_cabang_negara as cabang_negara',
+                'jawaban_json'
             )
-            ->orderBy('program_studi.nama')
-            ->orderBy('lulusan.nama');
+            ->orderBy('lulusan_program_studi')
+            ->orderBy('lulusan_nama');
 
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
+            $q->whereIn('lulusan_program_studi', $this->filters['program_studi']);
         }
         if (!empty($this->filters['periode'])) {
-            $q->whereIn('periode.kode_periode', $this->filters['periode']);
+            $q->whereIn('periode_kode', $this->filters['periode']);
         }
 
         return $q->get();
@@ -625,19 +621,30 @@ class ReportExport
             ->count('lulusan.id');
     }
 
-    private function getJawabanForSurvey(int $surveyId, array $soalIds): array
+    private function getJawabanFromArsip(mixed $jawabanJson, $soalList): array
     {
-        $rows = DB::table('respon_jawaban')
-            ->join('jawaban', 'respon_jawaban.jawaban_id', '=', 'jawaban.id')
-            ->where('respon_jawaban.survey_id', $surveyId)
-            ->whereIn('respon_jawaban.soal_id', $soalIds)
-            ->select('respon_jawaban.soal_id', 'jawaban.nilai')
-            ->get();
+        if (is_string($jawabanJson)) {
+            $jawabanJson = json_decode($jawabanJson, true);
+        }
+
+        if (! is_array($jawabanJson)) {
+            return [];
+        }
+
+        $soalIdByKode = $soalList->pluck('id', 'kode')->all();
 
         $map = [];
-        foreach ($rows as $r) {
-            $map[$r->soal_id] = (int) $r->nilai;
+        foreach ($jawabanJson as $jawaban) {
+            $kode = $jawaban['kode'] ?? null;
+            $nilai = $jawaban['nilai'] ?? null;
+
+            if (! isset($soalIdByKode[$kode]) || ! is_numeric($nilai)) {
+                continue;
+            }
+
+            $map[$soalIdByKode[$kode]] = (int) $nilai;
         }
+
         return $map;
     }
 

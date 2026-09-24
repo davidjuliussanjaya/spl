@@ -117,8 +117,11 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             foreach ($rows as $record) {
                 $answers = $this->buildAnswers($record['cells'], $record['headers'], $questionCatalog);
                 $year = $record['year'];
-                $accessCode = sprintf('ARS-%d-%04d', $year, $record['source_row']);
-                $surveyAccessCode = 'A' . substr((string) $year, -2) . str_pad((string) $record['source_row'], 7, '0', STR_PAD_LEFT);
+                $alumniIndex = (int) ($record['alumni_index'] ?? 1);
+                $recordSuffix = sprintf('%04d', $record['source_row'])
+                    . ($alumniIndex > 1 ? '-' . str_pad((string) $alumniIndex, 2, '0', STR_PAD_LEFT) : '');
+                $accessCode = sprintf('ARS-%d-%s', $year, $recordSuffix);
+                $surveyAccessCode = $this->surveyAccessCode($year, $record['source_row'], $alumniIndex);
                 $submittedAt = Carbon::create($year, 12, 31, 12, 0, 0);
                 $perusahaanId = $this->upsertPerusahaan($record, $submittedAt);
                 $profilAkademik = $this->resolveAcademicProfile($record['program_studi'] ?? null);
@@ -224,7 +227,9 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
         // Tab 2020 dan 2021 mencatat satu respons perusahaan secara agregat,
         // tanpa identitas alumni. Tetap buat relasi teknis yang jelas ditandai
         // sebagai agregat agar respons historisnya tidak hilang.
-        $nim = $record['nim'] ?? sprintf('ARS%d%04d', $record['year'], $record['source_row']);
+        $alumniIndex = (int) ($record['alumni_index'] ?? 1);
+        $nim = $record['nim'] ?? sprintf('ARS%d%04d', $record['year'], $record['source_row'])
+            . ($alumniIndex > 1 ? '-' . str_pad((string) $alumniIndex, 2, '0', STR_PAD_LEFT) : '');
         $nama = $this->displayAlumniName($record);
         $fakultas = $profilAkademik['fakultas'];
         $programStudi = $profilAkademik['program_studi'];
@@ -298,6 +303,18 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             $record['year'],
             $record['source_row'],
         );
+    }
+
+    /** Kode survey dibatasi 10 karakter; huruf pertama membedakan alumni dari baris sumber yang sama. */
+    private function surveyAccessCode(int $year, int $sourceRow, int $alumniIndex): string
+    {
+        if ($alumniIndex > 26) {
+            throw new \RuntimeException("Terlalu banyak alumni pada baris sumber {$sourceRow} tahun {$year}.");
+        }
+
+        return chr(64 + $alumniIndex)
+            . substr((string) $year, -2)
+            . str_pad((string) $sourceRow, 7, '0', STR_PAD_LEFT);
     }
 
     /** Membuat sesi survei selesai agar arsip ikut tampil pada menu Survei. */
@@ -446,7 +463,9 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
                 $cells = $this->rowCells($row, $strings);
                 $record = $this->normaliseRecord($year, (int) $row['r'], $cells, $headers);
                 if ($record !== null) {
-                    $records[] = $record;
+                    foreach ($this->expandAlumniRecords($record) as $alumniRecord) {
+                        $records[] = $alumniRecord;
+                    }
                 }
             }
         }
@@ -564,6 +583,49 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
             return null;
         }
         return array_merge($record, ['year' => $year, 'source_row' => $sourceRow, 'cells' => $cells, 'headers' => $headers]);
+    }
+
+    /**
+     * Satu baris Excel kadang memuat beberapa alumni yang dipisahkan koma.
+     * Setiap nama dibuat sebagai satu record agar tidak tampil bertumpuk pada
+     * laporan. NIM yang sudah tersedia tidak dipecah karena merujuk pada satu
+     * alumni tertentu.
+     */
+    private function expandAlumniRecords(array $record): array
+    {
+        if (filled($record['nim']) || ! filled($record['alumni'])) {
+            return [array_merge($record, ['alumni_index' => 1])];
+        }
+
+        $names = $this->splitAlumniNames($record['alumni']);
+
+        return collect($names)
+            ->values()
+            ->map(fn (string $name, int $index) => array_merge($record, [
+                'alumni' => $name,
+                'alumni_index' => $index + 1,
+            ]))
+            ->all();
+    }
+
+    /** @return array<int, string> */
+    private function splitAlumniNames(string $rawNames): array
+    {
+        // Koma pada gelar tidak menandakan alumni berikutnya, misalnya
+        // "Risqika Sari, A.Md.". Lindungi bagian itu sebelum memisah daftar.
+        $protectedNames = preg_replace_callback(
+            '/,\s*((?:A|S|M|D)\.?\s*(?:Md|Kom|T|E|Si|Sn|Pd|H|Hum|Ikom)\.?(?:\s*,\s*(?:M|S)\.?\s*(?:Kom|T|E|Si|Sn|Pd|H|Hum|Ikom)\.?)?)/iu',
+            fn (array $matches) => '¦' . $matches[1],
+            $rawNames,
+        );
+
+        $names = preg_split('/(?:\R|;|,)\s+(?=\p{Lu})/u', (string) $protectedNames) ?: [];
+
+        return collect($names)
+            ->map(fn (string $name) => trim(str_replace('¦', ', ', $name)))
+            ->filter()
+            ->values()
+            ->all();
     }
 
     private function buildAnswers(array $cells, array $headers, array $catalog): array
