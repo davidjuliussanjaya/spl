@@ -15,6 +15,7 @@ class PertanyaanService
         // 1. Konversi Jenis Soal (Sesuai logic Anda sebelumnya)
         $jenis = $this->mapJenisSoal($data['type']);
         $allowsMultipleAnswers = $this->allowsMultipleAnswers($jenis, $data);
+        $allowsCustomAnswer = $this->allowsCustomAnswer($jenis, $data);
 
         // 2. Simpan Soal
         $soal = Soal::create([
@@ -24,6 +25,7 @@ class PertanyaanService
             'kode'                => $this->resolveKode($data['kode'] ?? null),
             'jenis_soal'          => $jenis,
             'allows_multiple_answers' => $allowsMultipleAnswers,
+            'allows_custom_answer'    => $allowsCustomAnswer,
             'is_required'         => isset($data['required']),
             'is_active'           => true
         ]);
@@ -46,6 +48,7 @@ class PertanyaanService
             $soal = Soal::findOrFail($id);
             $jenis = $this->mapJenisSoal($data['type']);
             $allowsMultipleAnswers = $this->allowsMultipleAnswers($jenis, $data);
+            $allowsCustomAnswer = $this->allowsCustomAnswer($jenis, $data);
 
             $soal->update([
                 'soal'                => $data['question'],
@@ -53,6 +56,7 @@ class PertanyaanService
                 'kode'                => $this->resolveKode($data['kode'] ?? null, $soal->kode),
                 'jenis_soal'          => $jenis,
                 'allows_multiple_answers' => $allowsMultipleAnswers,
+                'allows_custom_answer'    => $allowsCustomAnswer,
                 'is_required'         => isset($data['required']),
             ]);
 
@@ -95,6 +99,13 @@ class PertanyaanService
     {
         return $jenis === 'multiple_choice'
             && (bool) (int) ($data['allows_multiple_answers'] ?? 1);
+    }
+
+    /** Isian bebas hanya dapat diaktifkan pada tipe pilihan ganda. */
+    private function allowsCustomAnswer(string $jenis, array $data): bool
+    {
+        return $jenis === 'multiple_choice'
+            && (bool) ($data['allows_custom_answer'] ?? false);
     }
 
     // Helper: Simpan Jawaban Iterasi

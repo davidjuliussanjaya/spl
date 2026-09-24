@@ -60,6 +60,7 @@ class SurveySubmitJawabanRequest extends FormRequest
 
                 if ($soal->jenis_soal === 'multiple_choice') {
                     $rawJawaban = $this->input("mc.{$soalId}");
+                    $jawabanLainnya = trim((string) $this->input("mc_custom.{$soalId}", ''));
 
                     if (! $soal->allows_multiple_answers && is_array($rawJawaban)) {
                         $validator->errors()->add("mc.{$soalId}", 'Pertanyaan ini hanya dapat memiliki satu jawaban.');
@@ -71,11 +72,18 @@ class SurveySubmitJawabanRequest extends FormRequest
                         ->map(fn ($id) => (int) $id)
                         ->intersect($soal->jawaban->pluck('id'));
 
-                    if ($soal->is_required) {
-                        $jawabanLainnya = trim((string) $this->input("mc_custom.{$soalId}", ''));
+                    if ($jawabanLainnya !== '' && ! $soal->allows_custom_answer) {
+                        $validator->errors()->add("mc_custom.{$soalId}", 'Isian jawaban lain tidak tersedia untuk pertanyaan ini.');
+                    }
 
-                        if ($jawabanTerpilih->isEmpty() && $jawabanLainnya === '') {
-                            $validator->errors()->add("mc.{$soalId}", 'Pilih minimal satu jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.');
+                    if ($soal->is_required) {
+                        if ($jawabanTerpilih->isEmpty() && (! $soal->allows_custom_answer || $jawabanLainnya === '')) {
+                            $validator->errors()->add(
+                                "mc.{$soalId}",
+                                $soal->allows_custom_answer
+                                    ? 'Pilih minimal satu jawaban atau isi jawaban lain untuk pertanyaan wajib ini.'
+                                    : 'Pilih minimal satu jawaban untuk pertanyaan wajib ini.',
+                            );
                         }
                     }
 

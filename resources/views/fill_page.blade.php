@@ -725,6 +725,7 @@
                             @foreach($multiChoiceSoal as $s)
                                 @php
                                     $allowsMultipleAnswers = $s->allows_multiple_answers;
+                                    $allowsCustomAnswer = $s->allows_custom_answer;
                                     $oldMultipleChoice = old('mc.' . $s->id, $allowsMultipleAnswers ? [] : null);
                                 @endphp
                                 <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}" data-required-multiple="{{ $s->is_required ? 'true' : 'false' }}">
@@ -735,12 +736,13 @@
                                     </p>
                                     <div class="ps-2">
                                         @foreach($s->jawaban as $j)
+                                            @continue($allowsCustomAnswer && mb_strtolower(trim($j->jawaban)) === 'lainnya')
                                             <div class="form-check mc-option mb-2">
                                                 <input class="form-check-input" type="{{ $allowsMultipleAnswers ? 'checkbox' : 'radio' }}"
                                                        name="mc[{{ $s->id }}]{{ $allowsMultipleAnswers ? '[]' : '' }}"
                                                        value="{{ $j->id }}"
                                                        @checked($allowsMultipleAnswers ? in_array($j->id, (array) $oldMultipleChoice) : (string) $oldMultipleChoice === (string) $j->id)
-                                                       @if(! $allowsMultipleAnswers)
+                                                       @if(! $allowsMultipleAnswers && $allowsCustomAnswer)
                                                            onchange="var txt = document.getElementById('mc_other_text_{{ $s->id }}'); var other = document.getElementById('mc_other_check_{{ $s->id }}'); other.checked = false; txt.disabled = true; txt.value = '';"
                                                        @endif
                                                        id="mc_{{ $s->id }}_{{ $j->id }}">
@@ -753,34 +755,38 @@
                                             </div>
                                         @endforeach
 
-                                        <div class="form-check mc-option mb-2">
-                                            <input class="form-check-input" type="{{ $allowsMultipleAnswers ? 'checkbox' : 'radio' }}"
-                                                   @if(! $allowsMultipleAnswers)
-                                                       name="mc[{{ $s->id }}]"
-                                                       value=""
-                                                       data-other-choice
-                                                   @endif
-                                                   id="mc_other_check_{{ $s->id }}"
-                                                   @checked(old('mc_custom.' . $s->id))
-                                                   onchange="
-                                                       var txt = document.getElementById('mc_other_text_{{ $s->id }}');
-                                                       txt.disabled = !this.checked;
-                                                       if (this.checked) txt.focus();
-                                                       else txt.value = '';
-                                                   ">
-                                            <label class="form-check-label" for="mc_other_check_{{ $s->id }}">
-                                                Lainnya (tuliskan):
-                                            </label>
+                                        @if($allowsCustomAnswer)
+                                            <div class="form-check mc-option mb-2">
+                                                <input class="form-check-input" type="{{ $allowsMultipleAnswers ? 'checkbox' : 'radio' }}"
+                                                       @if(! $allowsMultipleAnswers)
+                                                           name="mc[{{ $s->id }}]"
+                                                           value=""
+                                                           data-other-choice
+                                                       @endif
+                                                       id="mc_other_check_{{ $s->id }}"
+                                                       @checked(old('mc_custom.' . $s->id))
+                                                       onchange="
+                                                           var txt = document.getElementById('mc_other_text_{{ $s->id }}');
+                                                           txt.disabled = !this.checked;
+                                                           if (this.checked) txt.focus();
+                                                           else txt.value = '';
+                                                       ">
+                                                <label class="form-check-label" for="mc_other_check_{{ $s->id }}">
+                                                    Jawaban lain (tuliskan):
+                                                </label>
+                                            </div>
+                                            <input type="text"
+                                                   name="mc_custom[{{ $s->id }}]"
+                                                   id="mc_other_text_{{ $s->id }}"
+                                                   class="mc-other-input ms-4 d-block"
+                                                   style="max-width: 420px"
+                                                   placeholder="Tuliskan jawaban Anda..."
+                                                   value="{{ old('mc_custom.' . $s->id) }}"
+                                                   {{ old('mc_custom.' . $s->id) ? '' : 'disabled' }}>
+                                        @endif
+                                        <div class="text-danger small mt-2" data-multiple-error hidden>
+                                            {{ $allowsCustomAnswer ? 'Pilih jawaban atau isi jawaban lain untuk pertanyaan wajib ini.' : 'Pilih minimal satu jawaban untuk pertanyaan wajib ini.' }}
                                         </div>
-                                        <input type="text"
-                                               name="mc_custom[{{ $s->id }}]"
-                                               id="mc_other_text_{{ $s->id }}"
-                                               class="mc-other-input ms-4 d-block"
-                                               style="max-width: 420px"
-                                               placeholder="Tuliskan jawaban Anda..."
-                                               value="{{ old('mc_custom.' . $s->id) }}"
-                                               {{ old('mc_custom.' . $s->id) ? '' : 'disabled' }}>
-                                        <div class="text-danger small mt-2" data-multiple-error hidden>Pilih jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.</div>
                                         @error('mc.' . $s->id)<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                                     </div>
                                 </div>

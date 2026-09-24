@@ -14,6 +14,7 @@ class Soal extends Model
         'kode',
         'jenis_soal',
         'allows_multiple_answers',
+        'allows_custom_answer',
         'kategori_id',
         'is_required',
         'is_active',
@@ -23,6 +24,7 @@ class Soal extends Model
     {
         return [
             'allows_multiple_answers' => 'boolean',
+            'allows_custom_answer' => 'boolean',
             'is_required' => 'boolean',
             'is_active' => 'boolean',
         ];

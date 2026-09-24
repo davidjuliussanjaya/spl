@@ -129,6 +129,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                     'K1' => [
                         'teks' => 'Secara umum, bagaimana penilaian Anda terhadap kualitas lulusan kami?',
                         'jenis' => 'multiple_choice',
+                        'allows_multiple_answers' => false,
                         'pilihan' => $likert,
                     ],
                 ],
@@ -151,6 +152,8 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                     'M1' => [
                         'teks' => 'Bentuk kerja sama apa yang berpotensi dapat dilakukan antara perusahaan Anda dengan kampus kami?',
                         'jenis' => 'multiple_choice',
+                        'allows_multiple_answers' => true,
+                        'allows_custom_answer' => true,
                         'pilihan' => [
                             ['jawaban' => 'Rekrutmen Lulusan',                          'nilai' => 1, 'urutan' => 1],
                             ['jawaban' => 'Internship / Magang Mahasiswa',              'nilai' => 2, 'urutan' => 2],
@@ -160,7 +163,6 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                             ['jawaban' => 'Penelitian atau proyek bersama',             'nilai' => 6, 'urutan' => 6],
                             ['jawaban' => 'Kerjasama Corporate Social Responsibility (CSR)', 'nilai' => 7, 'urutan' => 7],
                             ['jawaban' => 'Riset Pengembangan Produk',                  'nilai' => 8, 'urutan' => 8],
-                            ['jawaban' => 'Lainnya',                                    'nilai' => 9, 'urutan' => 9],
                         ],
                     ],
                 ],
@@ -187,6 +189,7 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                 $kategoriId = DB::table('kategoris')->insertGetId([
                     'nama_kategori' => $kategoriNama,
                     'deskripsi' => $kategoriData['deskripsi'],
+                    'is_active' => true,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
@@ -199,6 +202,9 @@ class DraftInstrumenUniversitas2026Seeder extends Seeder
                         'kode' => $kode,
                         'kategori_id' => $kategoriId,
                         'jenis_soal' => $soalData['jenis'],
+                        'allows_multiple_answers' => $soalData['allows_multiple_answers']
+                            ?? $soalData['jenis'] === 'multiple_choice',
+                        'allows_custom_answer' => $soalData['allows_custom_answer'] ?? false,
                         'is_required' => true,
                         'is_active' => true,
                         'created_at' => $now,

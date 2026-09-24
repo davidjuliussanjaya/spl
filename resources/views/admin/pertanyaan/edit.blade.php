@@ -59,6 +59,14 @@
                             <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Pengaturan ini hanya berlaku untuk pilihan ganda.</small>
                         </div>
 
+                        <div class="col-md-6" id="customAnswerModeGroup">
+                            <div class="form-check form-switch fs-5 pt-md-4">
+                                <input class="form-check-input" type="checkbox" name="allows_custom_answer" id="customAnswerSwitch" value="1" @checked(old('allows_custom_answer', $soal->allows_custom_answer))>
+                                <label class="form-check-label fs-6 text-dark ms-2 mt-1" for="customAnswerSwitch">Izinkan jawaban lain dengan isian bebas</label>
+                            </div>
+                            <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Responden dapat mengetik jawaban bila pilihannya tidak tersedia.</small>
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Kode Pertanyaan</label>
                             <input type="text" class="form-control modern-input" name="kode" value="{{ $soal->kode }}" placeholder="Contoh: f101, B1, C2...">
@@ -210,6 +218,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const pilihanGroup = document.getElementById('pilihanJawabanGroup');
     const multipleAnswerModeGroup = document.getElementById('multipleAnswerModeGroup');
     const multipleAnswerMode = document.getElementById('multipleAnswerMode');
+    const customAnswerModeGroup = document.getElementById('customAnswerModeGroup');
+    const customAnswerSwitch = document.getElementById('customAnswerSwitch');
 
     // Toggle tampilan opsi jawaban berdasarkan tipe soal
     function togglePilihan() {
@@ -222,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const isMultipleChoice = typeSelect.value === 'radio';
         multipleAnswerModeGroup.style.display = isMultipleChoice ? 'block' : 'none';
         multipleAnswerMode.disabled = !isMultipleChoice;
+        customAnswerModeGroup.style.display = isMultipleChoice ? 'block' : 'none';
+        customAnswerSwitch.disabled = !isMultipleChoice;
     }
 
     togglePilihan(); // Eksekusi saat pertama load
