@@ -56,6 +56,61 @@ test('administrator can open the company list and add form', function () {
         ->assertOk();
 });
 
+test('lulusan list filters by dashboard-style period and program studi', function () {
+    $fakultasLain = Fakultas::create(['kode' => 'FEB', 'nama' => 'Fakultas Ekonomi dan Bisnis']);
+    $prodiLain = ProgramStudi::create(['fakultas_id' => $fakultasLain->id, 'kode' => 'AK', 'nama' => 'Akuntansi']);
+    $periodeLain = Periode::create([
+        'kode_periode' => 'TEST-LAIN',
+        'nama_periode' => 'Periode Pengujian Lain',
+        'tanggal_mulai' => now()->subDay(),
+        'tanggal_berakhir' => now()->addDay(),
+    ]);
+    $perusahaan = PenggunaLulusan::create(perusahaanData());
+    $lulusanCocok = Lulusan::create([
+        'pengguna_lulusan_id' => $perusahaan->id, 'nama' => 'Lulusan Periode Cocok', 'nim' => '22410100901',
+        'program_studi' => $this->programStudi->nama, 'fakultas' => $this->fakultas->kode,
+        'program_studi_id' => $this->programStudi->id, 'fakultas_id' => $this->fakultas->id, 'tahun_lulus' => '2025-08-01',
+    ]);
+    $lulusanLain = Lulusan::create([
+        'pengguna_lulusan_id' => $perusahaan->id, 'nama' => 'Lulusan Periode Lain', 'nim' => '22410100902',
+        'program_studi' => $prodiLain->nama, 'fakultas' => $fakultasLain->kode,
+        'program_studi_id' => $prodiLain->id, 'fakultas_id' => $fakultasLain->id, 'tahun_lulus' => '2025-08-01',
+    ]);
+    Survey::create(['judul' => 'Survei Cocok', 'tahun' => 2026, 'periode_id' => $this->periode->id, 'lulusan_id' => $lulusanCocok->id, 'pengguna_lulusan_id' => $perusahaan->id, 'access_code' => 'FILTER01', 'is_active' => true, 'is_completed' => false]);
+    Survey::create(['judul' => 'Survei Lain', 'tahun' => 2026, 'periode_id' => $periodeLain->id, 'lulusan_id' => $lulusanLain->id, 'pengguna_lulusan_id' => $perusahaan->id, 'access_code' => 'FILTER02', 'is_active' => true, 'is_completed' => false]);
+
+    $this->actingAs($this->admin)
+        ->get(route('lulusan', [
+            'periode' => [$this->periode->kode_periode],
+            'program_studi' => [$this->programStudi->nama],
+        ]))
+        ->assertOk()
+        ->assertSee('Lulusan Periode Cocok')
+        ->assertDontSee('Lulusan Periode Lain');
+});
+
+test('lulusan list shows aggregate archive records with a clear label', function () {
+    $perusahaan = PenggunaLulusan::create(perusahaanData());
+    Lulusan::create([
+        'pengguna_lulusan_id' => $perusahaan->id,
+        'nama' => 'Data agregat tanpa nama alumni (2021, baris 10)',
+        'nim' => 'ARS20210010',
+        'program_studi' => $this->programStudi->nama,
+        'fakultas' => $this->fakultas->kode,
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
+        'tahun_lulus' => '2021-08-15',
+        'is_aggregate' => true,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('lulusan'))
+        ->assertOk()
+        ->assertSee('Data agregat tanpa nama alumni (2021, baris 10)')
+        ->assertSee('Arsip agregat')
+        ->assertSee('ID Arsip ARS20210010');
+});
+
 test('administrator can add, edit, and delete a company', function () {
     $this->actingAs($this->admin)
         ->post(route('pengguna.store'), perusahaanData())
@@ -104,7 +159,6 @@ test('administrator can open, add, and view a graduate', function () {
             'program_studi_id' => $this->programStudi->id,
             'fakultas_id' => $this->fakultas->id,
             'tahun_lulus' => '2025-08-01',
-            'status' => '1',
         ])
         ->assertRedirect(route('lulusan'));
 
@@ -112,7 +166,21 @@ test('administrator can open, add, and view a graduate', function () {
 
     $this->actingAs($this->admin)
         ->get(route('lulusan.show', $lulusan->id))
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('Dapat diedit')
+        ->assertDontSee('Data Perusahaan');
+
+    $this->actingAs($this->admin)
+        ->put(route('lulusan.update-mahasiswa', $lulusan->id), [
+            'nama' => 'Budi Lulusan Diperbarui',
+            'nim' => '22410100009',
+            'program_studi_id' => $this->programStudi->id,
+            'fakultas_id' => $this->fakultas->id,
+            'tahun_lulus' => '2025-08-01',
+        ])
+        ->assertRedirect(route('lulusan.show', $lulusan->id));
+
+    $this->assertDatabaseHas('lulusan', ['id' => $lulusan->id, 'nama' => 'Budi Lulusan Diperbarui']);
 });
 
 test('administrator can open every remaining management page', function () {
@@ -209,6 +277,14 @@ test('non-administrators cannot access administration features', function () {
     }
 });
 
+test('dashboard no longer renders the respondent and category summary chart panels', function () {
+    $this->actingAs($this->admin)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertDontSee('<div id="chart-prodi"', false)
+        ->assertDontSee('<div id="chart-kinerja"', false);
+});
+
 test('administrator can compare category scores across survey periods', function () {
     foreach ([
         ['kode' => 'TS-2024', 'nama' => 'Tracer Study 2024', 'tanggal' => '2024-01-01', 'nilai' => 3],
@@ -266,7 +342,6 @@ test('dashboard applies active filters to every data set used by its cards, char
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
     $lulusanLain = Lulusan::create([
         'pengguna_lulusan_id' => $perusahaan->id,
@@ -277,7 +352,6 @@ test('dashboard applies active filters to every data set used by its cards, char
         'program_studi_id' => $prodiLain->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2024-08-01',
-        'status' => true,
     ]);
     $surveyTerpilih = Survey::create([
         'judul' => 'Survei Terpilih', 'periode_id' => $periodeTerpilih->id,
@@ -305,6 +379,7 @@ test('dashboard applies active filters to every data set used by its cards, char
             'perusahaan_nama' => $perusahaan->nama_perusahaan,
             'jawaban_json' => [
                 ['kategori' => $kategori, 'jenis' => 'rating', 'nilai' => $nilai],
+                ['kode' => 'L1', 'jenis' => 'multiple_choice', 'jawaban' => [$prodi === $this->programStudi->nama ? 'Kemampuan Berbahasa Asing' : 'Etika dan Integritas']],
                 ['kategori' => $kategori, 'soal' => 'Saran', 'jenis' => 'essay', 'jawaban' => $feedback],
             ],
         ]);
@@ -326,6 +401,8 @@ test('dashboard applies active filters to every data set used by its cards, char
         ->and($dashboard['categoryComparisonPeriods'])->toBe([
             ['periode' => $periodeTerpilih->kode_periode, 'label' => $periodeTerpilih->nama_periode],
         ])
+        ->and($dashboard['bidangPeningkatanLabels'])->toBe(['Kemampuan Berbahasa Asing'])
+        ->and($dashboard['bidangPeningkatanData'])->toBe([1])
         ->and($dashboard['komentarTerbaru'])->toHaveCount(1)
         ->and($dashboard['komentarTerbaru']->first()->jawaban_text)->toBe('Feedback terpilih');
 });
@@ -346,7 +423,7 @@ test('archive seeder imports 2020 and 2021 company responses that do not identif
     ]);
 });
 
-test('regular users see anonymous feedback and no respondent or graduate totals', function () {
+test('regular users see the full dashboard while feedback identities remain anonymous', function () {
     $userRole = Role::firstOrCreate(['code' => 'user'], ['name' => 'User']);
     $regularUser = User::factory()->create(['is_active' => true]);
     $regularUser->roles()->attach($userRole, ['is_active' => true, 'assigned_at' => now()]);
@@ -369,6 +446,10 @@ test('regular users see anonymous feedback and no respondent or graduate totals'
         ->get(route('dashboard'))
         ->assertOk()
         ->assertSee('Responden anonim')
+        ->assertSee('Jumlah Responden yang Mengisi')
+        ->assertSee('Jumlah Alumni yang Dinilai')
+        ->assertDontSee('<div id="chart-prodi"', false)
+        ->assertDontSee('<div id="chart-kinerja"', false)
         ->assertDontSee('PT Rahasia Sentosa')
         ->assertDontSee('Nama Responden Rahasia')
         ->assertDontSee('Total Responden / NL')
@@ -386,11 +467,12 @@ test('administrator can create, update, and delete a survey', function () {
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
+    $kategori = Kategori::create(['nama_kategori' => 'Umum', 'status' => 'utama']);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
         'kode' => 'A1',
+        'kategori_id' => $kategori->id,
         'jenis_soal' => 'rating',
         'is_required' => true,
         'is_active' => true,
@@ -409,10 +491,9 @@ test('administrator can create, update, and delete a survey', function () {
 
     $this->actingAs($this->admin)
         ->post(route('survey.store'), $data)
-        ->assertRedirect()
-        ->assertSessionHas('error', 'Terjadi kesalahan: Lulusan ini sudah memiliki survei pada periode yang dipilih.');
+        ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 
-    $this->assertDatabaseCount('survey', 1);
+    $this->assertDatabaseCount('survey', 2);
 
     $survey = Survey::firstOrFail();
 
@@ -431,10 +512,14 @@ test('administrator can create, update, and delete a survey', function () {
         ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]));
 });
 
-test('administrator can create and update a question without entering an optional code', function () {
-    $kategori = Kategori::create(['nama_kategori' => 'Kompetensi']);
+test('administrator can create and update an FTI optional-category question without entering a code', function () {
+    $kategori = Kategori::create([
+        'nama_kategori' => 'Kompetensi FTI Tambahan',
+        'status' => 'optional',
+        'fakultas_id' => $this->fakultas->id,
+    ]);
     $data = [
-        'question' => 'Bagaimana kemampuan teknis lulusan?',
+        'question' => 'Bagaimana kemampuan teknis lulusan FTI?',
         'kategori_id' => $kategori->id,
         'type' => 'text',
         'required' => '1',
@@ -442,10 +527,21 @@ test('administrator can create and update a question without entering an optiona
 
     $this->actingAs($this->admin)
         ->post(route('savequestion'), $data)
-        ->assertRedirect(route('pertanyaan'));
+        ->assertRedirect(route('pertanyaan'))
+        ->assertSessionHas('success', 'Soal berhasil disimpan!');
 
     $soal = Soal::firstOrFail();
     expect($soal->kode)->toStartWith('Q-');
+    $this->assertDatabaseHas('kategoris', [
+        'id' => $kategori->id,
+        'status' => 'optional',
+        'fakultas_id' => $this->fakultas->id,
+    ]);
+    $this->assertDatabaseHas('soal', [
+        'id' => $soal->id,
+        'kategori_id' => $kategori->id,
+        'jenis_soal' => 'essay',
+    ]);
 
     $this->actingAs($this->admin)
         ->post(route('savequestion'), [
@@ -467,14 +563,19 @@ test('administrator can create and update a question without entering an optiona
             'question' => 'Apakah lulusan direkomendasikan?',
             'kategori_id' => $kategori->id,
             'type' => 'radio',
+            'allows_multiple_answers' => '0',
             'jawaban' => ['Ya', 'Tidak'],
             'nilai' => [1, 0],
         ])
         ->assertRedirect(route('pertanyaan'));
 
     $pilihanSoal = Soal::where('soal', 'Apakah lulusan direkomendasikan?')->firstOrFail();
-    $this->assertDatabaseHas('soal', ['id' => $pilihanSoal->id, 'jenis_soal' => 'multiple_choice']);
-    $this->assertDatabaseHas('jawaban', ['soal_id' => $pilihanSoal->id, 'jawaban' => 'Ya', 'nilai' => 1]);
+    $this->assertDatabaseHas('soal', [
+        'id' => $pilihanSoal->id,
+        'jenis_soal' => 'multiple_choice',
+        'allows_multiple_answers' => false,
+    ]);
+    $this->assertDatabaseHas('jawaban', ['soal_id' => $pilihanSoal->id, 'jawaban' => 'Ya', 'nilai' => 4]);
 
     $this->actingAs($this->admin)
         ->get(route('pertanyaan.edit', $soal->id))
@@ -482,7 +583,7 @@ test('administrator can create and update a question without entering an optiona
 
     $this->actingAs($this->admin)
         ->put(route('pertanyaan.update', $soal->id), array_merge($data, [
-            'question' => 'Bagaimana kemampuan teknis lulusan setelah diperbarui?',
+            'question' => 'Bagaimana kemampuan teknis lulusan FTI setelah diperbarui?',
         ]))
         ->assertRedirect(route('pertanyaan'));
 
@@ -491,6 +592,47 @@ test('administrator can create and update a question without entering an optiona
         ->assertRedirect();
 
     $this->assertDatabaseHas('soal', ['id' => $soal->id, 'is_active' => false]);
+});
+
+test('question option scores are normalized to the configured four or five point scale', function () {
+    $kategori = Kategori::create(['nama_kategori' => 'Skala Penilaian', 'status' => 'optional', 'fakultas_id' => $this->fakultas->id]);
+
+    foreach ([
+        ['question' => 'Penilaian empat opsi', 'options' => ['Sangat Baik', 'Baik', 'Cukup', 'Kurang'], 'expected' => [4, 3, 2, 1]],
+        ['question' => 'Penilaian lima opsi', 'options' => ['Sangat Baik', 'Baik', 'Cukup', 'Kurang', 'Sangat Kurang'], 'expected' => [5, 4, 3, 2, 1]],
+    ] as $scenario) {
+        $this->actingAs($this->admin)
+            ->post(route('savequestion'), [
+                'question' => $scenario['question'],
+                'kategori_id' => $kategori->id,
+                'type' => 'radio',
+                'allows_multiple_answers' => '0',
+                'jawaban' => $scenario['options'],
+                'nilai' => array_fill(0, count($scenario['options']), 99),
+            ])
+            ->assertRedirect(route('pertanyaan'));
+
+        $soal = Soal::where('soal', $scenario['question'])->firstOrFail();
+        expect($soal->jawaban()->orderBy('urutan')->pluck('nilai')->map(fn ($nilai) => (int) $nilai)->all())
+            ->toBe($scenario['expected']);
+    }
+});
+
+test('question form reports a duplicate question code instead of causing a server error', function () {
+    $kategori = Kategori::create(['nama_kategori' => 'Kode Pertanyaan', 'status' => 'utama']);
+    Soal::create(['soal' => 'Pertanyaan lama', 'kategori_id' => $kategori->id, 'kode' => 'F123', 'jenis_soal' => 'essay', 'is_required' => true, 'is_active' => true]);
+
+    $this->actingAs($this->admin)
+        ->post(route('savequestion'), [
+            'question' => 'Pertanyaan dengan kode yang sama',
+            'kategori_id' => $kategori->id,
+            'type' => 'text',
+            'kode' => 'F123',
+        ])
+        ->assertRedirect()
+        ->assertSessionHasErrors('kode');
+
+    $this->assertDatabaseCount('soal', 1);
 });
 
 test('public survey access, fill, and submit flow works', function () {
@@ -504,7 +646,6 @@ test('public survey access, fill, and submit flow works', function () {
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
@@ -519,6 +660,20 @@ test('public survey access, fill, and submit flow works', function () {
         'nilai' => 4,
         'urutan' => 1,
     ]);
+    $soalPilihanTunggal = Soal::create([
+        'soal' => 'Apakah lulusan direkomendasikan?',
+        'kode' => 'K1',
+        'jenis_soal' => 'multiple_choice',
+        'allows_multiple_answers' => false,
+        'is_required' => true,
+        'is_active' => true,
+    ]);
+    $jawabanPilihanTunggal = Jawaban::create([
+        'soal_id' => $soalPilihanTunggal->id,
+        'jawaban' => 'Ya',
+        'nilai' => 1,
+        'urutan' => 1,
+    ]);
     $survey = Survey::create([
         'judul' => 'Survey Kepuasan',
         'periode_id' => $this->periode->id,
@@ -528,12 +683,15 @@ test('public survey access, fill, and submit flow works', function () {
         'is_completed' => false,
         'is_active' => true,
     ]);
-    $survey->soals()->attach($soal);
+    $survey->soals()->attach([$soal->id, $soalPilihanTunggal->id]);
 
     $this->post(route('survey.access'), ['code' => $survey->access_code])
         ->assertRedirect(route('survey.fill', $survey->access_code));
 
-    $this->get(route('survey.fill', $survey->access_code))->assertOk();
+    $this->get(route('survey.fill', $survey->access_code))
+        ->assertOk()
+        ->assertSee('name="mc[' . $soalPilihanTunggal->id . ']"', false)
+        ->assertSee('type="radio"', false);
 
     $this->from(route('survey.fill', $survey->access_code))
         ->post(route('survey.submit', $survey->access_code), [
@@ -542,19 +700,32 @@ test('public survey access, fill, and submit flow works', function () {
             'jumlah_lulusan_bekerja' => 0,
         ])
         ->assertRedirect(route('survey.fill', $survey->access_code))
-        ->assertSessionHasErrors(['jumlah_lulusan_bekerja', 'jawaban.' . $soal->id]);
+        ->assertSessionHasErrors(['jumlah_lulusan_bekerja', 'jawaban.' . $soal->id, 'mc.' . $soalPilihanTunggal->id]);
+
+    $this->from(route('survey.fill', $survey->access_code))
+        ->post(route('survey.submit', $survey->access_code), [
+            'nama_pengisi' => 'Rina Penyelia',
+            'nama_perusahaan' => $perusahaan->nama_perusahaan,
+            'jumlah_lulusan_bekerja' => 1,
+            'jawaban' => [$soal->id => $jawaban->id],
+            'mc' => [$soalPilihanTunggal->id => [$jawabanPilihanTunggal->id]],
+        ])
+        ->assertRedirect(route('survey.fill', $survey->access_code))
+        ->assertSessionHasErrors(['mc.' . $soalPilihanTunggal->id]);
 
     $this->post(route('survey.submit', $survey->access_code), [
         'nama_pengisi' => 'Rina Penyelia',
         'nama_perusahaan' => $perusahaan->nama_perusahaan,
         'jumlah_lulusan_bekerja' => 1,
         'jawaban' => [$soal->id => $jawaban->id],
+        'mc' => [$soalPilihanTunggal->id => $jawabanPilihanTunggal->id],
     ])
         ->assertRedirect('/')
         ->assertSessionHas('success', 'Jawaban Anda telah tersimpan dengan aman.');
 
     $this->assertDatabaseHas('survey', ['id' => $survey->id, 'is_completed' => true]);
     $this->assertDatabaseHas('respon_jawaban', ['survey_id' => $survey->id, 'jawaban_id' => $jawaban->id]);
+    $this->assertDatabaseHas('respon_jawaban', ['survey_id' => $survey->id, 'jawaban_id' => $jawabanPilihanTunggal->id]);
 
     // Kode yang sudah dipakai tidak boleh dapat dibuka atau dikirim ulang.
     $this->get(route('survey.fill', $survey->access_code))->assertForbidden();
@@ -563,10 +734,11 @@ test('public survey access, fill, and submit flow works', function () {
         'nama_perusahaan' => $perusahaan->nama_perusahaan,
         'jumlah_lulusan_bekerja' => 1,
         'jawaban' => [$soal->id => $jawaban->id],
+        'mc' => [$soalPilihanTunggal->id => $jawabanPilihanTunggal->id],
     ])->assertForbidden();
 
     $this->assertDatabaseCount('survey_arsip', 1);
-    $this->assertDatabaseCount('respon_jawaban', 1);
+    $this->assertDatabaseCount('respon_jawaban', 2);
 });
 
 test('administrator can manage categories, use the company data endpoint, and download a report', function () {
@@ -575,6 +747,7 @@ test('administrator can manage categories, use the company data endpoint, and do
             'nama_kategori' => 'Kompetensi',
             'deskripsi' => 'Penilaian kompetensi lulusan',
             'status' => 'utama',
+            'fakultas_id' => $this->fakultas->id,
         ])
         ->assertRedirect(route('kategori.index'));
 
@@ -585,8 +758,14 @@ test('administrator can manage categories, use the company data endpoint, and do
             'nama_kategori' => 'Kompetensi Diperbarui',
             'deskripsi' => 'Deskripsi diperbarui',
             'status' => 'optional',
+            'fakultas_id' => null,
         ])
         ->assertRedirect(route('kategori.index'));
+
+    $this->assertDatabaseHas('kategoris', [
+        'id' => $kategori->id,
+        'fakultas_id' => null,
+    ]);
 
     $perusahaan = PenggunaLulusan::create(perusahaanData());
     $this->actingAs($this->admin)
@@ -603,6 +782,40 @@ test('administrator can manage categories, use the company data endpoint, and do
         ->assertRedirect(route('kategori.index'));
 });
 
+test('survey only attaches questions from general or matching faculty categories', function () {
+    $perusahaan = PenggunaLulusan::create(perusahaanData());
+    $lulusan = Lulusan::create([
+        'pengguna_lulusan_id' => $perusahaan->id,
+        'nama' => 'Budi Lulusan',
+        'nim' => '22410100123',
+        'program_studi' => 'Teknik Informatika',
+        'fakultas' => 'FTI',
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
+        'tahun_lulus' => '2025-08-01',
+    ]);
+    $fakultasLain = Fakultas::create(['kode' => 'FEB', 'nama' => 'Fakultas Ekonomi dan Bisnis']);
+    $kategoriUmum = Kategori::create(['nama_kategori' => 'Umum', 'status' => 'utama']);
+    $kategoriLain = Kategori::create(['nama_kategori' => 'Khusus FEB', 'status' => 'utama', 'fakultas_id' => $fakultasLain->id]);
+    $soalUmum = Soal::create(['soal' => 'Pertanyaan umum', 'kode' => 'UMUM-1', 'kategori_id' => $kategoriUmum->id, 'jenis_soal' => 'essay', 'is_required' => true, 'is_active' => true]);
+    $soalLain = Soal::create(['soal' => 'Pertanyaan FEB', 'kode' => 'FEB-1', 'kategori_id' => $kategoriLain->id, 'jenis_soal' => 'essay', 'is_required' => true, 'is_active' => true]);
+
+    $survey = app(\App\Services\SurveyService::class)->createSurvey([
+        'judul' => 'Survei Fakultas',
+        'periode_id' => $this->periode->id,
+        'lulusan_id' => $lulusan->id,
+        'pengguna_lulusan_id' => $perusahaan->id,
+        'soal_pilihan' => [$soalUmum->id, $soalLain->id],
+    ]);
+
+    expect($survey->soals()->pluck('soal.id')->all())->toBe([$soalUmum->id]);
+
+    $this->get(route('survey.fill', $survey->access_code))
+        ->assertOk()
+        ->assertSee('Pertanyaan umum')
+        ->assertDontSee('Pertanyaan FEB');
+});
+
 test('administrator can generate surveys in bulk', function () {
     $perusahaan = PenggunaLulusan::create(perusahaanData());
     Lulusan::create([
@@ -614,7 +827,6 @@ test('administrator can generate surveys in bulk', function () {
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
@@ -647,7 +859,6 @@ test('bulk survey skips only graduates who already have a survey in the selected
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
     $lulusanBaru = Lulusan::create([
         'pengguna_lulusan_id' => $perusahaan->id,
@@ -658,7 +869,6 @@ test('bulk survey skips only graduates who already have a survey in the selected
         'program_studi_id' => $this->programStudi->id,
         'fakultas_id' => $this->fakultas->id,
         'tahun_lulus' => '2025-08-01',
-        'status' => true,
     ]);
     $soal = Soal::create([
         'soal' => 'Kemampuan teknis lulusan',
@@ -686,9 +896,9 @@ test('bulk survey skips only graduates who already have a survey in the selected
             'soal_pilihan' => [$soal->id],
         ])
         ->assertRedirect(route('survey', ['periode_id' => $this->periode->id]))
-        ->assertSessionHas('success', 'Berhasil membuat 1 survey untuk lulusan tahun 2025. 1 lulusan dilewati karena sudah memiliki survei pada periode ini.');
+        ->assertSessionHas('success', 'Berhasil membuat 2 survey untuk lulusan tahun 2025.');
 
-    $this->assertDatabaseCount('survey', 2);
+    $this->assertDatabaseCount('survey', 3);
     $this->assertDatabaseHas('survey', [
         'lulusan_id' => $lulusanBaru->id,
         'periode_id' => $this->periode->id,

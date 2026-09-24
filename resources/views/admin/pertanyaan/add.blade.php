@@ -22,18 +22,29 @@
                 <form action="{{ route('savequestion') }}" method="POST" data-draft-key="spl:draft:question-create">
                     @csrf
 
+                    @if($errors->any())
+                        <div class="alert alert-danger mb-4" role="alert">
+                            <strong><i class="bi bi-exclamation-circle-fill me-1" aria-hidden="true"></i>Pertanyaan belum dapat disimpan.</strong>
+                            <ul class="mb-0 mt-2 ps-3">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="mb-4">
                         <label class="form-label fw-bold text-dark">Soal Pertanyaan <span class="text-danger">*</span></label>
-                        <textarea class="form-control modern-input" name="question" rows="3" placeholder="Tuliskan pertanyaan Anda di sini..." required></textarea>
+                        <textarea class="form-control modern-input" name="question" rows="3" placeholder="Tuliskan pertanyaan Anda di sini..." required>{{ old('question') }}</textarea>
                     </div>
 
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Kategori Pertanyaan <span class="text-danger">*</span></label>
                             <select class="form-select modern-input" name="kategori_id" required>
-                                <option value="" disabled selected>-- Pilih Kategori --</option>
+                                <option value="" disabled @selected(!old('kategori_id'))>-- Pilih Kategori --</option>
                                 @foreach($kategoris as $kategori)
-                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                    <option value="{{ $kategori->id }}" @selected((string) old('kategori_id') === (string) $kategori->id)>{{ $kategori->nama_kategori }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -41,21 +52,30 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Tipe Masukan <span class="text-danger">*</span></label>
                             <select class="form-select modern-input" name="type" id="typeSelect">
-                                <option value="rating">Rating / Skala Penilaian</option>
-                                <option value="radio">Pilihan Ganda (Satu Jawaban)</option>
-                                <option value="text">Teks Bebas (Essay)</option>
+                                <option value="rating" @selected(old('type', 'rating') === 'rating')>Rating / Skala Penilaian</option>
+                                <option value="radio" @selected(old('type') === 'radio')>Pilihan Ganda</option>
+                                <option value="text" @selected(old('type') === 'text')>Teks Bebas (Essay)</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-6" id="multipleAnswerModeGroup">
+                            <label class="form-label fw-bold text-dark">Jumlah Jawaban yang Diizinkan <span class="text-danger">*</span></label>
+                            <select class="form-select modern-input" name="allows_multiple_answers" id="multipleAnswerMode">
+                                <option value="0" @selected(old('allows_multiple_answers', '0') === '0')>Satu jawaban saja</option>
+                                <option value="1" @selected(old('allows_multiple_answers') === '1')>Lebih dari satu jawaban</option>
+                            </select>
+                            <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Pengaturan ini hanya berlaku untuk pilihan ganda.</small>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Kode Pertanyaan</label>
-                            <input type="text" class="form-control modern-input" name="kode" placeholder="Contoh: f101, B1, C2...">
+                            <input type="text" class="form-control modern-input" name="kode" value="{{ old('kode') }}" placeholder="Contoh: f101, B1, C2...">
                             <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Wajib diisi jika merujuk pada standar DIKTI.</small>
                         </div>
 
                         <div class="col-md-6 d-flex align-items-center pt-md-4">
                             <div class="form-check form-switch fs-5">
-                                <input class="form-check-input" type="checkbox" name="required" id="requiredSwitch" checked>
+                                <input class="form-check-input" type="checkbox" name="required" id="requiredSwitch" value="1" @checked(old('required', true))>
                                 <label class="form-check-label fs-6 text-dark ms-2 mt-1" for="requiredSwitch">Tandai Wajib Diisi (Required)</label>
                             </div>
                         </div>
@@ -75,14 +95,14 @@
                             <div class="option-column-headings" aria-hidden="true">
                                 <span></span>
                                 <span>Opsi Jawaban</span>
-                                <span class="text-center">Bobot Nilai</span>
+                                <span class="text-center">Bobot otomatis</span>
                                 <span></span>
                             </div>
                             <div id="options">
                                 <div class="d-flex align-items-center mb-3 option-item">
                                     <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
                                     <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban (Cth: Sangat Baik)">
-                                    <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="4" title="Bobot Nilai">
+                                    <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" value="4" title="Bobot Nilai otomatis" readonly>
                                     <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                                         <i class="bi bi-x-lg pointer-events-none"></i>
                                     </button>
@@ -90,7 +110,7 @@
                                 <div class="d-flex align-items-center mb-3 option-item">
                                     <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
                                     <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban (Cth: Baik)">
-                                    <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="3" title="Bobot Nilai">
+                                    <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" value="3" title="Bobot Nilai otomatis" readonly>
                                     <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                                         <i class="bi bi-x-lg pointer-events-none"></i>
                                     </button>
@@ -175,37 +195,63 @@
     .pointer-events-none {
         pointer-events: none;
     }
+    .option-score[readonly] { background-color: #eef4ff; color: #1d4ed8; font-weight: 700; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const questionForm = document.querySelector('form[data-draft-key="spl:draft:question-create"]');
     const typeSelect = document.getElementById('typeSelect');
     const pilihanGroup = document.getElementById('pilihanJawabanGroup');
+    const multipleAnswerModeGroup = document.getElementById('multipleAnswerModeGroup');
+    const multipleAnswerMode = document.getElementById('multipleAnswerMode');
 
     // Toggle tampilan opsi jawaban berdasarkan tipe soal
     function togglePilihan() {
-        if (typeSelect.value === 'text') {
-            pilihanGroup.style.display = 'none';
-        } else {
-            pilihanGroup.style.display = 'block';
-        }
+        const isEssay = typeSelect.value === 'text';
+        pilihanGroup.hidden = isEssay;
+        pilihanGroup.querySelectorAll('input, button').forEach((field) => {
+            field.disabled = isEssay;
+        });
+
+        const isMultipleChoice = typeSelect.value === 'radio';
+        multipleAnswerModeGroup.style.display = isMultipleChoice ? 'block' : 'none';
+        multipleAnswerMode.disabled = !isMultipleChoice;
     }
 
     togglePilihan(); // Eksekusi saat pertama load
     typeSelect.addEventListener('change', togglePilihan); // Eksekusi saat dropdown berubah
+    questionForm?.addEventListener('spl:draft-restored', function () {
+        togglePilihan();
+        normalisasiBobotOpsi();
+    });
 });
+
+function normalisasiBobotOpsi() {
+    const optionItems = Array.from(document.querySelectorAll('#options .option-item'));
+    const nilaiAwal = optionItems.length >= 5 ? 5 : 4;
+
+    optionItems.forEach(function (item, index) {
+        const score = item.querySelector('[name="nilai[]"]');
+        if (score) score.value = Math.max(nilaiAwal - index, 1);
+    });
+
+    const addOption = document.getElementById('addOption');
+    if (addOption) {
+        const limitReached = optionItems.length >= 5;
+        addOption.disabled = limitReached;
+        addOption.title = limitReached ? 'Maksimal lima opsi jawaban' : 'Tambah Opsi';
+    }
+}
 
 // Logic Tambah Opsi Jawaban
 document.getElementById('addOption').addEventListener('click', function() {
     let container = document.getElementById('options');
-    // Menghitung urutan nilai otomatis (default mengecil atau membesar)
-    let index = container.children.length + 1;
-
     let html = `
         <div class="d-flex align-items-center mb-3 option-item">
             <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
             <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban">
-            <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="${index}">
+            <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" title="Bobot Nilai otomatis" readonly>
             <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                 <i class="bi bi-x-lg pointer-events-none"></i>
             </button>
@@ -213,13 +259,17 @@ document.getElementById('addOption').addEventListener('click', function() {
     `;
 
     container.insertAdjacentHTML('beforeend', html);
+    normalisasiBobotOpsi();
 });
 
 // Logic Hapus Opsi Jawaban (Event Delegation)
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('removeOption')) {
         e.target.parentElement.remove();
+        normalisasiBobotOpsi();
     }
 });
+
+normalisasiBobotOpsi();
 </script>
 @endsection

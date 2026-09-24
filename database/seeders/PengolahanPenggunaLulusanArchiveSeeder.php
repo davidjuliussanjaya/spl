@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Fakultas;
+use App\Models\ProgramStudi;
+use Illuminate\Support\Str;
 use ZipArchive;
 
 /**
@@ -118,7 +121,8 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
                 $surveyAccessCode = 'A' . substr((string) $year, -2) . str_pad((string) $record['source_row'], 7, '0', STR_PAD_LEFT);
                 $submittedAt = Carbon::create($year, 12, 31, 12, 0, 0);
                 $perusahaanId = $this->upsertPerusahaan($record, $submittedAt);
-                $lulusanId = $this->upsertLulusan($record, $perusahaanId, $submittedAt);
+                $profilAkademik = $this->resolveAcademicProfile($record['program_studi'] ?? null);
+                $lulusanId = $this->upsertLulusan($record, $perusahaanId, $submittedAt, $profilAkademik);
                 $surveyId = $this->upsertSurvey($record, $surveyAccessCode, $lulusanId, $perusahaanId, $periodeIds[$year], $submittedAt);
 
                 DB::table('survey_arsip')->updateOrInsert(
@@ -135,8 +139,8 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
                         'tahun_instrumen' => '2024',
                         'lulusan_nama' => $this->displayAlumniName($record),
                         'lulusan_nim' => $record['nim'],
-                        'lulusan_program_studi' => $record['program_studi'],
-                        'lulusan_fakultas' => 'FTI',
+                        'lulusan_program_studi' => $profilAkademik['program_studi']->nama,
+                        'lulusan_fakultas' => $profilAkademik['fakultas']->kode,
                         'lulusan_tahun_lulus' => (string) $year,
                         'perusahaan_nama' => $record['perusahaan'],
                         'perusahaan_jenis' => $record['jenis_perusahaan'],
@@ -215,29 +219,76 @@ class PengolahanPenggunaLulusanArchiveSeeder extends Seeder
     }
 
     /** Menghubungkan setiap arsip ke lulusan agar relasi Survey lengkap. */
-    private function upsertLulusan(array $record, int $perusahaanId, Carbon $timestamp): int
+    private function upsertLulusan(array $record, int $perusahaanId, Carbon $timestamp, array $profilAkademik): int
     {
         // Tab 2020 dan 2021 mencatat satu respons perusahaan secara agregat,
         // tanpa identitas alumni. Tetap buat relasi teknis yang jelas ditandai
         // sebagai agregat agar respons historisnya tidak hilang.
         $nim = $record['nim'] ?? sprintf('ARS%d%04d', $record['year'], $record['source_row']);
         $nama = $this->displayAlumniName($record);
+        $fakultas = $profilAkademik['fakultas'];
+        $programStudi = $profilAkademik['program_studi'];
 
         DB::table('lulusan')->updateOrInsert(
             ['nim' => $nim],
             [
                 'pengguna_lulusan_id' => $perusahaanId,
                 'nama' => $nama,
-                'program_studi' => $record['program_studi'] ?? 'Tidak tercatat',
-                'fakultas' => 'FTI',
+                'program_studi' => $programStudi->nama,
+                'fakultas' => $fakultas->kode,
+                'program_studi_id' => $programStudi->id,
+                'fakultas_id' => $fakultas->id,
+                'is_aggregate' => empty($record['alumni']),
                 'tahun_lulus' => "{$record['year']}-08-15",
-                'status' => true,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ],
         );
 
         return (int) DB::table('lulusan')->where('nim', $nim)->value('id');
+    }
+
+    private function resolveAcademicProfile(?string $rawProgramStudi): array
+    {
+        $rawProgramStudi = trim((string) $rawProgramStudi);
+        $normalized = Str::lower($rawProgramStudi);
+        $mappings = [
+            ['sistem informasi', 'FTI', 'Fakultas Teknologi dan Informatika', 'Sistem Informasi'],
+            ['teknik komputer', 'FTI', 'Fakultas Teknologi dan Informatika', 'Teknik Komputer'],
+            ['akuntansi', 'FEB', 'Fakultas Ekonomi dan Bisnis', 'Akuntansi'],
+            ['manajemen informatika', 'FTI', 'Fakultas Teknologi dan Informatika', 'Manajemen Informatika'],
+            ['manajemen', 'FEB', 'Fakultas Ekonomi dan Bisnis', 'Manajemen'],
+            ['desain komunikasi visual', 'FDIK', 'Fakultas Desain dan Industri Kreatif', 'Desain Komunikasi Visual'],
+            ['desain produk', 'FDIK', 'Fakultas Desain dan Industri Kreatif', 'Desain Produk'],
+            ['produksi film', 'FDIK', 'Fakultas Desain dan Industri Kreatif', 'Produksi Film dan Televisi'],
+            ['administrasi perkantoran', 'FDIK', 'Fakultas Desain dan Industri Kreatif', 'Administrasi Perkantoran'],
+        ];
+
+        foreach ($mappings as [$needle, $kodeFakultas, $namaFakultas, $namaProdi]) {
+            if (Str::contains($normalized, $needle)) {
+                return $this->firstOrCreateAcademicProfile($kodeFakultas, $namaFakultas, $namaProdi);
+            }
+        }
+
+        return $this->firstOrCreateAcademicProfile(
+            'UNK',
+            'Fakultas Belum Teridentifikasi',
+            $rawProgramStudi ?: 'Program Studi Belum Tercatat',
+        );
+    }
+
+    private function firstOrCreateAcademicProfile(string $kodeFakultas, string $namaFakultas, string $namaProdi): array
+    {
+        $fakultas = Fakultas::firstOrCreate(['kode' => $kodeFakultas], ['nama' => $namaFakultas]);
+        $programStudi = ProgramStudi::firstOrCreate(
+            ['fakultas_id' => $fakultas->id, 'nama' => $namaProdi],
+            ['kode' => 'PS-' . strtoupper(substr(md5($fakultas->id . '|' . $namaProdi), 0, 12))],
+        );
+
+        return [
+            'fakultas' => $fakultas,
+            'program_studi' => $programStudi,
+        ];
     }
 
     private function displayAlumniName(array $record): string

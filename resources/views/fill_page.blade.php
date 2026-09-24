@@ -93,7 +93,7 @@
         .survey-header p.text-white-50 + p.text-white-50 { margin-top: .3rem; }
         .survey-header p.text-white-50 .text-white { color: #fff !important; letter-spacing: .05em; }
         .univ-badge {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             width: min(280px, 76vw);
@@ -101,7 +101,7 @@
             background: #fff;
             padding: .85rem 1.15rem;
             border-radius: 15px;
-            margin-bottom: 1.35rem;
+            margin: 0 auto 1rem;
             border: 1px solid rgba(255,255,255,.75);
             box-shadow: 0 10px 22px rgba(5, 19, 49, .24);
         }
@@ -458,7 +458,7 @@
                     <div class="univ-badge">
                         <img src="{{ asset('assets/images/logo/undika.png') }}" class="univ-logo" alt="Universitas Dinamika">
                     </div>
-                    <div class="survey-eyebrow">Survey pengguna lulusan</div>
+                    <div class="survey-eyebrow">Survei pengguna lulusan</div>
                     <h1>{{ $survey->judul }}</h1>
                     <p class="text-white-50 mb-1">{{ $survey->periode?->nama_periode }} · {{ $survey->periode?->tanggal_mulai?->translatedFormat('d M Y') }}–{{ $survey->periode?->tanggal_berakhir?->translatedFormat('d M Y') }}</p>
                     <p class="text-white-50 mb-0">Kode Akses Sesi: <span class="fw-bold text-white tracking-widest">{{ $survey->access_code }}</span></p>
@@ -513,20 +513,11 @@
                     </div>
                 </div>
 
-                @php
-                    $jumlahSistem = $survey->penggunalulusan->lulusans->count();
-                    $storedJumlah = $survey->penggunalulusan->jumlah_lulusan;
-                @endphp
-
                 <div class="company-summary">
                     <div class="company-summary-icon"><i class="bi bi-building"></i></div>
                         <div class="flex-grow-1">
                             <div class="company-summary-name">{{ $survey->penggunalulusan->nama_perusahaan ?? 'Nama Perusahaan Belum Tersedia' }}</div>
                             <div class="company-summary-address">{{ $survey->penggunalulusan->alamat_perusahaan ?? 'Alamat belum tersedia' }}</div>
-                        </div>
-                        <div class="company-stat">
-                            <strong>{{ $jumlahSistem }}</strong>
-                            <span>lulusan tercatat<br>di sistem</span>
                         </div>
                 </div>
 
@@ -538,13 +529,8 @@
                     <div class="d-flex align-items-center gap-2">
                         <input type="number" name="jumlah_lulusan_bekerja" class="form-control"
                                style="max-width: 160px"
-                               min="1" step="1" required value="{{ old('jumlah_lulusan_bekerja', $storedJumlah) }}"
+                               min="1" step="1" required value="{{ old('jumlah_lulusan_bekerja') }}"
                                placeholder="Minimal 1 orang">
-                        @if($jumlahSistem > 0)
-                        <span class="text-muted small">
-                            (sistem mencatat <strong>{{ $jumlahSistem }}</strong> lulusan)
-                        </span>
-                        @endif
                     </div>
                     <div class="form-text">Diisi oleh perusahaan sesuai jumlah lulusan yang bekerja saat ini, minimal 1 orang.</div>
                     @error('jumlah_lulusan_bekerja')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
@@ -727,7 +713,7 @@
                         @endforeach
                     @endif
 
-                    {{-- MULTIPLE CHOICE: checkbox beberapa pilihan + kolom "Lainnya" teks bebas --}}
+                    {{-- MULTIPLE CHOICE: mode satu jawaban memakai radio; mode multi memakai checkbox. --}}
                     @if($multiChoiceSoal->count() > 0)
                         <div class="{{ $ratingSoal->count() > 0 ? 'mt-4 pt-4 border-top' : '' }}">
                             @if($ratingSoal->count() == 0)
@@ -737,6 +723,10 @@
                             @endif
 
                             @foreach($multiChoiceSoal as $s)
+                                @php
+                                    $allowsMultipleAnswers = $s->allows_multiple_answers;
+                                    $oldMultipleChoice = old('mc.' . $s->id, $allowsMultipleAnswers ? [] : null);
+                                @endphp
                                 <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}" data-required-multiple="{{ $s->is_required ? 'true' : 'false' }}">
                                     <p class="fw-bold text-dark mb-3">
                                         <span class="text-dinamika me-1">{{ $loop->iteration }}.</span>
@@ -746,10 +736,13 @@
                                     <div class="ps-2">
                                         @foreach($s->jawaban as $j)
                                             <div class="form-check mc-option mb-2">
-                                                <input class="form-check-input" type="checkbox"
-                                                       name="mc[{{ $s->id }}][]"
+                                                <input class="form-check-input" type="{{ $allowsMultipleAnswers ? 'checkbox' : 'radio' }}"
+                                                       name="mc[{{ $s->id }}]{{ $allowsMultipleAnswers ? '[]' : '' }}"
                                                        value="{{ $j->id }}"
-                                                       @checked(in_array($j->id, old('mc.' . $s->id, [])))
+                                                       @checked($allowsMultipleAnswers ? in_array($j->id, (array) $oldMultipleChoice) : (string) $oldMultipleChoice === (string) $j->id)
+                                                       @if(! $allowsMultipleAnswers)
+                                                           onchange="var txt = document.getElementById('mc_other_text_{{ $s->id }}'); var other = document.getElementById('mc_other_check_{{ $s->id }}'); other.checked = false; txt.disabled = true; txt.value = '';"
+                                                       @endif
                                                        id="mc_{{ $s->id }}_{{ $j->id }}">
                                                 <label class="form-check-label" for="mc_{{ $s->id }}_{{ $j->id }}">
                                                     {{ $j->jawaban }}
@@ -761,7 +754,12 @@
                                         @endforeach
 
                                         <div class="form-check mc-option mb-2">
-                                            <input class="form-check-input" type="checkbox"
+                                            <input class="form-check-input" type="{{ $allowsMultipleAnswers ? 'checkbox' : 'radio' }}"
+                                                   @if(! $allowsMultipleAnswers)
+                                                       name="mc[{{ $s->id }}]"
+                                                       value=""
+                                                       data-other-choice
+                                                   @endif
                                                    id="mc_other_check_{{ $s->id }}"
                                                    @checked(old('mc_custom.' . $s->id))
                                                    onchange="
@@ -782,7 +780,7 @@
                                                placeholder="Tuliskan jawaban Anda..."
                                                value="{{ old('mc_custom.' . $s->id) }}"
                                                {{ old('mc_custom.' . $s->id) ? '' : 'disabled' }}>
-                                        <div class="text-danger small mt-2" data-multiple-error hidden>Pilih minimal satu jawaban untuk pertanyaan wajib ini.</div>
+                                        <div class="text-danger small mt-2" data-multiple-error hidden>Pilih jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.</div>
                                         @error('mc.' . $s->id)<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
@@ -836,7 +834,7 @@
             let firstInvalidGroup = null;
 
             document.querySelectorAll('[data-required-multiple="true"]').forEach(function (group) {
-                const hasCheckedAnswer = Array.from(group.querySelectorAll('input[name^="mc["]')).some(function (input) {
+                const hasCheckedAnswer = Array.from(group.querySelectorAll('input[name^="mc["]:not([data-other-choice])')).some(function (input) {
                     return input.checked;
                 });
                 const otherAnswer = group.querySelector('.mc-other-input')?.value.trim() ?? '';
@@ -855,7 +853,7 @@
             if (firstInvalidGroup) {
                 event.preventDefault();
                 firstInvalidGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalidGroup.querySelector('input[type="checkbox"]')?.focus();
+                firstInvalidGroup.querySelector('input[type="checkbox"], input[type="radio"]')?.focus();
             }
         });
     </script>

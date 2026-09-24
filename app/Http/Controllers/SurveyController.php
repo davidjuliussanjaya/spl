@@ -30,7 +30,11 @@ class SurveyController extends Controller
 
     public function index(Request $request)
     {
-        $periodeList = Periode::withCount('surveys')->orderByDesc('tanggal_mulai')->get();
+        // Delapan kartu menghasilkan maksimal dua baris pada grid desktop (4 kolom).
+        $periodeList = Periode::withCount('surveys')
+            ->orderByDesc('tanggal_mulai')
+            ->paginate(8)
+            ->withQueryString();
         $selectedPeriode = $request->filled('periode_id')
             ? Periode::find($request->integer('periode_id'))
             : null;
@@ -68,14 +72,18 @@ class SurveyController extends Controller
     $perusahaan = \App\Models\PenggunaLulusan::all();
     
     // Ambil semua soal aktif untuk dipilih oleh Admin
-    $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori'])
+    $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori.fakultas'])
         ->where('is_active', 1)
         ->get();
 
     // Tambahkan data lulusan jika diperlukan di form
-    $lulusan = \App\Models\Lulusan::all(); 
+    $lulusan = \App\Models\Lulusan::with('fakultasMaster')->get();
 
-    $periodes = Periode::orderByDesc('tanggal_mulai')->get();
+    $periodes = Periode::query()
+        ->whereDate('tanggal_mulai', '<=', today())
+        ->whereDate('tanggal_berakhir', '>=', today())
+        ->orderByDesc('tanggal_mulai')
+        ->get();
 
     return view('admin.survey.add', compact('perusahaan', 'daftarSoal', 'lulusan', 'periodes'));
 }
@@ -90,15 +98,19 @@ class SurveyController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
-    public function verifyCode(Request $request)
+public function verifyCode(Request $request)
 {
-    $survey = Survey::with('periode')->where('access_code', $request->code)
+    $code = trim((string) $request->input('code'));
+
+    $survey = Survey::with('periode')->where('access_code', $code)
                     ->where('is_completed', false)
                     ->where('is_active', true)
                     ->first();
 
     if (! $survey || ! $survey->periode?->isBerlangsung()) {
-        return back()->with('error', 'Kode akses tidak valid, survei tidak aktif atau telah selesai, atau periode pengisian belum berlangsung.');
+        return back()
+            ->withInput()
+            ->with('error', 'Kode akses tidak valid, survei tidak aktif atau telah selesai, atau periode pengisian belum berlangsung.');
     }
 
     return redirect()->route('survey.fill', $survey->access_code);
@@ -160,9 +172,13 @@ public function edit($id)
     }
 
     $perusahaan = PenggunaLulusan::all();
-    $lulusan    = Lulusan::all();
-    $daftarSoal = Soal::with('kategori')->where('is_active', 1)->get();
-    $periodes = Periode::orderByDesc('tanggal_mulai')->get();
+    $lulusan = Lulusan::with('fakultasMaster')->get();
+    $daftarSoal = Soal::with('kategori.fakultas')->where('is_active', 1)->get();
+    $periodes = Periode::query()
+        ->whereDate('tanggal_mulai', '<=', today())
+        ->whereDate('tanggal_berakhir', '>=', today())
+        ->orderByDesc('tanggal_mulai')
+        ->get();
 
     $responGrouped = $survey->is_completed
         ? ResponJawaban::with('jawaban')->where('survey_id', $id)->get()->groupBy('soal_id')
@@ -187,11 +203,15 @@ public function edit($id)
             ->orderByDesc('tahun')
             ->pluck('tahun');
 
-        $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori'])
+        $daftarSoal = \App\Models\Soal::with(['jawaban', 'kategori.fakultas'])
             ->where('is_active', 1)
             ->get();
 
-        $periodes = Periode::orderByDesc('tanggal_mulai')->get();
+        $periodes = Periode::query()
+            ->whereDate('tanggal_mulai', '<=', today())
+            ->whereDate('tanggal_berakhir', '>=', today())
+            ->orderByDesc('tanggal_mulai')
+            ->get();
 
         return view('admin.survey.bulk', compact('tahunList', 'daftarSoal', 'periodes'));
     }
@@ -201,12 +221,7 @@ public function edit($id)
         try {
             $result = $this->surveyService->createBulkSurveys($request->validated());
             $count = count($result['surveys']);
-            $skipped = $result['skipped'];
             $message = "Berhasil membuat {$count} survey untuk lulusan tahun {$request->tahun_lulus}.";
-
-            if ($skipped > 0) {
-                $message .= " {$skipped} lulusan dilewati karena sudah memiliki survei pada periode ini.";
-            }
 
             return redirect()->route('survey', ['periode_id' => $request->periode_id])
                 ->with('success', $message);

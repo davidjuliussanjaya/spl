@@ -32,7 +32,7 @@
                     <thead>
                         <tr>
                             <th>Periode</th>
-                            @if($isAdmin)
+                            @if($canViewDashboardMetrics)
                                 <th class="metric-col">Jumlah Responden<br>yang Mengisi</th>
                                 <th class="metric-col">Jumlah Alumni<br>yang Dinilai</th>
                                 <th>Respons</th>
@@ -44,7 +44,7 @@
                         @foreach($periodSatisfactionSummaries as $period)
                             <tr data-period-row @if($loop->index >= $periodPreviewLimit) hidden @endif>
                                 <td>{{ $period['periode'] }}</td>
-                                @if($isAdmin)
+                                @if($canViewDashboardMetrics)
                                     <td>{{ $period['total_responden'] }}</td>
                                     <td>{{ $period['total_lulusan'] }}</td>
                                     <td>{{ number_format($period['response_rate_pct'], 1) }}%</td>

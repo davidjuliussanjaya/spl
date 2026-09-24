@@ -46,6 +46,18 @@
                             @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
+                        <div class="mb-4">
+                            <label for="fakultas_id" class="form-label fw-bold">Tipe Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select @error('fakultas_id') is-invalid @enderror" id="fakultas_id" name="fakultas_id">
+                                <option value="" @selected(old('fakultas_id', $kategori->fakultas_id) === null || old('fakultas_id', $kategori->fakultas_id) === '')>Umum</option>
+                                @foreach($fakultasList as $fakultas)
+                                    <option value="{{ $fakultas->id }}" @selected((string) old('fakultas_id', $kategori->fakultas_id) === (string) $fakultas->id)>{{ $fakultas->kode }} — {{ $fakultas->nama }}</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">Kategori Umum tersedia untuk semua survei; kategori fakultas hanya digunakan pada survei lulusan dari fakultas tersebut.</div>
+                            @error('fakultas_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <a href="{{ route('kategori.index') }}" class="btn btn-light border px-4">Batal</a>
                             <button type="submit" class="btn btn-primary px-4 shadow-sm">Simpan Perubahan</button>

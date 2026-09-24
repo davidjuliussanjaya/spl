@@ -93,16 +93,6 @@
                                 <small class="text-muted" style="font-size: 0.7rem;">Pilih instansi yang menilai lulusan ini</small>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">
-                                <div>
-                                    <span class="d-block fw-bold small">Status Lulusan</span>
-                                    <small class="text-muted small">Aktifkan data ini</small>
-                                </div>
-                                <div class="form-check form-switch ms-3">
-                                    <input class="form-check-input" type="checkbox" name="status" value="1" id="statusSwitch" checked>
-                                </div>
-                            </div>
-
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary shadow-sm py-2 fw-bold rounded-3">
                                     <i class="bi bi-check-circle me-2"></i> Simpan Data

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SurveyStoreRequest extends FormRequest
 {
@@ -15,7 +16,12 @@ class SurveyStoreRequest extends FormRequest
     {
         return [
             'judul'               => 'required|string|max:255',
-            'periode_id'          => 'required|exists:periode,id',
+            'periode_id'          => [
+                'required',
+                Rule::exists('periode', 'id')->where(fn ($query) => $query
+                    ->whereDate('tanggal_mulai', '<=', today())
+                    ->whereDate('tanggal_berakhir', '>=', today())),
+            ],
             'lulusan_id'          => 'required|exists:lulusan,id',
             'pengguna_lulusan_id' => 'required|exists:pengguna_lulusan,id',
             'soal_pilihan'        => 'required|array|min:1',
@@ -28,6 +34,13 @@ class SurveyStoreRequest extends FormRequest
             'badan_hukum'         => 'nullable|string|max:255',
             'telp_perusahaan'     => 'nullable|string|max:50',
             'alamat_perusahaan'   => 'nullable|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'periode_id.exists' => 'Pilih periode survei yang sedang berlangsung.',
         ];
     }
 }

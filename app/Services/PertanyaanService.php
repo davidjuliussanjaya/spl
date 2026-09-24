@@ -14,6 +14,7 @@ class PertanyaanService
     return DB::transaction(function () use ($data) {
         // 1. Konversi Jenis Soal (Sesuai logic Anda sebelumnya)
         $jenis = $this->mapJenisSoal($data['type']);
+        $allowsMultipleAnswers = $this->allowsMultipleAnswers($jenis, $data);
 
         // 2. Simpan Soal
         $soal = Soal::create([
@@ -22,6 +23,7 @@ class PertanyaanService
             // Kode bersifat opsional di form, tetapi kolom database wajib unik.
             'kode'                => $this->resolveKode($data['kode'] ?? null),
             'jenis_soal'          => $jenis,
+            'allows_multiple_answers' => $allowsMultipleAnswers,
             'is_required'         => isset($data['required']),
             'is_active'           => true
         ]);
@@ -43,12 +45,14 @@ class PertanyaanService
         return DB::transaction(function () use ($id, $data) {
             $soal = Soal::findOrFail($id);
             $jenis = $this->mapJenisSoal($data['type']);
+            $allowsMultipleAnswers = $this->allowsMultipleAnswers($jenis, $data);
 
             $soal->update([
                 'soal'                => $data['question'],
                 'kategori_id'         => $data['kategori_id'], // Simpan kategori yang diupdate
                 'kode'                => $this->resolveKode($data['kode'] ?? null, $soal->kode),
                 'jenis_soal'          => $jenis,
+                'allows_multiple_answers' => $allowsMultipleAnswers,
                 'is_required'         => isset($data['required']),
             ]);
 
@@ -84,6 +88,13 @@ class PertanyaanService
             'rating' => 'rating',
             default => throw new \InvalidArgumentException('Tipe pertanyaan tidak dikenali.'),
         };
+    }
+
+    /** Rating selalu satu jawaban; pengaturan ini hanya berlaku untuk pilihan ganda. */
+    private function allowsMultipleAnswers(string $jenis, array $data): bool
+    {
+        return $jenis === 'multiple_choice'
+            && (bool) (int) ($data['allows_multiple_answers'] ?? 1);
     }
 
     // Helper: Simpan Jawaban Iterasi

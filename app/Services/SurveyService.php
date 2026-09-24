@@ -19,11 +19,10 @@ class SurveyService
     {
         return DB::transaction(function () use ($data) {
             $periode = Periode::findOrFail($data['periode_id']);
+            $this->pastikanPeriodeBerlangsung($periode);
             $pengguna = PenggunaLulusan::findOrFail($data['pengguna_lulusan_id']);
             $lulus = Lulusan::findOrFail($data['lulusan_id']);
 
-            $this->ensureLulusanHasNoSurveyInPeriod($lulus->id, $periode->id);
-            
             $pengguna->update([
                 'nama_penyelia'     => $data['nama'] ?? $pengguna->nama_penyelia,
                 'kontak_penyelia'   => $data['hp'] ?? $pengguna->kontak_penyelia,
@@ -46,8 +45,11 @@ class SurveyService
                 'is_active'           => true,
             ]);
 
-            $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])
-                ->get(['id', 'kategori_id', 'kode']);
+            $soalTerpilih = $this->soalUntukLulusan($data['soal_pilihan'], $lulus);
+
+            if ($soalTerpilih->isEmpty()) {
+                throw new \DomainException('Tidak ada pertanyaan yang sesuai dengan fakultas lulusan yang dipilih.');
+            }
 
             foreach ($this->urutkanSoal($soalTerpilih, $data['kategori_urutan'] ?? []) as $index => $soal) {
                 DB::table('survey_soal')->insert([
@@ -144,8 +146,12 @@ class SurveyService
             foreach ($data['mc'] ?? [] as $soal_id => $jawaban_ids) {
                 $soalModel = $soalCache->get($soal_id);
 
-                foreach ($jawaban_ids as $jawaban_id) {
+                foreach (array_filter((array) $jawaban_ids, fn ($id) => $id !== null && $id !== '') as $jawaban_id) {
                     $jawabanModel = $jawabanCache->get($jawaban_id);
+
+                    if (! $soalModel || ! $jawabanModel || (int) $jawabanModel->soal_id !== (int) $soal_id) {
+                        continue;
+                    }
 
                     $respon = new ResponJawaban();
                     $respon->survey_id             = $survey->id;
@@ -235,7 +241,7 @@ class SurveyService
             $s = $soals->get($soal_id);
             if (!$s) continue;
 
-            $pilihan = $s->jawaban->whereIn('id', $jawaban_ids)->pluck('jawaban')->toArray();
+            $pilihan = $s->jawaban->whereIn('id', (array) $jawaban_ids)->pluck('jawaban')->toArray();
             $jawabanArr[$s->kode] = [
                 'kode'     => $s->kode,
                 'kategori' => $s->kategori?->nama_kategori,
@@ -249,9 +255,22 @@ class SurveyService
         // Teks "Lainnya" pada multiple choice
         foreach ($data['mc_custom'] ?? [] as $soal_id => $custom_text) {
             if (empty(trim($custom_text ?? ''))) continue;
-            if (isset($jawabanArr[$soals->get($soal_id)?->kode])) {
-                $jawabanArr[$soals->get($soal_id)->kode]['jawaban'][] = trim($custom_text);
+
+            $s = $soals->get($soal_id);
+            if (! $s) continue;
+
+            if (! isset($jawabanArr[$s->kode])) {
+                $jawabanArr[$s->kode] = [
+                    'kode'     => $s->kode,
+                    'kategori' => $s->kategori?->nama_kategori,
+                    'soal'     => $s->soal,
+                    'jenis'    => $s->jenis_soal,
+                    'jawaban'  => [],
+                    'nilai'    => null,
+                ];
             }
+
+            $jawabanArr[$s->kode]['jawaban'][] = trim($custom_text);
         }
 
         // Urutkan berdasarkan kode soal (B1, B2, C1, ...)
@@ -301,6 +320,7 @@ class SurveyService
     {
         return DB::transaction(function () use ($data) {
             $periode = Periode::findOrFail($data['periode_id']);
+            $this->pastikanPeriodeBerlangsung($periode);
             $tahunLulus = $data['tahun_lulus'];
 
             $lulusanList = Lulusan::whereYear('tahun_lulus', $tahunLulus)
@@ -311,19 +331,17 @@ class SurveyService
                 throw new \Exception("Tidak ada lulusan dengan tahun lulus {$tahunLulus} yang memiliki data perusahaan.");
             }
 
-            $existingLulusanIds = Survey::query()
-                ->where('periode_id', $periode->id)
-                ->whereIn('lulusan_id', $lulusanList->pluck('id'))
-                ->pluck('lulusan_id')
-                ->all();
-            $lulusanBaru = $lulusanList->reject(fn (Lulusan $lulus) => in_array($lulus->id, $existingLulusanIds, true));
-            $skipped = $lulusanList->count() - $lulusanBaru->count();
             $surveys = [];
 
-            $soalTerpilih = Soal::whereIn('id', $data['soal_pilihan'])->get(['id', 'kategori_id', 'kode']);
+            $soalTerpilih = Soal::with('kategori:id,fakultas_id')
+                ->whereIn('id', $data['soal_pilihan'])
+                ->get(['id', 'kategori_id', 'kode']);
 
-            foreach ($lulusanBaru as $lulus) {
-                $soalUntukLulusan = $soalTerpilih;
+            foreach ($lulusanList as $lulus) {
+                $soalUntukLulusan = $soalTerpilih->filter(function (Soal $soal) use ($lulus) {
+                    return ! $soal->kategori?->fakultas_id
+                        || (int) $soal->kategori->fakultas_id === (int) $lulus->fakultas_id;
+                });
 
                 $survey = Survey::create([
                     'judul'               => $data['judul'],
@@ -352,7 +370,6 @@ class SurveyService
 
             return [
                 'surveys' => $surveys,
-                'skipped' => $skipped,
             ];
         });
     }
@@ -361,9 +378,8 @@ class SurveyService
     {
         return DB::transaction(function () use ($survey, $data) {
             $periode = Periode::findOrFail($data['periode_id']);
+            $this->pastikanPeriodeBerlangsung($periode);
             $lulus = Lulusan::findOrFail($data['lulusan_id']);
-
-            $this->ensureLulusanHasNoSurveyInPeriod($lulus->id, $periode->id, $survey->id);
 
             $pengguna = PenggunaLulusan::find($data['pengguna_lulusan_id']);
             if ($pengguna) {
@@ -386,8 +402,11 @@ class SurveyService
                 'pengguna_lulusan_id' => $data['pengguna_lulusan_id'],
             ]);
 
-            $soalValid = Soal::whereIn('id', $data['soal_pilihan'])
-                ->get(['id', 'kategori_id', 'kode']);
+            $soalValid = $this->soalUntukLulusan($data['soal_pilihan'], $lulus);
+
+            if ($soalValid->isEmpty()) {
+                throw new \DomainException('Tidak ada pertanyaan yang sesuai dengan fakultas lulusan yang dipilih.');
+            }
 
             $pivotData = $this->urutkanSoal($soalValid, $data['kategori_urutan'] ?? [])
                 ->values()
@@ -417,16 +436,23 @@ class SurveyService
         })->values();
     }
 
-    private function ensureLulusanHasNoSurveyInPeriod(int $lulusanId, int $periodeId, ?int $ignoreSurveyId = null): void
+    private function pastikanPeriodeBerlangsung(Periode $periode): void
     {
-        $exists = Survey::query()
-            ->where('lulusan_id', $lulusanId)
-            ->where('periode_id', $periodeId)
-            ->when($ignoreSurveyId, fn ($query) => $query->where('id', '!=', $ignoreSurveyId))
-            ->exists();
-
-        if ($exists) {
-            throw new \DomainException('Lulusan ini sudah memiliki survei pada periode yang dipilih.');
+        if (! $periode->isBerlangsung()) {
+            throw new \DomainException('Survei hanya dapat dibuat atau diubah pada periode yang sedang berlangsung.');
         }
     }
+
+    /** Ambil hanya pertanyaan dari kategori umum atau fakultas lulusan terkait. */
+    private function soalUntukLulusan(array $soalIds, Lulusan $lulusan)
+    {
+        return Soal::query()
+            ->whereIn('id', $soalIds)
+            ->whereHas('kategori', function ($query) use ($lulusan) {
+                $query->whereNull('fakultas_id')
+                    ->when($lulusan->fakultas_id, fn ($query, $fakultasId) => $query->orWhere('fakultas_id', $fakultasId));
+            })
+            ->get(['id', 'kategori_id', 'kode']);
+    }
+
 }

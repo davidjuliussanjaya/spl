@@ -3,55 +3,50 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ReportExport;
+use App\Services\DashboardService;
 use App\Models\SurveyArsip;
 use App\Models\Fakultas;
 use App\Models\ProgramStudi;
-use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 
 class ReportController extends Controller
 {
+    public function __construct(private DashboardService $dashboardService)
+    {
+    }
+
     public function index(Request $request)
     {
-        $tahunList = DB::table('lulusan')
-            ->whereNotNull('tahun_lulus')
-            ->selectRaw(DatabaseYearExpression::fromDateColumn('tahun_lulus') . ' as tahun')
-            ->distinct()
-            ->orderByDesc('tahun')
-            ->pluck('tahun');
-
-        $prodiList = ProgramStudi::orderBy('nama')->get();
-
-        $totalSurveySelesai = DB::table('survey')->where('is_completed', true)->count();
-
-        $filters = [
-            'tahun_dari' => $request->input('tahun_dari'),
-            'tahun_sampai' => $request->input('tahun_sampai'),
-            'program_studi' => collect(Arr::wrap($request->input('program_studi')))
-                ->filter(fn ($programStudi) => filled($programStudi))
-                ->values()
-                ->all(),
-        ];
+        $filters = $this->filtersFromRequest($request);
+        $filterOptions = $this->dashboardService->getFilterOptions($filters['periode']);
+        $totalSurveySelesai = SurveyArsip::query()
+            ->when($filters['periode'], fn ($query, $periode) => $query->whereIn('periode_kode', $periode))
+            ->when($filters['program_studi'], fn ($query, $prodi) => $query->whereIn('lulusan_program_studi', $prodi))
+            ->count();
 
         return view('admin.report.index', compact(
-            'tahunList', 'prodiList',
-            'totalSurveySelesai', 'filters'
+            'filterOptions', 'totalSurveySelesai', 'filters'
         ));
     }
 
     public function download(Request $request)
     {
-        $filters = [
-            'tahun_dari' => $request->input('tahun_dari'),
-            'tahun_sampai' => $request->input('tahun_sampai'),
+        return (new ReportExport($this->filtersFromRequest($request)))->download();
+    }
+
+    private function filtersFromRequest(Request $request): array
+    {
+        return [
+            'periode' => collect(Arr::wrap($request->input('periode')))
+                ->filter(fn ($periode) => filled($periode))
+                ->values()
+                ->all(),
             'program_studi' => collect(Arr::wrap($request->input('program_studi')))
                 ->filter(fn ($programStudi) => filled($programStudi))
                 ->values()
                 ->all(),
         ];
-        return (new ReportExport($filters))->download();
     }
 
     public function arsip(Request $request)

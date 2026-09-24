@@ -45,9 +45,18 @@
                             <label class="form-label fw-bold text-dark">Tipe Masukan <span class="text-danger">*</span></label>
                             <select class="form-select modern-input" name="type" id="typeSelect">
                                 <option value="rating" {{ $soal->jenis_soal == 'rating' ? 'selected' : '' }}>Rating / Skala Penilaian</option>
-                                <option value="radio" {{ $soal->jenis_soal == 'multiple_choice' ? 'selected' : '' }}>Pilihan Ganda (Satu Jawaban)</option>
+                                <option value="radio" {{ $soal->jenis_soal == 'multiple_choice' ? 'selected' : '' }}>Pilihan Ganda</option>
                                 <option value="text" {{ $soal->jenis_soal == 'essay' ? 'selected' : '' }}>Teks Bebas (Essay)</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-6" id="multipleAnswerModeGroup">
+                            <label class="form-label fw-bold text-dark">Jumlah Jawaban yang Diizinkan <span class="text-danger">*</span></label>
+                            <select class="form-select modern-input" name="allows_multiple_answers" id="multipleAnswerMode">
+                                <option value="0" @selected((string) old('allows_multiple_answers', $soal->allows_multiple_answers ? '1' : '0') === '0')>Satu jawaban saja</option>
+                                <option value="1" @selected((string) old('allows_multiple_answers', $soal->allows_multiple_answers ? '1' : '0') === '1')>Lebih dari satu jawaban</option>
+                            </select>
+                            <small class="text-muted mt-1 d-block"><i class="bi bi-info-circle me-1"></i>Pengaturan ini hanya berlaku untuk pilihan ganda.</small>
                         </div>
 
                         <div class="col-md-6">
@@ -78,7 +87,7 @@
                             <div class="option-column-headings" aria-hidden="true">
                                 <span></span>
                                 <span>Opsi Jawaban</span>
-                                <span class="text-center">Bobot Nilai</span>
+                                <span class="text-center">Bobot otomatis</span>
                                 <span></span>
                             </div>
                             <div id="options">
@@ -87,7 +96,7 @@
                                     <div class="d-flex align-items-center mb-3 option-item">
                                         <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
                                         <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban" value="{{ $j->jawaban }}">
-                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="{{ $j->nilai }}" title="Bobot Nilai">
+                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" value="{{ $j->nilai }}" title="Bobot Nilai otomatis" readonly>
                                         <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                                             <i class="bi bi-x-lg pointer-events-none"></i>
                                         </button>
@@ -97,7 +106,7 @@
                                     <div class="d-flex align-items-center mb-3 option-item">
                                         <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
                                         <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban (Cth: Sangat Baik)">
-                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="4" title="Bobot Nilai">
+                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" value="4" title="Bobot Nilai otomatis" readonly>
                                         <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                                             <i class="bi bi-x-lg pointer-events-none"></i>
                                         </button>
@@ -105,7 +114,7 @@
                                     <div class="d-flex align-items-center mb-3 option-item">
                                         <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
                                         <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban (Cth: Baik)">
-                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="3" title="Bobot Nilai">
+                                        <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" value="3" title="Bobot Nilai otomatis" readonly>
                                         <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                                             <i class="bi bi-x-lg pointer-events-none"></i>
                                         </button>
@@ -191,37 +200,63 @@
     .pointer-events-none {
         pointer-events: none;
     }
+    .option-score[readonly] { background-color: #eef4ff; color: #1d4ed8; font-weight: 700; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const questionForm = document.querySelector('form');
     const typeSelect = document.getElementById('typeSelect');
     const pilihanGroup = document.getElementById('pilihanJawabanGroup');
+    const multipleAnswerModeGroup = document.getElementById('multipleAnswerModeGroup');
+    const multipleAnswerMode = document.getElementById('multipleAnswerMode');
 
     // Toggle tampilan opsi jawaban berdasarkan tipe soal
     function togglePilihan() {
-        if (typeSelect.value === 'text') {
-            pilihanGroup.style.display = 'none';
-        } else {
-            pilihanGroup.style.display = 'block';
-        }
+        const isEssay = typeSelect.value === 'text';
+        pilihanGroup.hidden = isEssay;
+        pilihanGroup.querySelectorAll('input, button').forEach((field) => {
+            field.disabled = isEssay;
+        });
+
+        const isMultipleChoice = typeSelect.value === 'radio';
+        multipleAnswerModeGroup.style.display = isMultipleChoice ? 'block' : 'none';
+        multipleAnswerMode.disabled = !isMultipleChoice;
     }
 
     togglePilihan(); // Eksekusi saat pertama load
     typeSelect.addEventListener('change', togglePilihan); // Eksekusi saat dropdown berubah
+    questionForm?.addEventListener('spl:draft-restored', function () {
+        togglePilihan();
+        normalisasiBobotOpsi();
+    });
 });
+
+function normalisasiBobotOpsi() {
+    const optionItems = Array.from(document.querySelectorAll('#options .option-item'));
+    const nilaiAwal = optionItems.length >= 5 ? 5 : 4;
+
+    optionItems.forEach(function (item, index) {
+        const score = item.querySelector('[name="nilai[]"]');
+        if (score) score.value = Math.max(nilaiAwal - index, 1);
+    });
+
+    const addOption = document.getElementById('addOption');
+    if (addOption) {
+        const limitReached = optionItems.length >= 5;
+        addOption.disabled = limitReached;
+        addOption.title = limitReached ? 'Maksimal lima opsi jawaban' : 'Tambah Opsi';
+    }
+}
 
 // Logic Tambah Opsi Jawaban
 document.getElementById('addOption').addEventListener('click', function() {
     let container = document.getElementById('options');
-    // Menghitung urutan nilai otomatis (default mengecil atau membesar)
-    let index = container.children.length + 1;
-
     let html = `
         <div class="d-flex align-items-center mb-3 option-item">
             <div class="text-muted me-3"><i class="bi bi-record-circle"></i></div>
             <input type="text" name="jawaban[]" class="form-control modern-input me-2" placeholder="Teks Jawaban">
-            <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center" style="width: 100px;" placeholder="Nilai" value="${index}">
+            <input type="number" name="nilai[]" class="form-control modern-input me-2 text-center option-score" style="width: 100px;" placeholder="Nilai" title="Bobot Nilai otomatis" readonly>
             <button type="button" class="btn btn-light-danger btn-sm rounded-circle px-2 py-1 removeOption" title="Hapus Opsi">
                 <i class="bi bi-x-lg pointer-events-none"></i>
             </button>
@@ -229,13 +264,17 @@ document.getElementById('addOption').addEventListener('click', function() {
     `;
 
     container.insertAdjacentHTML('beforeend', html);
+    normalisasiBobotOpsi();
 });
 
 // Logic Hapus Opsi Jawaban (Event Delegation)
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('removeOption')) {
         e.target.parentElement.remove();
+        normalisasiBobotOpsi();
     }
 });
+
+normalisasiBobotOpsi();
 </script>
 @endsection

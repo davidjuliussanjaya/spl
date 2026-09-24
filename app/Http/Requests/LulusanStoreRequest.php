@@ -28,7 +28,6 @@ class LulusanStoreRequest extends FormRequest
             'program_studi_id'    => 'required|exists:program_studi,id',
             'fakultas_id'         => 'required|exists:fakultas,id',
             'tahun_lulus'         => 'required|date',
-            'status'              => 'nullable',
         ];
     }
 }

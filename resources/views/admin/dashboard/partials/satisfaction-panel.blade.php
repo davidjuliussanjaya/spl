@@ -3,7 +3,7 @@
         <div>
             <h6 class="panel-title">Indeks Kepuasan Pengguna</h6>
             <p class="panel-subtitle">
-                @if($isAdmin)
+                @if($canViewDashboardMetrics)
                     {{ $totalResponKepuasan }} respons penilaian dari {{ $totalResponden }} responden.
                     {{ $skorKepuasan['jumlah_responden'] }} responden mengisi dari {{ $skorKepuasan['total_lulusan'] }} alumni yang dinilai ({{ number_format($skorKepuasan['response_rate_pct'], 1) }}%)
                     — {{ $skorKepuasan['rumus'] }}.
@@ -39,10 +39,10 @@
                     @foreach($kepuasanPerKategori as $kat)
                         <tr data-kategori-row="{{ $kat['kategori'] }}">
                             <td>{{ $kat['kategori'] }}</td>
-                            <td>{{ $kat['pct_sb'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_b'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_k'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_sk'] }}% @if($isAdmin)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_sb'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_b'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_k'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_sk'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
                             <td class="fw-bold">{{ number_format($kat['skor_akhir'], 2) }}</td>
                         </tr>
                     @endforeach

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lulusan extends Model
 {
@@ -21,12 +22,12 @@ class Lulusan extends Model
         'program_studi_id',
         'fakultas_id',
         'tahun_lulus',
-        'status',
+        'is_aggregate',
     ];
 
     protected $casts = [
         'tahun_lulus' => 'date',
-        'status' => 'boolean',
+        'is_aggregate' => 'boolean',
     ];
 
     public function pengguna(): BelongsTo
@@ -42,5 +43,10 @@ class Lulusan extends Model
     public function programStudi(): BelongsTo
     {
         return $this->belongsTo(ProgramStudi::class, 'program_studi_id');
+    }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class);
     }
 }

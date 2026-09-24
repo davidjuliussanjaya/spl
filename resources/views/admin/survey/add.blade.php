@@ -56,7 +56,7 @@
                                     @endforeach
                                 </select>
                                 @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode. Tambahkan melalui menu Periode terlebih dahulu.</div>@endif
+                                @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode yang sedang berlangsung. Tambahkan atau ubah periode melalui menu Periode terlebih dahulu.</div>@endif
                             </div>
 
                             <div class="col-md-12 mb-2">
@@ -88,10 +88,10 @@
                                 <div class="mb-3">
                                     <label class="form-label small text-secondary mb-1">Pilih Data Lulusan <span
                                             class="text-danger">*</span></label>
-                                    <select name="lulusan_id" class="form-select line-input" required>
+                                    <select name="lulusan_id" id="lulusan_id" class="form-select line-input" required>
                                         <option value="">-- Pilih Alumni/Lulusan --</option>
                                         @foreach($lulusan as $l)
-                                            <option value="{{ $l->id }}">{{ $l->nama }}</option>
+                                            <option value="{{ $l->id }}" data-fakultas-id="{{ $l->fakultas_id }}">{{ $l->nama }}{{ $l->fakultasMaster ? ' — ' . $l->fakultasMaster->kode : '' }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -174,8 +174,7 @@
                             </div>
                             <h5 class="fw-bold m-0">Pilih Pertanyaan yang Digunakan</h5>
                         </div>
-                        <p class="text-muted small ms-5 ps-2">Centang pertanyaan yang akan muncul di halaman survey
-                            perusahaan.</p>
+                        <p class="text-muted small ms-5 ps-2">Kategori <span class="badge bg-secondary">Umum</span> berlaku untuk semua survei. Kategori per fakultas hanya tampil untuk lulusan dari fakultas yang sesuai.</p>
                     </div>
 
                     <div class="card-body p-4">
@@ -183,7 +182,7 @@
                             <div class="alert alert-danger spl-alert">{{ $message }}</div>
                         @enderror
 
-                        <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" :selected-category-ids="old('kategori_urutan', [])" />
+                        <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="old('soal_pilihan', [])" :selected-category-ids="old('kategori_urutan', [])" filter-lulusan-selector="#lulusan_id" />
 
                         <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm rounded-pill">
