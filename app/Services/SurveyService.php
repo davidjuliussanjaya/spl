@@ -109,8 +109,13 @@ class SurveyService
                 array_keys($data['mc'] ?? []),
                 array_keys($data['mc_custom'] ?? []),
             )));
-            $soalCache  = Soal::whereIn('id', $soalIds)->get()->keyBy('id');
-            $jawabanCache = Jawaban::whereIn('soal_id', $soalIds)->get()->keyBy('id');
+            // Hanya pertanyaan yang memang terpasang pada survei ini boleh
+            // menghasilkan respons, termasuk untuk isian bebas.
+            $soalCache = $survey->soals()
+                ->whereIn('soal.id', $soalIds)
+                ->get()
+                ->keyBy('id');
+            $jawabanCache = Jawaban::whereIn('soal_id', $soalCache->keys())->get()->keyBy('id');
 
             // Rating & Essay
             foreach ($data['jawaban'] ?? [] as $soal_id => $isi_jawaban) {
@@ -175,6 +180,9 @@ class SurveyService
                 if (empty(trim($custom_text ?? ''))) continue;
 
                 $soalModel = $soalCache->get($soal_id);
+                if (! $soalModel || $soalModel->jenis_soal !== 'multiple_choice' || ! $soalModel->allows_custom_answer) {
+                    continue;
+                }
 
                 $respon = new ResponJawaban();
                 $respon->survey_id          = $survey->id;
@@ -257,7 +265,7 @@ class SurveyService
             if (empty(trim($custom_text ?? ''))) continue;
 
             $s = $soals->get($soal_id);
-            if (! $s) continue;
+            if (! $s || ! $s->allows_custom_answer) continue;
 
             if (! isset($jawabanArr[$s->kode])) {
                 $jawabanArr[$s->kode] = [

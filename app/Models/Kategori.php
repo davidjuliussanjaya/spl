@@ -12,12 +12,20 @@ class Kategori extends Model
         'nama_kategori',
         'deskripsi',
         'status',
+        'is_active',
         'fakultas_id',
     ];
 
     public function soal()
     {
         return $this->hasMany(Soal::class, 'kategori_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
     }
 
     public function fakultas()
