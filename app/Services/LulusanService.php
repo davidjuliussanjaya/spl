@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Lulusan;
 use App\Models\ProgramStudi;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class LulusanService
@@ -23,10 +24,26 @@ class LulusanService
             $data['program_studi'] = $programStudi->nama;
             $data['fakultas'] = $programStudi->fakultas->kode;
 
-            // Logika tambahan: pastikan status menjadi boolean false jika tidak dicentang
-            $data['status'] = isset($data['status']) ? true : false;
-
             return Lulusan::create($data);
+        });
+    }
+
+    /**
+     * Memperbarui data akademik lulusan tanpa mengubah perusahaan penilainya.
+     */
+    public function updateMahasiswa(Lulusan $lulusan, array $data): Lulusan
+    {
+        return DB::transaction(function () use ($lulusan, $data) {
+            $programStudi = ProgramStudi::findOrFail($data['program_studi_id']);
+            if ((int) $programStudi->fakultas_id !== (int) $data['fakultas_id']) {
+                throw new \InvalidArgumentException('Program studi tidak terdaftar pada fakultas yang dipilih.');
+            }
+
+            $data['program_studi'] = $programStudi->nama;
+            $data['fakultas'] = $programStudi->fakultas->kode;
+            $lulusan->update($data);
+
+            return $lulusan->fresh();
         });
     }
 
@@ -47,25 +64,20 @@ class LulusanService
             $query->where('nim', 'like', '%' . $request->nim . '%');
         }
 
-        // Filter Prodi
-        if ($request->filled('program_studi_id')) {
-            $query->where('program_studi_id', $request->integer('program_studi_id'));
+        $periode = collect(Arr::wrap($request->input('periode', [])))
+            ->filter(fn ($value) => filled($value))
+            ->values()
+            ->all();
+        if (! empty($periode)) {
+            $query->whereHas('surveys.periode', fn ($survey) => $survey->whereIn('kode_periode', $periode));
         }
 
-        // Filter Fakultas
-        if ($request->filled('fakultas_id')) {
-            $query->where('fakultas_id', $request->integer('fakultas_id'));
-        }
-
-        // Filter Tahun Lulus (Range)
-        if ($request->filled('dari') && $request->filled('sampai')) {
-            $query->whereBetween('tahun_lulus', [$request->dari . '-01-01', $request->sampai . '-12-31']);
-        }
-
-        // Filter Status (Boolean di DB, tapi di UI Bekerja/Belum)
-        if ($request->has('status_kerja') && $request->status_kerja != 'Select') {
-            $statusValue = ($request->status_kerja == 'Bekerja') ? 1 : 0;
-            $query->where('status', $statusValue);
+        $programStudi = collect(Arr::wrap($request->input('program_studi', [])))
+            ->filter(fn ($value) => filled($value))
+            ->values()
+            ->all();
+        if (! empty($programStudi)) {
+            $query->whereIn('program_studi', $programStudi);
         }
 
         return $query->latest('created_at')->paginate(10)->withQueryString();

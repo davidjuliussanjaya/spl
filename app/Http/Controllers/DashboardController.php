@@ -21,6 +21,7 @@ class DashboardController extends Controller
             'program_studi',
         ]));
         $data['isAdmin'] = $request->user()?->hasRole('admin') ?? false;
+        $data['canViewDashboardMetrics'] = $request->user() !== null;
 
         return view('admin.dashboard.index', $data);
     }

@@ -90,6 +90,7 @@
                     form.querySelector('[data-add-category="' + CSS.escape(categoryId) + '"]')?.click();
                 });
                 restoreValues(form, draft.values);
+                form.dispatchEvent(new CustomEvent('spl:draft-restored'));
             }
 
             let saveTimer;

@@ -65,7 +65,7 @@
                                 @endforeach
                             </select>
                             @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            @if($periodes->isEmpty())<div class="form-text text-danger">Tambahkan periode terlebih dahulu melalui menu Periode.</div>@endif
+                            @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode yang sedang berlangsung. Tambahkan atau ubah periode melalui menu Periode terlebih dahulu.</div>@endif
                         </div>
 
                         <div class="col-md-12 mb-2">
@@ -155,9 +155,8 @@
                         <h5 class="fw-bold m-0">Pilih Pertanyaan yang Digunakan</h5>
                     </div>
                     <p class="text-muted small ms-5 ps-2">
-                        Pilih pertanyaan yang ingin dimasukkan. Pertanyaan berlabel <span class="badge bg-secondary">Umum</span> akan muncul di semua survey.
-                        Pertanyaan berlabel <span class="badge bg-primary">FTI</span> / <span class="badge bg-warning text-dark">FDIK</span> / <span class="badge bg-success">FEB</span>
-                        hanya akan ditambahkan ke survey lulusan dari fakultas yang sesuai.
+                        Pilih kategori yang ingin dimasukkan. Kategori berlabel <span class="badge bg-secondary">Umum</span> akan muncul di semua survey.
+                        Kategori berlabel fakultas hanya akan ditambahkan ke survey lulusan dari fakultas yang sesuai.
                     </p>
                 </div>
 

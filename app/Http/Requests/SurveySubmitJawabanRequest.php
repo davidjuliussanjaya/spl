@@ -31,7 +31,7 @@ class SurveySubmitJawabanRequest extends FormRequest
             'jawaban'                => 'nullable|array',
             'jawaban.*'              => 'nullable',
             'mc'                     => 'nullable|array',
-            'mc.*'                   => 'nullable|array',
+            'mc.*'                   => 'nullable',
             'mc.*.*'                 => 'nullable|integer',
             'mc_custom'              => 'nullable|array',
             'mc_custom.*'            => 'nullable|string|max:1000',
@@ -51,30 +51,44 @@ class SurveySubmitJawabanRequest extends FormRequest
                 return;
             }
 
-            $soalWajib = $survey->soals()
+            $soals = $survey->soals()
                 ->with('jawaban:id,soal_id')
-                ->where('is_required', true)
                 ->get();
 
-            foreach ($soalWajib as $soal) {
+            foreach ($soals as $soal) {
                 $soalId = $soal->id;
 
-                if ($soal->jenis_soal === 'essay') {
-                    if (! filled($this->input("jawaban.{$soalId}"))) {
-                        $validator->errors()->add("jawaban.{$soalId}", 'Pertanyaan wajib ini harus diisi.');
+                if ($soal->jenis_soal === 'multiple_choice') {
+                    $rawJawaban = $this->input("mc.{$soalId}");
+
+                    if (! $soal->allows_multiple_answers && is_array($rawJawaban)) {
+                        $validator->errors()->add("mc.{$soalId}", 'Pertanyaan ini hanya dapat memiliki satu jawaban.');
+                        continue;
+                    }
+
+                    $jawabanTerpilih = collect(is_array($rawJawaban) ? $rawJawaban : [$rawJawaban])
+                        ->filter(fn ($id) => $id !== null && $id !== '')
+                        ->map(fn ($id) => (int) $id)
+                        ->intersect($soal->jawaban->pluck('id'));
+
+                    if ($soal->is_required) {
+                        $jawabanLainnya = trim((string) $this->input("mc_custom.{$soalId}", ''));
+
+                        if ($jawabanTerpilih->isEmpty() && $jawabanLainnya === '') {
+                            $validator->errors()->add("mc.{$soalId}", 'Pilih minimal satu jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.');
+                        }
                     }
 
                     continue;
                 }
 
-                if ($soal->jenis_soal === 'multiple_choice') {
-                    $jawabanTerpilih = collect($this->input("mc.{$soalId}", []))
-                        ->map(fn ($id) => (int) $id)
-                        ->intersect($soal->jawaban->pluck('id'));
-                    $jawabanLainnya = trim((string) $this->input("mc_custom.{$soalId}", ''));
+                if (! $soal->is_required) {
+                    continue;
+                }
 
-                    if ($jawabanTerpilih->isEmpty() && $jawabanLainnya === '') {
-                        $validator->errors()->add("mc.{$soalId}", 'Pilih minimal satu jawaban atau isi pilihan lainnya untuk pertanyaan wajib ini.');
+                if ($soal->jenis_soal === 'essay') {
+                    if (! filled($this->input("jawaban.{$soalId}"))) {
+                        $validator->errors()->add("jawaban.{$soalId}", 'Pertanyaan wajib ini harus diisi.');
                     }
 
                     continue;

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\SurveyArsip;
 use App\Models\Lulusan;
-use App\Models\ProgramStudi;
 use App\Models\Survey;
 use Illuminate\Support\Arr;
 
@@ -308,6 +307,22 @@ class DashboardService
             })
             ->values();
 
+        // L1 adalah pertanyaan pilihan ganda tentang bidang yang perlu ditingkatkan.
+        // Satu respons dapat memuat beberapa pilihan, sehingga setiap pilihan dihitung
+        // sebagai satu bagian pada distribusi pie chart.
+        $bidangPeningkatan = $arsipList
+            ->flatMap(function ($arsip) {
+                return collect($arsip->jawaban_json ?? [])
+                    ->filter(fn (array $jawaban) => strtoupper((string) ($jawaban['kode'] ?? '')) === 'L1')
+                    ->flatMap(fn (array $jawaban) => Arr::wrap($jawaban['jawaban'] ?? []));
+            })
+            ->filter(fn ($jawaban) => filled($jawaban))
+            ->map(fn ($jawaban) => trim((string) $jawaban))
+            ->countBy()
+            ->sortDesc();
+        $bidangPeningkatanLabels = $bidangPeningkatan->keys()->values()->all();
+        $bidangPeningkatanData = $bidangPeningkatan->values()->all();
+
         $komentarTerbaru = $arsipList
             ->sortByDesc('submitted_at')
             ->map(function ($arsip) {
@@ -327,7 +342,7 @@ class DashboardService
             ->filter()
             ->values();
 
-        $filterOptions = $this->getFilterOptions();
+        $filterOptions = $this->getFilterOptions($periode);
 
         return compact(
             'totalSurvey',
@@ -342,6 +357,8 @@ class DashboardService
             'respondenProdiLabels',
             'respondenProdiData',
             'prodiDetails',
+            'bidangPeningkatanLabels',
+            'bidangPeningkatanData',
             'kepuasanPerKategori',
             'kepuasanRingkasan',
             'totalResponKepuasan',
@@ -424,25 +441,43 @@ class DashboardService
         return $query->distinct()->count('survey.pengguna_lulusan_id');
     }
 
-    private function getFilterOptions(): array
+    /**
+     * Opsi filter bersama untuk dashboard dan laporan.
+     * Program studi dibatasi pada populasi lulusan yang memiliki survei di periode terkait.
+     */
+    public function getFilterOptions(array $selectedPeriode = []): array
     {
-        $prodiList = ProgramStudi::query()
-            ->orderBy('nama')
-            ->pluck('nama')
-            ->merge(SurveyArsip::query()
-                ->whereNotNull('lulusan_program_studi')
-                ->pluck('lulusan_program_studi'))
+        // Opsi prodi mengikuti populasi lulusan pada survei periode terkait,
+        // bukan hanya arsip respons yang sudah selesai diisi.
+        $prodiPeriode = Survey::query()
+            ->join('periode', 'periode.id', '=', 'survey.periode_id')
+            ->join('lulusan', 'lulusan.id', '=', 'survey.lulusan_id')
+            ->whereNotNull('periode.kode_periode')
+            ->whereNotNull('lulusan.program_studi')
+            ->get([
+                'periode.kode_periode as periode_kode',
+                'lulusan.program_studi as lulusan_program_studi',
+            ])
             ->filter()
-            ->unique()
+            ->groupBy('lulusan_program_studi')
+            ->map(fn ($arsip) => $arsip->pluck('periode_kode')->filter()->unique()->values()->all())
+            ->all();
+
+        $prodiList = collect($prodiPeriode)
+            ->filter(fn (array $periodeList) => empty($selectedPeriode)
+                || ! empty(array_intersect($periodeList, $selectedPeriode)))
+            ->keys()
             ->sort()
             ->values();
 
-        $periodeList = SurveyArsip::whereNotNull('periode_kode')
-            ->orderByDesc('periode_tanggal_mulai')
-            ->get(['periode_kode', 'periode_nama'])
-            ->unique('periode_kode')
-            ->mapWithKeys(fn ($arsip) => [$arsip->periode_kode => $arsip->periode_nama ?: $arsip->periode_kode]);
+        $periodeList = Survey::query()
+            ->join('periode', 'periode.id', '=', 'survey.periode_id')
+            ->whereNotNull('periode.kode_periode')
+            ->orderByDesc('periode.tanggal_mulai')
+            ->get(['periode.kode_periode', 'periode.nama_periode'])
+            ->unique('kode_periode')
+            ->mapWithKeys(fn ($periode) => [$periode->kode_periode => $periode->nama_periode ?: $periode->kode_periode]);
 
-        return compact('periodeList', 'prodiList');
+        return compact('periodeList', 'prodiList', 'prodiPeriode');
     }
 }

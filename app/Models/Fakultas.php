@@ -20,4 +20,9 @@ class Fakultas extends Model
         return $this->hasMany(Lulusan::class);
     }
 
+    public function kategoris()
+    {
+        return $this->hasMany(Kategori::class);
+    }
+
 }

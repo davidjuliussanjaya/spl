@@ -87,7 +87,6 @@ class LulusanSeeder extends Seeder
                         'program_studi_id'    => $programStudi->id,
                         'fakultas_id'         => $programStudi->fakultas_id,
                         'tahun_lulus'         => $l['tahun_lulus'],
-                        'status'              => true,
                     ]
                 );
             }

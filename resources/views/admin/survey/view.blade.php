@@ -83,10 +83,10 @@
                             
                             <div class="mb-3">
                                 <label class="form-label small text-secondary mb-1">Pilih Data Lulusan <span class="text-danger">*</span></label>
-                                <select name="lulusan_id" class="form-select line-input" required {{ $disabledAttr }}>
+                                <select name="lulusan_id" id="lulusan_id" class="form-select line-input" required {{ $disabledAttr }}>
                                     <option value="">-- Pilih Alumni/Lulusan --</option>
                                     @foreach($lulusan as $l)
-                                        <option value="{{ $l->id }}" {{ $survey->lulusan_id == $l->id ? 'selected' : '' }}>{{ $l->nama }}</option>
+                                        <option value="{{ $l->id }}" data-fakultas-id="{{ $l->fakultas_id }}" {{ $survey->lulusan_id == $l->id ? 'selected' : '' }}>{{ $l->nama }}{{ $l->fakultasMaster ? ' — ' . $l->fakultasMaster->kode : '' }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -152,11 +152,11 @@
                         </div>
                         <h5 class="fw-bold m-0">Pertanyaan yang Digunakan</h5>
                     </div>
-                    <p class="text-muted small ms-5 ps-2">Daftar pertanyaan untuk sesi survey perusahaan ini.</p>
+                    <p class="text-muted small ms-5 ps-2">Kategori Umum berlaku untuk semua survei; kategori fakultas mengikuti fakultas lulusan yang dipilih.</p>
                 </div>
 
                 <div class="card-body p-4">
-                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="$selectedSoalIds" :selected-category-ids="old('kategori_urutan', $selectedCategoryIds)" :locked="$isLocked" />
+                    <x-survey-question-selector :daftar-soal="$daftarSoal" :selected-soal-ids="$selectedSoalIds" :selected-category-ids="old('kategori_urutan', $selectedCategoryIds)" :locked="$isLocked" filter-lulusan-selector="#lulusan_id" />
 
                     {{-- TOMBOL SUBMIT HANYA MUNCUL JIKA SURVEY BELUM DIISI --}}
                     @if(!$isLocked)

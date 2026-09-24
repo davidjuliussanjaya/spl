@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori;
+use App\Models\Fakultas;
 use Illuminate\Http\Request;
 
 class KategoriController extends Controller
@@ -12,13 +13,15 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        $kategoris = Kategori::latest('created_at')->paginate(10);
+        $kategoris = Kategori::with('fakultas')->latest('created_at')->paginate(10);
         return view('admin.kategori.index', compact('kategoris'));
     }
 
     public function create()
     {
-        return view('admin.kategori.create');
+        $fakultasList = Fakultas::orderBy('kode')->get();
+
+        return view('admin.kategori.create', compact('fakultasList'));
     }
 
     public function store(Request $request)
@@ -27,9 +30,10 @@ class KategoriController extends Controller
             'nama_kategori' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'status' => 'required|in:utama,optional',
+            'fakultas_id' => 'nullable|exists:fakultas,id',
         ]);
 
-        Kategori::create($request->only(['nama_kategori', 'deskripsi', 'status']));
+        Kategori::create($request->only(['nama_kategori', 'deskripsi', 'status', 'fakultas_id']));
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
@@ -41,7 +45,9 @@ class KategoriController extends Controller
 
     public function edit(Kategori $kategori)
     {
-        return view('admin.kategori.edit', compact('kategori'));
+        $fakultasList = Fakultas::orderBy('kode')->get();
+
+        return view('admin.kategori.edit', compact('kategori', 'fakultasList'));
     }
 
     public function update(Request $request, Kategori $kategori)
@@ -50,9 +56,10 @@ class KategoriController extends Controller
             'nama_kategori' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'status' => 'required|in:utama,optional',
+            'fakultas_id' => 'nullable|exists:fakultas,id',
         ]);
 
-        $kategori->update($request->only(['nama_kategori', 'deskripsi', 'status']));
+        $kategori->update($request->only(['nama_kategori', 'deskripsi', 'status', 'fakultas_id']));
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui.');
     }

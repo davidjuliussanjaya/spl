@@ -60,25 +60,17 @@ class ReportExport
     public function __construct(array $filters)
     {
         $this->filters = array_replace([
-            'tahun_dari' => null,
-            'tahun_sampai' => null,
+            'periode' => [],
             'program_studi' => [],
         ], $filters);
+        $this->filters['periode'] = array_values(array_filter(
+            (array) $this->filters['periode'],
+            fn ($periode) => filled($periode),
+        ));
         $this->filters['program_studi'] = array_values(array_filter(
             (array) $this->filters['program_studi'],
             fn ($programStudi) => filled($programStudi),
         ));
-
-        if (
-            filled($this->filters['tahun_dari'])
-            && filled($this->filters['tahun_sampai'])
-            && (int) $this->filters['tahun_dari'] > (int) $this->filters['tahun_sampai']
-        ) {
-            [$this->filters['tahun_dari'], $this->filters['tahun_sampai']] = [
-                $this->filters['tahun_sampai'],
-                $this->filters['tahun_dari'],
-            ];
-        }
         $this->satisfactionScoreService = new SatisfactionScoreService();
     }
 
@@ -130,6 +122,9 @@ class ReportExport
         $row++;
 
         $filterText = "Tahun Lulus: {$tahun}"
+            . (!empty($this->filters['periode'])
+                ? '   |   Periode: ' . implode(', ', $this->filters['periode'])
+                : '')
             . (!empty($this->filters['program_studi'])
                 ? '   |   Prodi: ' . implode(', ', $this->filters['program_studi'])
                 : '');
@@ -556,18 +551,16 @@ class ReportExport
     {
         $q = DB::table('lulusan')
             ->join('survey', 'lulusan.id', '=', 'survey.lulusan_id')
+            ->join('periode', 'periode.id', '=', 'survey.periode_id')
             ->where('survey.is_completed', true)
             ->selectRaw(DatabaseYearExpression::fromDateColumn('lulusan.tahun_lulus') . ' as tahun')
             ->distinct();
 
-        if (filled($this->filters['tahun_dari'])) {
-            $q->whereYear('lulusan.tahun_lulus', '>=', $this->filters['tahun_dari']);
-        }
-        if (filled($this->filters['tahun_sampai'])) {
-            $q->whereYear('lulusan.tahun_lulus', '<=', $this->filters['tahun_sampai']);
+        if (!empty($this->filters['periode'])) {
+            $q->whereIn('periode.kode_periode', $this->filters['periode']);
         }
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi_id', $this->filters['program_studi']);
+            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
         }
 
         return $q->orderBy('tahun')->pluck('tahun')->map(fn($v) => (int) $v)->toArray();
@@ -587,6 +580,7 @@ class ReportExport
     {
         $q = DB::table('survey')
             ->join('lulusan', 'survey.lulusan_id', '=', 'lulusan.id')
+            ->join('periode', 'periode.id', '=', 'survey.periode_id')
             ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
             ->join('pengguna_lulusan', 'survey.pengguna_lulusan_id', '=', 'pengguna_lulusan.id')
             ->where('survey.is_completed', true)
@@ -607,7 +601,10 @@ class ReportExport
             ->orderBy('lulusan.nama');
 
         if (!empty($this->filters['program_studi'])) {
-            $q->whereIn('lulusan.program_studi_id', $this->filters['program_studi']);
+            $q->whereIn('lulusan.program_studi', $this->filters['program_studi']);
+        }
+        if (!empty($this->filters['periode'])) {
+            $q->whereIn('periode.kode_periode', $this->filters['periode']);
         }
 
         return $q->get();
@@ -616,12 +613,16 @@ class ReportExport
     private function getTotalLulusan(int $tahun, string $fakultas, string $programStudi): int
     {
         return DB::table('lulusan')
+            ->join('survey', 'survey.lulusan_id', '=', 'lulusan.id')
+            ->join('periode', 'periode.id', '=', 'survey.periode_id')
             ->join('fakultas', 'lulusan.fakultas_id', '=', 'fakultas.id')
             ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
             ->where('fakultas.kode', $fakultas)
             ->where('program_studi.nama', $programStudi)
             ->whereYear('tahun_lulus', $tahun)
-            ->count();
+            ->when(!empty($this->filters['periode']), fn ($query) => $query->whereIn('periode.kode_periode', $this->filters['periode']))
+            ->distinct('lulusan.id')
+            ->count('lulusan.id');
     }
 
     private function getJawabanForSurvey(int $surveyId, array $soalIds): array
@@ -649,11 +650,14 @@ class ReportExport
     {
         $spreadsheet = $this->build();
 
-        $tahunDari = $this->filters['tahun_dari'] ?: 'Semua';
-        $tahunSampai = $this->filters['tahun_sampai'] ?: 'Semua';
+        $periodeLabel = empty($this->filters['periode'])
+            ? 'Semua_Periode'
+            : (count($this->filters['periode']) === 1
+                ? $this->filters['periode'][0]
+                : count($this->filters['periode']) . '_Periode');
         $jumlahProdi = count($this->filters['program_studi']);
         $parts = array_filter([
-            "Tahun{$tahunDari}-{$tahunSampai}",
+            $periodeLabel,
             $jumlahProdi ? "{$jumlahProdi}_Prodi" : '',
         ]);
         $filename = 'Laporan_Tracer_Study_' . implode('_', $parts) . '.xlsx';

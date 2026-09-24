@@ -13,10 +13,20 @@ class Soal extends Model
         'soal',
         'kode',
         'jenis_soal',
+        'allows_multiple_answers',
         'kategori_id',
         'is_required',
         'is_active',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'allows_multiple_answers' => 'boolean',
+            'is_required' => 'boolean',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function instrumen()
     {

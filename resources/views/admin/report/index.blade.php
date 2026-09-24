@@ -40,27 +40,33 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-uppercase text-muted">
-                                <i class="bi bi-calendar-range me-1"></i> Rentang Tahun Lulus
+                                <i class="bi bi-calendar-range me-1"></i> Periode Survei
                             </label>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <select name="tahun_dari" class="form-select" aria-label="Tahun mulai">
-                                        <option value="">Dari tahun</option>
-                                        @foreach($tahunList->sort() as $t)
-                                            <option value="{{ $t }}" {{ ($filters['tahun_dari'] ?? '') == $t ? 'selected' : '' }}>{{ $t }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <select name="tahun_sampai" class="form-select" aria-label="Tahun sampai">
-                                        <option value="">Sampai tahun</option>
-                                        @foreach($tahunList->sortDesc() as $t)
-                                            <option value="{{ $t }}" {{ ($filters['tahun_sampai'] ?? '') == $t ? 'selected' : '' }}>{{ $t }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="dropdown report-filter-dropdown">
+                                <button class="report-filter-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                                    <span>
+                                        @if(empty($filters['periode']))
+                                            Semua periode
+                                        @elseif(count($filters['periode']) === 1)
+                                            {{ $filterOptions['periodeList'][$filters['periode'][0]] ?? $filters['periode'][0] }}
+                                        @else
+                                            {{ count($filters['periode']) }} periode dipilih
+                                        @endif
+                                    </span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-menu report-filter-menu">
+                                    @forelse($filterOptions['periodeList'] as $kodePeriode => $namaPeriode)
+                                        <label class="report-filter-option">
+                                            <input type="checkbox" name="periode[]" value="{{ $kodePeriode }}" data-periode-input {{ in_array($kodePeriode, $filters['periode'] ?? [], true) ? 'checked' : '' }}>
+                                            <span>{{ $namaPeriode }}</span>
+                                        </label>
+                                    @empty
+                                        <span class="small text-muted">Belum ada periode survei.</span>
+                                    @endforelse
                                 </div>
                             </div>
-                            <div class="form-text">Kosongkan salah satu batas untuk memilih semua tahun sebelum atau sesudahnya.</div>
+                            <div class="form-text">Kosongkan untuk memasukkan semua periode.</div>
                         </div>
 
                         <div class="mb-4">
@@ -68,14 +74,16 @@
                                 <i class="bi bi-mortarboard me-1"></i> Program Studi
                             </label>
                             <div class="border rounded p-2" style="max-height: 190px; overflow-y: auto;">
-                                @foreach($prodiList as $p)
-                                    <div class="form-check mb-1">
-                                        <input class="form-check-input" type="checkbox" name="program_studi[]" value="{{ $p->id }}" id="prodi-{{ $loop->index }}" {{ in_array((string) $p->id, $filters['program_studi'] ?? [], true) ? 'checked' : '' }}>
-                                        <label class="form-check-label small" for="prodi-{{ $loop->index }}">{{ $p->nama }}</label>
+                                @forelse($filterOptions['prodiPeriode'] as $prodi => $periodeProdi)
+                                    <div class="form-check mb-1" data-prodi-option data-periode='@json($periodeProdi)'>
+                                        <input class="form-check-input" type="checkbox" name="program_studi[]" value="{{ $prodi }}" id="prodi-{{ $loop->index }}" {{ in_array($prodi, $filters['program_studi'] ?? [], true) ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="prodi-{{ $loop->index }}">{{ $prodi }}</label>
                                     </div>
-                                @endforeach
+                                @empty
+                                    <span class="small text-muted">Belum ada program studi pada periode survei.</span>
+                                @endforelse
                             </div>
-                            <div class="form-text">Pilih satu atau beberapa program studi. Kosongkan untuk semua program studi.</div>
+                            <div class="form-text">Pilihan prodi menyesuaikan periode yang dipilih. Kosongkan untuk semua program studi.</div>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -109,8 +117,8 @@
                     <div class="card border-0 shadow-sm text-center py-3">
                         <div class="card-body">
                             <i class="bi bi-calendar-range-fill fs-2 mb-2" style="color:#2563EB;"></i>
-                            <h3 class="fw-bold mb-0" style="color:#2563EB;">{{ $tahunList->count() }}</h3>
-                            <p class="text-muted small mb-0">Tahun Lulus Tersedia</p>
+                            <h3 class="fw-bold mb-0" style="color:#2563EB;">{{ $filterOptions['periodeList']->count() }}</h3>
+                            <p class="text-muted small mb-0">Periode Tersedia</p>
                         </div>
                     </div>
                 </div>
@@ -173,4 +181,53 @@
         </div>
     </div>
 </div>
+
+<style>
+    .report-filter-dropdown { width: 100%; }
+    .report-filter-toggle {
+        align-items: center; background: #fff; border: 1px solid #dee2e6; border-radius: .375rem;
+        display: flex; justify-content: space-between; min-height: 38px; padding: .375rem .75rem;
+        text-align: left; width: 100%;
+    }
+    .report-filter-toggle span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .report-filter-toggle:focus { border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25); outline: 0; }
+    .report-filter-menu { max-height: 230px; overflow-y: auto; padding: .45rem; width: 100%; }
+    .report-filter-option { align-items: center; cursor: pointer; display: flex; gap: .5rem; padding: .35rem .45rem; }
+    .report-filter-option:hover { background: #f1f5f9; border-radius: .25rem; }
+</style>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const periodeInputs = [...document.querySelectorAll('[data-periode-input]')];
+        const prodiOptions = [...document.querySelectorAll('[data-prodi-option]')];
+        const periodeLabel = document.querySelector('.report-filter-toggle span');
+
+        const syncProdiByPeriode = function () {
+            const selectedPeriode = periodeInputs.filter((input) => input.checked).map((input) => input.value);
+
+            prodiOptions.forEach(function (option) {
+                const periodeProdi = JSON.parse(option.dataset.periode || '[]');
+                const available = selectedPeriode.length === 0
+                    || periodeProdi.some((periode) => selectedPeriode.includes(periode));
+                const input = option.querySelector('input[name="program_studi[]"]');
+
+                option.hidden = !available;
+                if (!available && input?.checked) input.checked = false;
+            });
+
+            if (periodeLabel) {
+                periodeLabel.textContent = selectedPeriode.length === 0
+                    ? 'Semua periode'
+                    : (selectedPeriode.length === 1
+                        ? (periodeInputs.find((input) => input.value === selectedPeriode[0])?.closest('label')?.textContent.trim() || selectedPeriode[0])
+                        : selectedPeriode.length + ' periode dipilih');
+            }
+        };
+
+        periodeInputs.forEach((input) => input.addEventListener('change', syncProdiByPeriode));
+        syncProdiByPeriode();
+    });
+</script>
+@endpush
 @endsection

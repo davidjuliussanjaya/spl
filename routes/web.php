@@ -60,6 +60,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/addgrad', [LulusanController::class, 'add'])->name('addgrad');
         Route::post('/lulusan.store', [LulusanController::class, 'store'])->name('lulusan.store');
         Route::get('/lulusan/{id}', [LulusanController::class, 'show'])->name('lulusan.show');
+        Route::put('/lulusan/{id}', [LulusanController::class, 'updateMahasiswa'])->name('lulusan.update-mahasiswa');
 
         // Pengguna Lulusan
         Route::get('/penggunalulusan', [PenggunaLulusanController::class, 'index'])->name('penggunalulusan');

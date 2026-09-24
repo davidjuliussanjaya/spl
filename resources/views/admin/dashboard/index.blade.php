@@ -149,6 +149,8 @@
 
     .chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; align-items: start; }
     @media(max-width:991px) { .chart-grid { grid-template-columns: 1fr; } }
+    .insight-grid { align-items: stretch; }
+    .insight-grid > .panel { height: 100%; }
 
     .panel-header {
         display: flex; justify-content: space-between; align-items: center;
@@ -160,9 +162,16 @@
     .panel-body { padding: .75rem 1rem .9rem; }
     .chart-wrap { min-height: 0; }
     .chart-compact { height: 240px; }
+    .improvement-chart { height: 240px; }
+    .improvement-legend { border-top: 1px solid var(--slate-100); display: grid; gap: .15rem .75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: .35rem; padding-top: .6rem; }
+    .improvement-legend-item { align-items: center; display: flex; gap: .4rem; min-width: 0; padding: .28rem 0; }
+    .improvement-legend-color { border-radius: 99px; display: block; flex: 0 0 8px; height: 8px; }
+    .improvement-legend-label { color: var(--slate-600); flex: 1; font-size: .7rem; line-height: 1.3; min-width: 0; }
+    .improvement-legend-value { color: var(--slate-800); font-size: .7rem; font-variant-numeric: tabular-nums; font-weight: 800; white-space: nowrap; }
+    @media(max-width:575px) { .improvement-legend { grid-template-columns: 1fr; } }
     .chart-modal { min-height: 420px; }
 
-    .feedback-list-main .fb-item:nth-child(n+4) { display: none; }
+    .feedback-list-main .fb-item:nth-child(n+6) { display: none; }
     .fb-item { padding: .75rem 1rem; border-bottom: 1px solid var(--slate-100); }
     .fb-item:last-child { border-bottom: none; }
     .fb-quote {
@@ -310,7 +319,8 @@
 @php
     $activePeriode = $filters['periode'] ?? [];
     $selectedProdi = $filters['program_studi'] ?? [];
-    $availableProdi = $filterOptions['prodiList'];
+    $availableProdi = $filterOptions['prodiList']->all();
+    $prodiPeriode = $filterOptions['prodiPeriode'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
     $activeKategori = $kategoriTerlemah->kategori ?? $kategoriTerbaik->kategori ?? null;
 @endphp
@@ -367,8 +377,8 @@
                         <i class="bi bi-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu periode-menu">
-                        @foreach($availableProdi as $prodi)
-                            <label class="periode-option">
+                        @foreach($prodiPeriode as $prodi => $periodeProdi)
+                            <label class="periode-option" data-prodi-option data-periode='@json($periodeProdi)' @hidden(!in_array($prodi, $availableProdi, true))>
                                 <input type="checkbox" name="program_studi[]" value="{{ $prodi }}" {{ in_array($prodi, $selectedProdi, true) ? 'checked' : '' }}>
                                 <span>{{ $prodi }}</span>
                             </label>
@@ -385,7 +395,6 @@
     </div>
 
     <div class="stat-grid">
-        @if($isAdmin)
         <div class="stat-card kpi-card kpi-respondents">
             <div class="stat-top">
                 <span class="stat-label">Jumlah Responden yang Mengisi</span>
@@ -402,7 +411,7 @@
         <div class="stat-card kpi-card kpi-alumni">
             <div class="stat-top">
                 <span class="stat-label">Jumlah Alumni yang Dinilai</span>
-                <div class="stat-icon-wrap"><i class="bi bi-mortarboard-fill"></i></div>
+                <div class="stat-icon-wrap"><i class="bi bi-person-badge-fill"></i></div>
             </div>
             <span class="stat-value kpi-count" data-count-up data-count="{{ $totalLulusan ?? 0 }}" data-count-decimals="0" aria-live="polite">{{ $totalLulusan ?? 0 }}</span>
             <span class="stat-unit">alumni</span>
@@ -418,8 +427,6 @@
             <span class="stat-unit">%</span>
             <div class="stat-sub">Target minimal {{ number_format($skorKepuasan['minimum_response_count'] ?? 0) }} responden dari {{ number_format($totalLulusan ?? 0) }} alumni pada filter aktif.</div>
         </div>
-        @endif
-
         <div class="stat-card kpi-card kpi-index">
             <div class="stat-top">
                 <span class="stat-label">Indeks Kepuasan Pengguna</span>
@@ -449,50 +456,54 @@
 
     @include('admin.dashboard.partials.satisfaction-panel')
 
-    <div class="chart-grid">
-        @if($isAdmin)
+    <div class="chart-grid insight-grid">
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title" id="prodiPanelTitle">Responden Berdasarkan Program Studi</h6>
-                    <p class="panel-subtitle" id="prodiPanelSubtitle">Ringkasan jumlah responden menurut program studi</p>
+                    <h6 class="panel-title">Bidang yang Perlu Ditingkatkan</h6>
+                    <p class="panel-subtitle">Distribusi jawaban pertanyaan L1 sesuai filter aktif</p>
                 </div>
+                <span class="fb-tag">Pilihan L1</span>
             </div>
             <div class="panel-body">
-                <div id="chart-prodi" class="chart-wrap chart-compact"></div>
+                @if(count($bidangPeningkatanData))
+                    @php
+                        $pieColors = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#ea580c', '#4f46e5'];
+                        $totalPilihanPeningkatan = array_sum($bidangPeningkatanData);
+                    @endphp
+                    <div id="chart-bidang-peningkatan" class="improvement-chart"></div>
+                    <div class="improvement-legend" aria-label="Rincian pilihan bidang yang perlu ditingkatkan">
+                        @foreach($bidangPeningkatanLabels as $index => $label)
+                            <div class="improvement-legend-item">
+                                <span class="improvement-legend-color" style="background:{{ $pieColors[$index % count($pieColors)] }}"></span>
+                                <span class="improvement-legend-label">{{ $label }}</span>
+                                <span class="improvement-legend-value">{{ $bidangPeningkatanData[$index] }} · {{ number_format(($bidangPeningkatanData[$index] / $totalPilihanPeningkatan) * 100, 1) }}%</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="empty-state"><i class="bi bi-pie-chart"></i>Belum ada jawaban pilihan untuk bidang yang perlu ditingkatkan.</div>
+                @endif
             </div>
         </div>
-        @endif
 
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title" id="kinerjaPanelTitle">Skor Kepuasan Terkonversi per Kategori</h6>
-                    <p class="panel-subtitle" id="kinerjaPanelSubtitle">Ringkasan skor kepuasan untuk setiap kategori</p>
+                    <h6 class="panel-title">Umpan Balik Terbaru</h6>
+                    <p class="panel-subtitle">Lima feedback terbaru ditampilkan di dashboard utama</p>
                 </div>
+                <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                    <i class="bi bi-chat-square-text"></i> Lihat Semua
+                </button>
             </div>
-            <div class="panel-body">
-                <div id="chart-kinerja" class="chart-wrap chart-compact"></div>
+            <div class="feedback-list-main">
+                @forelse($komentarTerbaru->take(5) as $komen)
+                    @include('admin.dashboard.partials.feedback-item', ['komen' => $komen])
+                @empty
+                    <div class="empty-state"><i class="bi bi-chat-dots"></i>Belum ada umpan balik.</div>
+                @endforelse
             </div>
-        </div>
-    </div>
-
-    <div class="panel">
-        <div class="panel-header">
-            <div>
-                <h6 class="panel-title">Umpan Balik Terbaru</h6>
-                <p class="panel-subtitle">Tiga feedback terbaru ditampilkan di dashboard utama</p>
-            </div>
-            <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                <i class="bi bi-chat-square-text"></i> Lihat Semua
-            </button>
-        </div>
-        <div class="feedback-list-main">
-            @forelse($komentarTerbaru->take(3) as $komen)
-                @include('admin.dashboard.partials.feedback-item', ['komen' => $komen])
-            @empty
-                <div class="empty-state"><i class="bi bi-chat-dots"></i>Belum ada umpan balik.</div>
-            @endforelse
         </div>
     </div>
 
@@ -601,6 +612,8 @@
     const respondenProdiLabels = @json($respondenProdiLabels);
     const prodiDetails = @json($prodiDetails);
     const kategoriDetails = @json($kategoriDetails);
+    const bidangPeningkatanLabels = @json($bidangPeningkatanLabels);
+    const bidangPeningkatanData = @json($bidangPeningkatanData);
     const initialKategori = @json($activeKategori);
     const compactLimit = 6;
     const periodTrendLimit = 6;
@@ -928,6 +941,40 @@
         tooltip: { y: { formatter: (value) => formatPct(value) } }
     });
 
+    const bidangPeningkatanOptions = () => ({
+        series: bidangPeningkatanData,
+        labels: bidangPeningkatanLabels,
+        chart: { type: 'donut', height: 240, toolbar: { show: false }, fontFamily: 'inherit' },
+        colors: ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#ea580c', '#4f46e5'],
+        stroke: { colors: ['#fff'], width: 3 },
+        dataLabels: { enabled: false },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '67%',
+                    labels: {
+                        show: true,
+                        name: { show: false },
+                        value: { show: true, fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', offsetY: 3 },
+                        total: {
+                            show: true,
+                            label: 'Total pilihan',
+                            color: '#64748b',
+                            fontSize: '11px',
+                            formatter: (chart) => chart.globals.seriesTotals.reduce((total, value) => total + value, 0)
+                        }
+                    }
+                }
+            }
+        },
+        legend: { show: false },
+        tooltip: { y: { formatter: (value) => `${value} pilihan` } },
+        responsive: [{
+            breakpoint: 480,
+            options: { chart: { height: 230 } }
+        }]
+    });
+
     let prodiChart = null;
     let kinerjaChart = null;
     let prodiFullChart = null;
@@ -935,6 +982,7 @@
     let kepuasanStackChart = null;
     let periodTrendChart = null;
     let categoryPeriodComparisonChart = null;
+    let bidangPeningkatanChart = null;
     const feedbackPageSize = 10;
     const compactProdi = sliceData(respondenProdiLabels, respondenProdiData);
     const compactKinerja = sliceData(chartLabels, chartData);
@@ -1068,9 +1116,6 @@
         kinerjaFullChart = renderChart(kinerjaFullChart, '#chart-kinerja-full', kategoriDetailOptions(detail, true));
     };
 
-    renderProdiSummary();
-    renderKinerjaSummary();
-
     if (periodTrendPreviewData.length) {
         periodTrendChart = renderChart(periodTrendChart, '#chart-period-trend', periodTrendOptions());
     } else {
@@ -1082,6 +1127,14 @@
             categoryPeriodComparisonChart,
             '#chart-category-period-comparison',
             categoryPeriodComparisonOptions()
+        );
+    }
+
+    if (bidangPeningkatanData.length) {
+        bidangPeningkatanChart = renderChart(
+            bidangPeningkatanChart,
+            '#chart-bidang-peningkatan',
+            bidangPeningkatanOptions()
         );
     }
 
@@ -1150,6 +1203,27 @@
         if (button && !button.disabled) renderPeriodPage(Number(button.dataset.periodPage));
     });
     if (periodPagination && periodRows.length) renderPeriodPage();
+
+    const periodeInputs = [...document.querySelectorAll('input[name="periode[]"]')];
+    const prodiFilterOptions = [...document.querySelectorAll('[data-prodi-option]')];
+    const syncProdiByPeriode = () => {
+        const selectedPeriode = periodeInputs
+            .filter((input) => input.checked)
+            .map((input) => input.value);
+
+        prodiFilterOptions.forEach((option) => {
+            const periodeProdi = JSON.parse(option.dataset.periode || '[]');
+            const available = selectedPeriode.length === 0
+                || periodeProdi.some((periode) => selectedPeriode.includes(periode));
+            const input = option.querySelector('input[name="program_studi[]"]');
+
+            option.hidden = !available;
+            if (!available && input?.checked) input.checked = false;
+        });
+    };
+
+    periodeInputs.forEach((input) => input.addEventListener('change', syncProdiByPeriode));
+    syncProdiByPeriode();
 
     document.querySelectorAll('[data-view-mode]').forEach((button) => {
         button.addEventListener('click', () => {

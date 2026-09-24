@@ -3,6 +3,7 @@
     'selectedSoalIds' => [],
     'selectedCategoryIds' => [],
     'locked' => false,
+    'filterLulusanSelector' => null,
 ])
 
 @php
@@ -15,6 +16,8 @@
                 'key' => (string) $key,
                 'name' => $questions->first()?->kategori?->nama_kategori ?? 'Tanpa kategori',
                 'status' => $questions->first()?->kategori?->status ?? 'utama',
+                'fakultas_id' => $questions->first()?->kategori?->fakultas_id,
+                'fakultas_kode' => $questions->first()?->kategori?->fakultas?->kode ?? 'Umum',
                 'questions' => $questions->sortBy(fn ($soal) => $soal->kode ?? $soal->id)->values(),
             ];
         })
@@ -38,7 +41,7 @@
     $badgeType = ['rating' => 'Rating', 'multiple_choice' => 'Pilihan', 'essay' => 'Esai'];
 @endphp
 
-<div id="{{ $selectorId }}" class="spl-question-selector" data-locked="{{ $locked ? 'true' : 'false' }}">
+<div id="{{ $selectorId }}" class="spl-question-selector" data-locked="{{ $locked ? 'true' : 'false' }}" data-filter-lulusan-selector="{{ $filterLulusanSelector }}">
     <div class="spl-question-selector-summary">
         <div>
             <span class="spl-question-selector-kicker">Susun instrumen</span>
@@ -64,11 +67,11 @@
             <div class="spl-category-list" data-zone="available">
                 @foreach($categories as $category)
                     @if(! in_array($category['key'], $selectedCategoryKeys, true))
-                        <article class="spl-category-card" draggable="{{ $locked ? 'false' : 'true' }}" data-category="{{ $category['key'] }}" tabindex="0">
+                        <article class="spl-category-card" draggable="{{ $locked ? 'false' : 'true' }}" data-category="{{ $category['key'] }}" data-fakultas-id="{{ $category['fakultas_id'] }}" tabindex="0">
                             <span class="spl-category-drag" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
                             <button type="button" class="spl-category-card-main" data-show-category="{{ $category['key'] }}">
                                 <span class="spl-category-card-name">{{ $category['name'] }}</span>
-                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
+                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · {{ $category['fakultas_kode'] }} · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
                             </button>
                             @unless($locked)
                                 <button type="button" class="spl-category-card-action" data-add-category="{{ $category['key'] }}" aria-label="Tambahkan kategori {{ $category['name'] }}"><i class="bi bi-plus-lg"></i></button>
@@ -91,11 +94,11 @@
                 <p class="spl-category-empty" data-empty-state>Letakkan kategori di sini.</p>
                 @foreach($categories as $category)
                     @if(in_array($category['key'], $selectedCategoryKeys, true))
-                        <article class="spl-category-card is-selected" draggable="{{ $locked ? 'false' : 'true' }}" data-category="{{ $category['key'] }}" tabindex="0">
+                        <article class="spl-category-card is-selected" draggable="{{ $locked ? 'false' : 'true' }}" data-category="{{ $category['key'] }}" data-fakultas-id="{{ $category['fakultas_id'] }}" tabindex="0">
                             <span class="spl-category-drag" aria-hidden="true"><i class="bi bi-grip-vertical"></i></span>
                             <button type="button" class="spl-category-card-main" data-show-category="{{ $category['key'] }}">
                                 <span class="spl-category-card-name">{{ $category['name'] }}</span>
-                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
+                                <span class="spl-category-card-meta">{{ $category['questions']->count() }} pertanyaan · {{ $category['fakultas_kode'] }} · <span class="spl-category-status {{ $category['status'] === 'utama' ? 'is-primary' : '' }}">{{ $category['status'] === 'utama' ? 'Utama' : 'Optional' }}</span></span>
                             </button>
                             @unless($locked)
                                 <button type="button" class="spl-category-card-action is-remove" data-remove-category="{{ $category['key'] }}" aria-label="Hapus kategori {{ $category['name'] }}"><i class="bi bi-x-lg"></i></button>
@@ -115,7 +118,7 @@
         </div>
 
         @foreach($categories as $category)
-            <div class="spl-question-panel" data-question-panel="{{ $category['key'] }}" hidden>
+            <div class="spl-question-panel" data-question-panel="{{ $category['key'] }}" data-fakultas-id="{{ $category['fakultas_id'] }}" hidden>
                 <div class="spl-question-panel-header">
                     <div>
                         <span class="spl-question-selector-kicker">Detail kategori</span>
@@ -221,6 +224,9 @@
                     const selectedZone = selector.querySelector('[data-zone="selected"]');
                     const detailEmpty = selector.querySelector('[data-detail-empty]');
                     const categoryOrderInputs = selector.querySelector('[data-category-order-inputs]');
+                    const lulusanSelect = selector.dataset.filterLulusanSelector
+                        ? document.querySelector(selector.dataset.filterLulusanSelector)
+                        : null;
                     let activeCategory = null;
                     let draggedCard = null;
 
@@ -258,10 +264,12 @@
                         const categoryPanel = panel(key);
                         if (!categoryPanel) return;
                         const enabled = isSelected(key);
+                        const card = selector.querySelector('[data-category="' + CSS.escape(key) + '"]');
+                        const availableForLulusan = card && !card.hidden;
                         const inputs = categoryPanel.querySelectorAll('[data-question-input]');
                         const status = categoryPanel.querySelector('[data-category-status]');
                         const help = categoryPanel.querySelector('[data-category-help]');
-                        inputs.forEach(function (input) { input.disabled = locked || !enabled; });
+                        inputs.forEach(function (input) { input.disabled = locked || !enabled || !availableForLulusan; });
                         status.textContent = enabled ? 'Kategori digunakan' : 'Belum digunakan';
                         status.classList.toggle('is-active', enabled);
                         help.textContent = enabled
@@ -270,6 +278,8 @@
                         updateCount();
                     };
                     const showCategory = function (key) {
+                        const card = selector.querySelector('[data-category="' + CSS.escape(key) + '"]');
+                        if (!card || card.hidden) return;
                         activeCategory = key;
                         selector.querySelectorAll('[data-question-panel]').forEach(function (item) { item.hidden = true; });
                         selector.querySelectorAll('.spl-category-card').forEach(function (item) { item.classList.toggle('is-active', item.dataset.category === key); });
@@ -301,6 +311,33 @@
                         syncCategoryOrder();
                         showCategory(key);
                     };
+                    const filterCategoriesByLulusan = function () {
+                        if (!lulusanSelect || locked) return;
+
+                        const fakultasId = lulusanSelect.selectedOptions[0]?.dataset.fakultasId || '';
+                        selector.querySelectorAll('.spl-category-card').forEach(function (card) {
+                            const categoryFakultasId = card.dataset.fakultasId || '';
+                            const available = !fakultasId || !categoryFakultasId || categoryFakultasId === fakultasId;
+                            card.hidden = !available;
+
+                            if (!available && card.closest('[data-zone="selected"]')) {
+                                moveCategory(card.dataset.category, availableZone);
+                            }
+                        });
+
+                        if (activeCategory) {
+                            const activeCard = selector.querySelector('[data-category="' + CSS.escape(activeCategory) + '"]');
+                            if (!activeCard || activeCard.hidden) {
+                                activeCategory = null;
+                                detailEmpty.hidden = false;
+                                selector.querySelectorAll('[data-question-panel]').forEach(function (item) { item.hidden = true; });
+                            }
+                        }
+
+                        updateEmptyState();
+                        syncCategoryOrder();
+                        updateCount();
+                    };
 
                     selector.addEventListener('click', function (event) {
                         const selectAll = event.target.closest('[data-select-all-categories]');
@@ -308,7 +345,7 @@
                         const remove = event.target.closest('[data-remove-category]');
                         const show = event.target.closest('[data-show-category]');
                         if (selectAll) {
-                            Array.from(availableZone.querySelectorAll('.spl-category-card')).forEach(function (card) {
+                            Array.from(availableZone.querySelectorAll('.spl-category-card:not([hidden])')).forEach(function (card) {
                                 moveCategory(card.dataset.category, selectedZone);
                             });
                             return;
@@ -320,6 +357,9 @@
                     selector.addEventListener('change', function (event) {
                         if (event.target.matches('[data-question-input]')) updateCount();
                     });
+                    if (lulusanSelect) {
+                        lulusanSelect.addEventListener('change', filterCategoriesByLulusan);
+                    }
 
                     if (!locked) {
                         selector.querySelectorAll('.spl-category-card').forEach(function (card) {
@@ -360,7 +400,8 @@
                     updateEmptyState();
                     syncCategoryOrder();
                     updateCount();
-                    const firstCard = selector.querySelector('.spl-category-card');
+                    filterCategoriesByLulusan();
+                    const firstCard = selector.querySelector('.spl-category-card:not([hidden])');
                     if (firstCard) showCategory(firstCard.dataset.category);
                 });
             });

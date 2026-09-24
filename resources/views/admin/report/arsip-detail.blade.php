@@ -53,14 +53,18 @@
     .spl-archive-field { min-width: 0; }
     .label-arsip { color: #94a3b8; font-size: .67rem; font-weight: 800; letter-spacing: .06em; line-height: 1.25; text-transform: uppercase; }
     .value-arsip { color: #334155; font-size: .86rem; font-weight: 600; line-height: 1.45; margin-top: .18rem; overflow-wrap: anywhere; }
-    .spl-archive-answers { border: 1px solid var(--spl-border); border-radius: 10px; overflow: hidden; }
-    .spl-archive-answers .table { font-size: .82rem; margin: 0; }
-    .spl-archive-answers .table thead th { background: #f8fafc; color: #475569; font-size: .68rem; font-weight: 800; letter-spacing: .045em; padding: .75rem 1rem; text-transform: uppercase; }
-    .spl-archive-answers .table tbody td { border-color: #edf2f7; padding: .85rem 1rem; vertical-align: top; }
+    .spl-archive-answers { border: 1px solid var(--spl-border); border-radius: 10px; overflow-x: auto; }
+    .spl-archive-answers .table { font-size: .82rem; margin: 0; min-width: 760px; table-layout: auto; }
+    .spl-archive-answers .table thead th { background: #f8fafc; color: #475569; font-size: .68rem; font-weight: 800; letter-spacing: .045em; padding: .75rem 1rem; text-transform: uppercase; white-space: nowrap; }
+    .spl-archive-answers .table tbody td { border-color: #edf2f7; overflow-wrap: normal; padding: .85rem 1rem; vertical-align: top; word-break: normal; }
+    .spl-answer-code-column { min-width: 112px; width: 112px; }
+    .spl-answer-value-column { min-width: 84px; width: 84px; }
+    .spl-archive-answers .table th:first-child, .spl-archive-answers .table td:first-child { min-width: 112px; width: 112px; }
+    .spl-archive-answers .table th:last-child, .spl-archive-answers .table td:last-child { min-width: 84px; width: 84px; }
     .spl-archive-category-row td { background: var(--spl-brand-soft); color: var(--spl-brand); font-size: .7rem; font-weight: 800; letter-spacing: .055em; padding: .52rem 1rem !important; text-transform: uppercase; }
     .jawaban-row:nth-child(even) { background: #fbfdff; }
-    .spl-answer-code { color: var(--spl-brand); font-weight: 800; }
-    .badge-jenis { border-radius: 999px; display: inline-block; font-size: .64rem; font-weight: 700; line-height: 1.2; margin-top: .3rem; padding: .2rem .45rem; }
+    .spl-answer-code { color: var(--spl-brand); font-weight: 800; white-space: nowrap; }
+    .badge-jenis { border-radius: 999px; display: inline-block; font-size: .64rem; font-weight: 700; line-height: 1.2; margin-top: .3rem; padding: .2rem .45rem; white-space: nowrap; }
     .spl-answer-value { color: var(--spl-brand); font-weight: 800; }
     .spl-archive-footer { border-top: 1px dashed #cbd5e1; color: var(--spl-muted); font-size: .72rem; margin-top: 1.5rem; padding-top: 1rem; text-align: center; }
 
@@ -72,7 +76,7 @@
         .spl-archive-document { padding: 1rem; }
         .spl-archive-document-title { font-size: .9rem; }
         .spl-archive-info-grid { margin-top: 1rem; }
-        .spl-archive-answers .table { min-width: 640px; }
+        .spl-archive-answers .table { min-width: 760px; }
     }
 </style>
 @endpush
@@ -247,10 +251,10 @@
             <table class="table table-bordered align-middle mb-0">
                 <thead>
                     <tr>
-                        <th class="text-center py-2" style="width:60px;color:#2563EB;">Kode</th>
+                        <th class="text-center py-2 spl-answer-code-column" style="color:#2563EB;">Kode</th>
                         <th class="py-2" style="color:#2563EB;">Aspek / Pertanyaan</th>
                         <th class="py-2" style="color:#2563EB;">Jawaban</th>
-                        <th class="text-center py-2" style="width:60px;color:#2563EB;">Nilai</th>
+                        <th class="text-center py-2 spl-answer-value-column" style="color:#2563EB;">Nilai</th>
                     </tr>
                 </thead>
                 <tbody>
