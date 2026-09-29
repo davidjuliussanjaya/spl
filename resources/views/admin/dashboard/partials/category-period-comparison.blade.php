@@ -4,7 +4,17 @@
             <h6 class="panel-title">Perbandingan Nilai Kategori Antarperiode</h6>
             <p class="panel-subtitle">Heatmap memudahkan melihat kategori yang meningkat atau menurun pada periode/tahun sebelumnya.</p>
         </div>
-        <span class="chip"><i class="bi bi-grid-3x3-gap-fill"></i> Heatmap 0-4</span>
+        <div class="category-comparison-actions">
+            <label class="visually-hidden" for="category-rating-filter">Filter tingkat nilai</label>
+            <select id="category-rating-filter" class="category-rating-filter" aria-label="Filter tingkat nilai heatmap">
+                <option value="all">Semua nilai</option>
+                <option value="kurang">Kurang</option>
+                <option value="cukup">Cukup</option>
+                <option value="baik">Baik</option>
+                <option value="sangat-baik">Sangat Baik</option>
+            </select>
+            <span class="chip"><i class="bi bi-grid-3x3-gap-fill"></i> Heatmap 0-4</span>
+        </div>
     </div>
 
     @if($categoryPeriodComparison->isEmpty())
