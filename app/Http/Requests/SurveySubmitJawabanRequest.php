@@ -17,14 +17,14 @@ class SurveySubmitJawabanRequest extends FormRequest
     {
         return [
             'nama_pengisi'      => 'required|string|max:255',
-            'jabatan_pengisi'   => 'nullable|string|max:255',
-            'hp_pengisi'        => 'nullable|string|max:50',
-            'email_pengisi'     => 'nullable|email|max:255',
+            'jabatan_pengisi'   => 'required|string|max:255',
+            'hp_pengisi'        => ['required', 'string', 'max:50', 'regex:/^[0-9]+$/'],
+            'email_pengisi'     => 'required|email|max:255',
             'nama_perusahaan'   => 'required|string|max:255',
             'nomor_badan_hukum' => 'nullable|string|max:255',
             'jenis_perusahaan'  => 'nullable|string|max:255',
             'alamat_perusahaan' => 'nullable|string',
-            'kontak_perusahaan' => 'nullable|string|max:255',
+            'kontak_perusahaan' => ['nullable', 'string', 'max:255', 'regex:/^[0-9]+$/'],
             'cabang_kota'       => 'nullable|integer|min:0',
             'cabang_negara'     => 'nullable|integer|min:0',
             'jumlah_lulusan_bekerja' => 'required|integer|min:1',

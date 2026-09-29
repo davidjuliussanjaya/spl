@@ -114,11 +114,23 @@
         .cta-panel p { margin: .65rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.6; }
         .cta-panel .button { flex: 0 0 auto; }
 
-        footer { padding: 2rem 0; border-top: 1px solid var(--line); background: #fff; }
-        .footer-content { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: .72rem; }
-        .footer-content strong { color: var(--ink); }
-        .footer-content a { color: var(--brand); font-weight: 700; text-decoration: none; }
-        .footer-content a:hover { text-decoration: underline; }
+        .site-footer { padding: 0 .75rem .75rem; background: var(--canvas); }
+        .footer-shell { overflow: hidden; border-radius: clamp(2rem, 5vw, 5.25rem) clamp(2rem, 5vw, 5.25rem) 0 0; background: linear-gradient(112deg, #247bd3 0%, #14539e 48%, #0b2d6c 100%); color: #fff; }
+        .footer-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .55fr); gap: 5rem; padding: clamp(3rem, 6vw, 5.65rem) 0 clamp(3.25rem, 6vw, 5rem); }
+        .footer-brand { display: block; width: min(250px, 100%); margin-bottom: 2rem; }
+        .footer-brand img { display: block; width: 100%; height: auto; filter: brightness(0) invert(1); }
+        .footer-heading { margin: 0 0 1.75rem; color: #fff; font-size: clamp(1rem, 1.6vw, 1.22rem); font-weight: 800; line-height: 1.45; }
+        .footer-address { margin: 0; color: #dbeafe; font-size: .94rem; line-height: 1.85; }
+        .footer-address span { display: block; margin-bottom: .45rem; }
+        .footer-contact { justify-self: end; width: min(100%, 310px); }
+        .footer-contact h2 { margin: 0 0 1.3rem; color: #fff; font-size: clamp(1.35rem, 2.15vw, 1.75rem); letter-spacing: -.045em; }
+        .contact-list { display: grid; gap: .95rem; margin: 0; padding: 0; list-style: none; }
+        .contact-list a { display: inline-flex; align-items: center; gap: .9rem; color: #fff; font-size: .92rem; font-weight: 750; text-decoration: none; }
+        .contact-list a:hover { color: #dbeafe; }
+        .contact-icon { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: #eff6ff; color: #0b3f82; font-size: 1.3rem; }
+        .footer-bottom { border-top: 1px solid rgba(219, 234, 254, .25); }
+        .footer-bottom p { margin: 0; padding: 1.15rem 0; color: #dbeafe; font-size: .76rem; font-weight: 650; text-align: center; }
+        .footer-content { display: none; }
 
         .survey-success-notification { position: fixed; z-index: 50; top: 1rem; right: 1rem; display: flex; align-items: flex-start; gap: .7rem; width: min(390px, calc(100vw - 2rem)); padding: 1rem; border: 1px solid #86efac; border-radius: 11px; background: #f0fdf4; color: #166534; box-shadow: 0 12px 30px rgba(15, 23, 42, .16); }
         .survey-success-notification i { font-size: 1.25rem; }
@@ -150,7 +162,10 @@
             .step { padding: 0; }
             .step:not(:last-child)::after { top: 60px; left: 24px; width: 1px; height: 35px; border-top: 0; border-left: 1px dashed rgba(191, 219, 254, .55); }
             .step + .step { margin-top: 1.35rem; }
-            .footer-content { align-items: flex-start; flex-direction: column; }
+            .site-footer { padding: 0; }
+            .footer-shell { border-radius: 2rem 2rem 0 0; }
+            .footer-main { grid-template-columns: 1fr; gap: 2.5rem; }
+            .footer-contact { justify-self: start; }
         }
     </style>
 </head>
@@ -275,7 +290,33 @@
         </section>
     </main>
 
-    <footer>
+    <footer class="site-footer">
+        <div class="footer-shell">
+            <div class="container footer-main">
+                <div>
+                    <a class="footer-brand" href="{{ route('landing') }}" aria-label="Beranda Universitas Dinamika">
+                        <img src="{{ asset('assets/images/logo/undika.png') }}" alt="Universitas Dinamika STIKOM Surabaya">
+                    </a>
+                    <p class="footer-heading">Bagian Pusat Layanan Karir dan Alumni Universitas Dinamika</p>
+                    <address class="footer-address">
+                        <span>Alamat:</span>
+                        Ruang Pusat Layanan Karir dan Alumni Lt.2 Gedung Merah<br>
+                        Jl. Raya Kedung Baruk No.98
+                    </address>
+                </div>
+                <section class="footer-contact" aria-labelledby="footer-contact-title">
+                    <h2 id="footer-contact-title">Kontak Kami</h2>
+                    <ul class="contact-list">
+                        <li><a href="https://wa.me/6285850837087" target="_blank" rel="noopener noreferrer"><span class="contact-icon"><i class="bi bi-whatsapp" aria-hidden="true"></i></span><span>085850837087</span></a></li>
+                        <li><a href="https://www.instagram.com/plka.dinamika" target="_blank" rel="noopener noreferrer"><span class="contact-icon"><i class="bi bi-instagram" aria-hidden="true"></i></span><span>@plka.dinamika</span></a></li>
+                        <li><a href="mailto:plka@dinamika.ac.id"><span class="contact-icon"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span><span>plka@dinamika.ac.id</span></a></li>
+                    </ul>
+                </section>
+            </div>
+            <div class="footer-bottom">
+                <div class="container"><p>&copy; {{ date('Y') }} PLKA Universitas Dinamika. Developed by Abel. All Right Reserved</p></div>
+            </div>
+        </div>
         <div class="container footer-content">
             <div><strong>Universitas Dinamika</strong> &copy; {{ date('Y') }} — Sistem Tracer Study</div>
             <a href="{{ route('login') }}">Login admin / pengguna</a>

@@ -16,6 +16,7 @@ class SurveyUpdateRequest extends FormRequest
     {
         return [
             'judul'               => 'required|string|max:255',
+            'deskripsi'           => 'nullable|string',
             'periode_id'          => [
                 'required',
                 Rule::exists('periode', 'id')->where(fn ($query) => $query

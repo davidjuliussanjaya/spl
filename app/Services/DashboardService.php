@@ -470,6 +470,10 @@ class DashboardService
             ->sort()
             ->values();
 
+        $prodiLabels = collect($prodiPeriode)
+            ->keys()
+            ->mapWithKeys(fn (string $prodi) => [$prodi => $this->programStudiLabel($prodi)]);
+
         $periodeList = Survey::query()
             ->join('periode', 'periode.id', '=', 'survey.periode_id')
             ->whereNotNull('periode.kode_periode')
@@ -478,6 +482,31 @@ class DashboardService
             ->unique('kode_periode')
             ->mapWithKeys(fn ($periode) => [$periode->kode_periode => $periode->nama_periode ?: $periode->kode_periode]);
 
-        return compact('periodeList', 'prodiList', 'prodiPeriode');
+        return compact('periodeList', 'prodiList', 'prodiPeriode', 'prodiLabels');
+    }
+
+    /** Label tampilan prodi; nilai asli tetap dipakai sebagai nilai filter dan data arsip. */
+    private function programStudiLabel(string $prodi): string
+    {
+        $prodi = trim($prodi);
+
+        if (preg_match('/^(S1|D3|D4)\s+/i', $prodi)) {
+            return $prodi;
+        }
+
+        $jenjang = match (mb_strtolower($prodi)) {
+            'sistem informasi',
+            'teknik komputer',
+            'akuntansi',
+            'manajemen',
+            'desain komunikasi visual',
+            'desain produk' => 'S1',
+            'manajemen informatika' => 'D3',
+            'produksi film dan televisi',
+            'administrasi perkantoran' => 'D4',
+            default => null,
+        };
+
+        return $jenjang ? "{$jenjang} {$prodi}" : $prodi;
     }
 }
