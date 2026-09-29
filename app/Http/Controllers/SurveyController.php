@@ -142,10 +142,26 @@ public function fill($code)
         try {
             $this->surveyService->submitJawaban($survey, $request->validated());
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Jawaban Anda telah tersimpan dengan aman.',
+                    'redirect' => route('landing'),
+                    'draft_key' => 'spl:draft:survey-fill-' . $survey->access_code,
+                ]);
+            }
+
             return redirect('/')
                 ->with('success', 'Jawaban Anda telah tersimpan dengan aman.')
                 ->with('clear_survey_draft', $survey->access_code);
         } catch (\Exception $e) {
+            report($e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Survei belum dapat disimpan. Silakan coba kembali beberapa saat lagi.',
+                ], 500);
+            }
+
             return back()->with('error', 'Gagal menyimpan jawaban: ' . $e->getMessage())->withInput();
         }
     }

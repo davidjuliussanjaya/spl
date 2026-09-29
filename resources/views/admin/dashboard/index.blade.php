@@ -321,8 +321,10 @@
     $selectedProdi = $filters['program_studi'] ?? [];
     $availableProdi = $filterOptions['prodiList']->all();
     $prodiPeriode = $filterOptions['prodiPeriode'];
+    $prodiLabels = $filterOptions['prodiLabels'];
     $pct = min(100, round((($rataKeseluruhan ?? 0) / 4) * 100));
     $activeKategori = $kategoriTerlemah->kategori ?? $kategoriTerbaik->kategori ?? null;
+    $isAdmin = auth()->user()?->hasRole('admin') ?? false;
 @endphp
 
 <div class="db-wrap">
@@ -332,9 +334,11 @@
             <p>Ringkasan performa dan kualitas lulusan Universitas Dinamika di dunia kerja.</p>
         </div>
         <div class="dashboard-header-actions">
+            @if($isAdmin)
             <button type="button" class="btn-extend" data-bs-toggle="modal" data-bs-target="#dashboardInfoModal">
                 <i class="bi bi-exclamation-circle"></i> Cara baca dashboard
             </button>
+            @endif
         <form method="GET" action="{{ route('dashboard') }}" id="filterForm" class="dashboard-filter-form">
             <div class="dashboard-filter-field">
                 <label class="form-label">Periode</label>
@@ -369,7 +373,7 @@
                             @if(empty($selectedProdi))
                                 Semua prodi
                             @elseif(count($selectedProdi) === 1)
-                                {{ $selectedProdi[0] }}
+                                {{ $prodiLabels[$selectedProdi[0]] ?? $selectedProdi[0] }}
                             @else
                                 {{ count($selectedProdi) }} prodi dipilih
                             @endif
@@ -380,7 +384,7 @@
                         @foreach($prodiPeriode as $prodi => $periodeProdi)
                             <label class="periode-option" data-prodi-option data-periode='@json($periodeProdi)' @hidden(!in_array($prodi, $availableProdi, true))>
                                 <input type="checkbox" name="program_studi[]" value="{{ $prodi }}" {{ in_array($prodi, $selectedProdi, true) ? 'checked' : '' }}>
-                                <span>{{ $prodi }}</span>
+                                <span>{{ $prodiLabels[$prodi] ?? $prodi }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -509,6 +513,7 @@
 
 </div>
 
+@if($isAdmin)
 <div class="modal fade" id="dashboardInfoModal" tabindex="-1" aria-labelledby="dashboardInfoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -536,6 +541,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Tampilan detail grafik dihapus karena isinya mengulang data ringkasan. --}}
 {{-- <div class="modal fade" id="prodiChartModal" tabindex="-1" aria-labelledby="prodiChartModalLabel" aria-hidden="true">
@@ -850,6 +856,58 @@
         tooltip: { y: { formatter: value => `${Number(value).toFixed(2)} / 4.00` } }
     });
 
+    const wrapCategoryLabel = (label, maxLength = 20) => {
+        const words = String(label).split(/\s+/);
+        const lines = [];
+        let line = '';
+
+        words.forEach((word) => {
+            const nextLine = line ? `${line} ${word}` : word;
+
+            if (line && nextLine.length > maxLength) {
+                lines.push(line);
+                line = word;
+                return;
+            }
+
+            line = nextLine;
+        });
+
+        if (line) {
+            lines.push(line);
+        }
+
+        return lines.join('\n');
+    };
+
+    const wrapHeatmapYAxisLabels = (chartContext) => {
+        chartContext.el.querySelectorAll('.apexcharts-yaxis-texts-g text').forEach((label) => {
+            const originalLabel = label.dataset.originalLabel || label.textContent;
+            const lines = wrapCategoryLabel(originalLabel).split('\n');
+
+            if (lines.length < 2) {
+                return;
+            }
+
+            const x = label.getAttribute('x');
+            const y = Number(label.getAttribute('y'));
+            const lineHeight = 12;
+            const startY = y - ((lines.length - 1) * lineHeight / 2);
+
+            label.replaceChildren();
+            label.setAttribute('text-anchor', 'end');
+            label.dataset.originalLabel = originalLabel;
+
+            lines.forEach((line, index) => {
+                const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                tspan.setAttribute('x', x);
+                tspan.setAttribute('y', String(startY + (index * lineHeight)));
+                tspan.textContent = line;
+                label.appendChild(tspan);
+            });
+        });
+    };
+
     const categoryPeriodComparisonOptions = () => ({
         series: categoryPeriodComparison.map((item) => ({
             name: item.kategori,
@@ -857,9 +915,13 @@
         })),
         chart: {
             type: 'heatmap',
-            height: Math.min(560, Math.max(320, categoryPeriodComparison.length * 42 + 90)),
+            height: Math.min(640, Math.max(340, categoryPeriodComparison.length * 54 + 90)),
             toolbar: { show: false },
-            fontFamily: 'inherit'
+            fontFamily: 'inherit',
+            events: {
+                mounted: wrapHeatmapYAxisLabels,
+                updated: wrapHeatmapYAxisLabels
+            }
         },
         dataLabels: {
             enabled: true,
@@ -884,9 +946,15 @@
             axisBorder: { show: false },
             axisTicks: { show: false }
         },
-        yaxis: { labels: { style: { colors: '#334155', fontSize: '11px', fontWeight: 600 } } },
+        yaxis: {
+            labels: {
+                minWidth: 180,
+                maxWidth: 180,
+                style: { colors: '#334155', fontSize: '11px', fontWeight: 600 }
+            }
+        },
         legend: { position: 'top', fontSize: '12px', markers: { radius: 4 } },
-        grid: { padding: { right: 10 } },
+        grid: { padding: { left: 8, right: 10 } },
         tooltip: { y: { formatter: value => value === null ? 'Tidak ada data' : `${Number(value).toFixed(2)} / 4.00` } }
     });
 

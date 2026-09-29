@@ -137,6 +137,28 @@
             font-weight: 500;
         }
         .survey-header-meta strong { color: #fff; font-size: .8rem; letter-spacing: .04em; }
+        .survey-welcome {
+            display: flex;
+            align-items: flex-start;
+            gap: .9rem;
+            margin-bottom: 1.65rem;
+            padding: 1rem 1.1rem;
+            border: 1px solid #bfdbfe;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #eff6ff, #fff);
+        }
+        .survey-welcome-icon {
+            display: grid;
+            flex: 0 0 38px;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--spl-brand);
+            color: #fff;
+        }
+        .survey-welcome h2 { margin: 0 0 .2rem; color: var(--spl-brand-deep); font-size: .96rem; font-weight: 800; }
+        .survey-welcome p { margin: 0; color: var(--spl-muted); font-size: .82rem; line-height: 1.55; }
 
         /* Info Box */
         .info-box {
@@ -367,6 +389,45 @@
             box-shadow: 0 8px 20px rgba(37, 99, 235, .22);
             color: white;
         }
+        .survey-saving-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
+            background: rgba(15, 31, 60, .62);
+            backdrop-filter: blur(3px);
+        }
+        .survey-saving-card {
+            width: min(100%, 360px);
+            padding: 2rem;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 22px 55px rgba(7, 23, 56, .25);
+            text-align: center;
+        }
+        .survey-saving-spinner {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 auto 1rem;
+            border: .3rem solid #dbeafe;
+            border-top-color: var(--spl-brand);
+            border-radius: 50%;
+            animation: survey-saving-spin .8s linear infinite;
+        }
+        @keyframes survey-saving-spin { to { transform: rotate(360deg); } }
+        .survey-result-icon {
+            display: grid;
+            width: 58px;
+            height: 58px;
+            place-items: center;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            font-size: 1.7rem;
+        }
+        .survey-result-icon.success { background: #dcfce7; color: #15803d; }
+        .survey-result-icon.error { background: #fee2e2; color: #dc2626; }
 
         .border-bottom-dashed { border-bottom: 2px dashed #e2e8f0; }
         .section-heading {
@@ -466,11 +527,13 @@
             </div>
 
             <div class="p-4 p-md-5">
-                @if($survey->deskripsi)
-                    <div class="alert alert-light border mb-4 text-secondary" style="line-height: 1.6;">
-                        <i class="bi bi-info-circle-fill text-dinamika me-2"></i> {{ $survey->deskripsi }}
+                <section class="survey-welcome" aria-labelledby="survey-welcome-title">
+                    <div class="survey-welcome-icon" aria-hidden="true"><i class="bi bi-chat-heart-fill"></i></div>
+                    <div>
+                        <h2 id="survey-welcome-title">Selamat datang</h2>
+                        <p>Terima kasih telah meluangkan waktu untuk mengisi kuesioner ini. Masukan Anda sangat berarti untuk membantu kami meningkatkan kualitas lulusan.</p>
                     </div>
-                @endif
+                </section>
 
                 <h2 class="section-heading">Informasi tentang lulusan terkait</h2>
 
@@ -495,7 +558,7 @@
             </div>
         </div>
 
-        <form action="{{ route('survey.submit', $survey->access_code) }}" method="POST" data-draft-key="spl:draft:survey-fill-{{ $survey->access_code }}">
+        <form action="{{ route('survey.submit', $survey->access_code) }}" method="POST" novalidate data-draft-key="spl:draft:survey-fill-{{ $survey->access_code }}">
             @csrf
 
             @if($errors->any())
@@ -527,9 +590,9 @@
                         Jumlah Lulusan yang Saat Ini Bekerja di Instansi Ini <span class="text-danger">*</span>
                     </label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="number" name="jumlah_lulusan_bekerja" class="form-control"
+                        <input type="text" name="jumlah_lulusan_bekerja" class="form-control"
                                style="max-width: 160px"
-                               min="1" step="1" required value="{{ old('jumlah_lulusan_bekerja') }}"
+                               inputmode="numeric" pattern="[0-9]+" required value="{{ old('jumlah_lulusan_bekerja') }}"
                                placeholder="Minimal 1 orang">
                     </div>
                     <div class="form-text">Diisi oleh perusahaan sesuai jumlah lulusan yang bekerja saat ini, minimal 1 orang.</div>
@@ -607,15 +670,15 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Kontak Perusahaan</label>
-                            <input type="text" name="kontak_perusahaan" class="form-control" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
+                            <input type="text" name="kontak_perusahaan" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="255" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Nasional</label>
-                            <input type="number" name="cabang_kota" class="form-control" min="0" placeholder="Jumlah cabang..." value="{{ $survey->penggunalulusan->cabang_kota ?? 0 }}">
+                            <input type="text" name="cabang_kota" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah cabang..." value="{{ $survey->penggunalulusan->cabang_kota ?? 0 }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Luar Negeri</label>
-                            <input type="number" name="cabang_negara" class="form-control" min="0" placeholder="Jumlah negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? 0 }}">
+                            <input type="text" name="cabang_negara" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? 0 }}">
                         </div>
                     </div>
                 </div>
@@ -633,16 +696,16 @@
                         <input type="text" name="nama_pengisi" class="form-control" required placeholder="Nama Anda..." value="{{ $survey->penggunalulusan->nama_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-secondary fw-bold mb-1">Jabatan / Posisi</label>
-                        <input type="text" name="jabatan_pengisi" class="form-control" placeholder="Contoh: HRD Manager, Direktur..." value="{{ $survey->penggunalulusan->jabatan_penyelia ?? '' }}">
+                        <label class="form-label small text-secondary fw-bold mb-1">Jabatan / Posisi <span class="text-danger">*</span></label>
+                        <input type="text" name="jabatan_pengisi" class="form-control" required placeholder="Contoh: HRD Manager, Direktur..." value="{{ $survey->penggunalulusan->jabatan_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-secondary fw-bold mb-1">Nomor HP</label>
-                        <input type="text" name="hp_pengisi" class="form-control" placeholder="08..." value="{{ $survey->penggunalulusan->kontak_penyelia ?? '' }}">
+                        <label class="form-label small text-secondary fw-bold mb-1">Nomor HP <span class="text-danger">*</span></label>
+                        <input type="text" name="hp_pengisi" class="form-control" required inputmode="numeric" pattern="[0-9]+" maxlength="50" placeholder="08..." value="{{ $survey->penggunalulusan->kontak_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-secondary fw-bold mb-1">Alamat Email</label>
-                        <input type="email" name="email_pengisi" class="form-control" placeholder="email@instansi.com" value="{{ $survey->penggunalulusan->email_penyelia ?? '' }}">
+                        <label class="form-label small text-secondary fw-bold mb-1">Alamat Email <span class="text-danger">*</span></label>
+                        <input type="email" name="email_pengisi" class="form-control" required placeholder="email@instansi.com" value="{{ $survey->penggunalulusan->email_penyelia ?? '' }}">
                     </div>
                 </div>
             </div>
@@ -833,10 +896,66 @@
         </form>
     </div>
 
+    <div id="surveySavingOverlay" class="survey-saving-overlay" hidden role="status" aria-live="assertive" aria-label="Sedang menyimpan survei">
+        <div class="survey-saving-card">
+            <div class="survey-saving-spinner" aria-hidden="true"></div>
+            <h2 class="h5 fw-bold mb-2">Menyimpan survei</h2>
+            <p class="text-muted small mb-0">Mohon tunggu, jawaban Anda sedang disimpan dengan aman.</p>
+        </div>
+    </div>
+
+    <div class="modal fade" id="surveyResultModal" tabindex="-1" aria-labelledby="surveyResultModalTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-body p-4 p-md-5 text-center">
+                    <div id="surveyResultIcon" class="survey-result-icon success"><i class="bi bi-check-lg" aria-hidden="true"></i></div>
+                    <h2 id="surveyResultModalTitle" class="h4 fw-bold mb-2">Kuesioner berhasil tersimpan</h2>
+                    <p id="surveyResultMessage" class="text-muted mb-4">Terima kasih atas waktu dan partisipasi Anda.</p>
+                    <button type="button" id="surveyResultAction" class="btn btn-primary px-4">Kembali ke halaman awal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelector('form').addEventListener('submit', function (event) {
+            const form = event.currentTarget;
+
+            const revealInvalidField = function (field) {
+                if (!field) {
+                    return;
+                }
+
+                const collapsedSection = field.closest('.collapse');
+                if (collapsedSection && !collapsedSection.classList.contains('show')) {
+                    const collapse = window.bootstrap?.Collapse?.getOrCreateInstance?.(collapsedSection);
+
+                    if (collapse) {
+                        collapse.show();
+                    } else {
+                        collapsedSection.classList.add('show');
+                    }
+                }
+
+                field.classList.add('is-invalid');
+                window.setTimeout(function () {
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    field.focus({ preventScroll: true });
+                    field.reportValidity();
+                }, collapsedSection ? 400 : 0);
+            };
+
+            if (!form.checkValidity()) {
+                event.preventDefault();
+
+                const firstInvalidField = form.querySelector(':invalid');
+                revealInvalidField(firstInvalidField);
+
+                return;
+            }
+
             let firstInvalidGroup = null;
 
             document.querySelectorAll('[data-required-multiple="true"]').forEach(function (group) {
@@ -860,7 +979,122 @@
                 event.preventDefault();
                 firstInvalidGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 firstInvalidGroup.querySelector('input[type="checkbox"], input[type="radio"]')?.focus();
+                return;
             }
+
+            if (event.defaultPrevented) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const submitButton = form.querySelector('.btn-submit');
+            const savingOverlay = document.getElementById('surveySavingOverlay');
+            const resultModalElement = document.getElementById('surveyResultModal');
+            const resultIcon = document.getElementById('surveyResultIcon');
+            const resultTitle = document.getElementById('surveyResultModalTitle');
+            const resultMessage = document.getElementById('surveyResultMessage');
+            const resultAction = document.getElementById('surveyResultAction');
+            const resultModal = window.bootstrap?.Modal?.getOrCreateInstance?.(resultModalElement);
+            const landingUrl = @json(route('landing'));
+
+            const hideResultModal = function () {
+                if (resultModal) {
+                    resultModal.hide();
+                    return;
+                }
+
+                resultModalElement.classList.remove('show');
+                resultModalElement.style.display = 'none';
+                resultModalElement.setAttribute('aria-hidden', 'true');
+            };
+
+            const showResult = function ({ success, title, message, actionLabel, action }) {
+                savingOverlay.hidden = true;
+                resultIcon.className = `survey-result-icon ${success ? 'success' : 'error'}`;
+                resultIcon.innerHTML = `<i class="bi bi-${success ? 'check-lg' : 'exclamation-lg'}" aria-hidden="true"></i>`;
+                resultTitle.textContent = title;
+                resultMessage.textContent = message;
+                resultAction.textContent = actionLabel;
+                resultAction.className = `btn px-4 ${success ? 'btn-primary' : 'btn-outline-secondary'}`;
+                resultAction.onclick = action;
+                if (resultModal) {
+                    resultModal.show();
+                    return;
+                }
+
+                resultModalElement.style.display = 'block';
+                resultModalElement.classList.add('show');
+                resultModalElement.setAttribute('aria-hidden', 'false');
+            };
+
+            savingOverlay.hidden = false;
+            submitButton.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { Accept: 'application/json' },
+                credentials: 'same-origin',
+            })
+                .then(async function (response) {
+                    const payload = await response.json().catch(() => ({}));
+
+                    if (response.ok) {
+                        try {
+                            localStorage.removeItem(payload.draft_key);
+                            sessionStorage.removeItem('spl:draft:pending');
+                        } catch (error) {}
+
+                        showResult({
+                            success: true,
+                            title: 'Kuesioner berhasil tersimpan',
+                            message: `${payload.message || 'Jawaban Anda telah tersimpan dengan aman.'} Terima kasih atas waktu dan partisipasi Anda.`,
+                            actionLabel: 'Kembali ke halaman awal',
+                            action: () => window.location.assign(payload.redirect || landingUrl),
+                        });
+                        return;
+                    }
+
+                    if (response.status === 422) {
+                        const firstErrorName = Object.keys(payload.errors || {})[0];
+                        const firstErrorField = firstErrorName
+                            ? form.querySelector(`[name="${CSS.escape(firstErrorName)}"]`)
+                            : null;
+
+                        revealInvalidField(firstErrorField);
+
+                        showResult({
+                            success: false,
+                            title: 'Isian survei belum lengkap',
+                            message: 'Masih ada isian yang perlu diperiksa. Lengkapi isian tersebut lalu kirim kembali survei.',
+                            actionLabel: 'Periksa kembali',
+                            action: () => {
+                                hideResultModal();
+                                submitButton.disabled = false;
+                                revealInvalidField(firstErrorField);
+                            },
+                        });
+                        return;
+                    }
+
+                    showResult({
+                        success: false,
+                        title: 'Survei gagal tersimpan',
+                        message: payload.message || 'Terjadi kendala saat menyimpan survei. Silakan coba kembali nanti.',
+                        actionLabel: 'Kembali ke halaman awal',
+                        action: () => window.location.assign(landingUrl),
+                    });
+                })
+                .catch(function () {
+                    showResult({
+                        success: false,
+                        title: 'Survei gagal tersimpan',
+                        message: 'Koneksi bermasalah. Silakan periksa koneksi internet Anda dan coba kembali.',
+                        actionLabel: 'Kembali ke halaman awal',
+                        action: () => window.location.assign(landingUrl),
+                    });
+                });
         });
     </script>
     <x-form-draft-cache />

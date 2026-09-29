@@ -5,7 +5,6 @@ use App\Http\Controllers\LulusanController;
 use App\Http\Controllers\PenggunaLulusanController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\PeriodeController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\UserManagementController;
@@ -27,12 +26,6 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // --- AKSES SEMUA ROLE (Admin & User Reguler) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    
 
     // --- KHUSUS ROLE ADMIN ---
     // Ganti 'admin' sesuai dengan 'code' yang ada di tabel roles Anda

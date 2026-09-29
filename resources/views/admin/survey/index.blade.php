@@ -57,7 +57,7 @@
             </div>
             @if($periodeList->hasPages())
                 <div class="spl-pagination border-top">
-                    <span>Menampilkan {{ $periodeList->firstItem() }}â€“{{ $periodeList->lastItem() }} dari {{ $periodeList->total() }} periode</span>
+                    <span>Menampilkan {{ $periodeList->firstItem() }}-{{ $periodeList->lastItem() }} dari {{ $periodeList->total() }} periode</span>
                     {{ $periodeList->links() }}
                 </div>
             @endif

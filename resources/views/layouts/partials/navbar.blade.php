@@ -16,8 +16,6 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end spl-user-dropdown">
                     <li><div class="spl-dropdown-identity"><div class="fw-semibold text-dark">{{ Auth::user()->name }}</div><div class="text-muted">{{ Auth::user()->email }}</div></div></li>
-                    <li><a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile.edit') }}"><i class="bi bi-person-circle"></i> Profil saya</a></li>
-                    <li><hr class="dropdown-divider"></li>
                     <li><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="dropdown-item dropdown-item-danger d-flex align-items-center gap-2"><i class="bi bi-box-arrow-left"></i> Keluar</button></form></li>
                 </ul>
             </div>

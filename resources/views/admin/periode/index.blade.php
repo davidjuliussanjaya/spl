@@ -22,10 +22,10 @@
 
     <section class="card">
         <div class="card-header spl-toolbar">
-            <div><h4 class="spl-toolbar-title">Daftar periode <span class="spl-filter-count">{{ $periodes->total() }} hasil</span></h4><p class="spl-toolbar-subtitle">Survei hanya dapat diisi pada rentang tanggal periode yang dipilih.</p></div>
+            <div><h4 class="spl-toolbar-title">Daftar periode <span class="spl-filter-count">{{ $periodes->total() }} hasil</span></h4><p class="spl-toolbar-subtitle">Survei hanya dapat diisi pada rentang tanggal periode yang dipilih. Kolom sesi survei menunjukkan jumlah survei yang dibuat, bukan jumlah responden.</p></div>
         </div>
         <div class="table-responsive">
-            <table class="table spl-table"><thead><tr><th>Kode</th><th>Nama periode</th><th>Tanggal mulai</th><th>Tanggal berakhir</th><th>Survei</th><th class="text-center">Aksi</th></tr></thead>
+            <table class="table spl-table"><thead><tr><th>Kode</th><th>Nama periode</th><th>Tanggal mulai</th><th>Tanggal berakhir</th><th>Sesi survei</th><th class="text-center">Aksi</th></tr></thead>
                 <tbody>
                 @forelse($periodes as $periode)
                     <tr>
