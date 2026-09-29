@@ -284,6 +284,9 @@
     .period-modal-body { max-height: 70vh; overflow: auto; padding: 0; }
     .category-period-comparison { border-color: var(--brand-100); }
     .category-comparison-chart-wrap { min-height: 320px; padding: 1rem; }
+    .category-comparison-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
+    .category-rating-filter { min-width: 130px; border: 1px solid var(--slate-200); border-radius: 7px; background: #fff; color: var(--slate-700); font-size: .72rem; font-weight: 600; padding: .32rem 1.7rem .32rem .55rem; }
+    .category-rating-filter:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); outline: 0; }
     .category-comparison-table-wrap { overflow-x: auto; border-top: 1px solid var(--slate-100); }
     .category-comparison-table { width: 100%; min-width: 700px; border-collapse: collapse; font-size: .78rem; }
     .category-comparison-table th { padding: .65rem .75rem; background: var(--slate-50); color: var(--slate-500); font-size: .68rem; font-weight: 700; letter-spacing: .3px; text-align: center; text-transform: uppercase; white-space: nowrap; }
@@ -908,14 +911,32 @@
         });
     };
 
-    const categoryPeriodComparisonOptions = () => ({
-        series: categoryPeriodComparison.map((item) => ({
+    const categoryRatingRanges = {
+        kurang: { min: 0, max: 2 },
+        cukup: { min: 2.01, max: 3 },
+        baik: { min: 3.01, max: 3.49 },
+        'sangat-baik': { min: 3.5, max: 4 }
+    };
+
+    const filteredCategoryComparison = (ratingFilter = 'all') => {
+        const range = categoryRatingRanges[ratingFilter];
+
+        return categoryPeriodComparison
+            .map((item) => ({
+                ...item,
+                scores: item.scores.map((score) => !range || score === null || (score >= range.min && score <= range.max) ? score : null)
+            }))
+            .filter((item) => item.scores.some((score) => score !== null));
+    };
+
+    const categoryPeriodComparisonOptions = (comparison = categoryPeriodComparison) => ({
+        series: comparison.map((item) => ({
             name: item.kategori,
             data: item.scores.map((score, index) => ({ x: categoryComparisonPeriods[index].label, y: score }))
         })),
         chart: {
             type: 'heatmap',
-            height: Math.min(640, Math.max(340, categoryPeriodComparison.length * 54 + 90)),
+            height: Math.min(640, Math.max(340, comparison.length * 54 + 90)),
             toolbar: { show: false },
             fontFamily: 'inherit',
             events: {
@@ -1191,11 +1212,28 @@
     }
 
     if (categoryComparisonPeriods.length > 1 && categoryPeriodComparison.length) {
-        categoryPeriodComparisonChart = renderChart(
-            categoryPeriodComparisonChart,
-            '#chart-category-period-comparison',
-            categoryPeriodComparisonOptions()
-        );
+        const categoryRatingFilter = document.getElementById('category-rating-filter');
+        const renderCategoryPeriodComparison = () => {
+            const comparison = filteredCategoryComparison(categoryRatingFilter?.value);
+
+            if (!comparison.length) {
+                if (categoryPeriodComparisonChart) {
+                    categoryPeriodComparisonChart.destroy();
+                    categoryPeriodComparisonChart = null;
+                }
+                emptyChart('#chart-category-period-comparison', 'Tidak ada kategori dengan tingkat nilai yang dipilih.');
+                return;
+            }
+
+            categoryPeriodComparisonChart = renderChart(
+                categoryPeriodComparisonChart,
+                '#chart-category-period-comparison',
+                categoryPeriodComparisonOptions(comparison)
+            );
+        };
+
+        renderCategoryPeriodComparison();
+        categoryRatingFilter?.addEventListener('change', renderCategoryPeriodComparison);
     }
 
     if (bidangPeningkatanData.length) {
