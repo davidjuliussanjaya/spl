@@ -224,7 +224,7 @@
                     @if(session('error'))
                         <p class="form-error" role="alert"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i><span>{{ session('error') }}</span></p>
                     @endif
-                    <p class="access-note"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Kode hanya dapat digunakan untuk survei aktif pada periode pengisian yang sedang berlangsung.</span></p>
+                    <p class="access-note"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Kode dapat digunakan selama survei masih aktif dan belum selesai diisi.</span></p>
                 </section>
             </div>
         </section>

@@ -121,11 +121,16 @@ body.spl-app {
 .spl-app .badge.bg-primary { background: var(--spl-brand-soft) !important; color: var(--spl-brand) !important; }
 
 /* Page patterns */
-.spl-page-header { align-items: center; display: flex; gap: 1rem; justify-content: space-between; margin-bottom: 1.5rem; }
-.spl-page-header h3 { color: var(--spl-text); font-size: 1.45rem; font-weight: 800; letter-spacing: -.03em; margin: 0 0 .25rem; }
-.spl-page-header p { color: var(--spl-muted); font-size: .83rem; margin: 0; }
-.spl-breadcrumb { align-items: center; background: transparent; display: flex; font-size: .75rem; gap: .4rem; margin: .25rem 0 0; padding: 0; }
+.spl-page-header { align-items: center; background: linear-gradient(112deg, #fff 0%, #f8fbff 58%, #eef5ff 100%); border: 1px solid #dbeafe; border-radius: 16px; box-shadow: 0 8px 20px rgba(37, 99, 235, .07); display: flex; gap: 1rem; isolation: isolate; justify-content: space-between; margin-bottom: 1.5rem; min-height: 116px; overflow: hidden; padding: 1.3rem 1.45rem; position: relative; }
+.spl-page-header::before { background: linear-gradient(180deg, var(--spl-brand), #60a5fa); border-radius: 99px; content: ''; height: 64%; left: 0; position: absolute; top: 18%; width: 4px; }
+.spl-page-header::after { background: radial-gradient(circle, rgba(96, 165, 250, .23) 0 28%, transparent 29%); content: ''; height: 180px; pointer-events: none; position: absolute; right: -52px; top: -78px; width: 180px; z-index: -1; }
+.spl-page-header > * { position: relative; }
+.spl-page-header h3 { color: var(--spl-text); font-size: 1.5rem; font-weight: 800; letter-spacing: -.035em; margin: .3rem 0 .32rem; }
+.spl-page-header p { color: var(--spl-muted); font-size: .84rem; margin: 0; }
+.spl-page-header .btn { box-shadow: 0 6px 14px rgba(37, 99, 235, .18); }
+.spl-breadcrumb { align-items: center; background: rgba(255, 255, 255, .72); border: 1px solid rgba(191, 219, 254, .78); border-radius: 999px; display: inline-flex; font-size: .7rem; font-weight: 650; gap: .42rem; margin: 0; padding: .27rem .58rem; }
 .spl-breadcrumb a { color: var(--spl-brand); text-decoration: none; }
+.spl-breadcrumb a:hover { color: var(--spl-brand-dark); text-decoration: underline; }
 .spl-toolbar { align-items: center; display: flex; flex-wrap: wrap; gap: .65rem; justify-content: space-between; }
 .spl-toolbar-title { color: var(--spl-text); font-size: .98rem; font-weight: 750; margin: 0; }
 .spl-toolbar-subtitle { color: var(--spl-muted); font-size: .78rem; margin: .18rem 0 0; }

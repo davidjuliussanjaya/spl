@@ -19,7 +19,6 @@ class SurveyService
     {
         return DB::transaction(function () use ($data) {
             $periode = Periode::findOrFail($data['periode_id']);
-            $this->pastikanPeriodeBerlangsung($periode);
             $pengguna = PenggunaLulusan::findOrFail($data['pengguna_lulusan_id']);
             $lulus = Lulusan::findOrFail($data['lulusan_id']);
 
@@ -328,7 +327,6 @@ class SurveyService
     {
         return DB::transaction(function () use ($data) {
             $periode = Periode::findOrFail($data['periode_id']);
-            $this->pastikanPeriodeBerlangsung($periode);
             $tahunLulus = $data['tahun_lulus'];
 
             $lulusanList = Lulusan::whereYear('tahun_lulus', $tahunLulus)
@@ -386,7 +384,6 @@ class SurveyService
     {
         return DB::transaction(function () use ($survey, $data) {
             $periode = Periode::findOrFail($data['periode_id']);
-            $this->pastikanPeriodeBerlangsung($periode);
             $lulus = Lulusan::findOrFail($data['lulusan_id']);
 
             $pengguna = PenggunaLulusan::find($data['pengguna_lulusan_id']);
@@ -442,13 +439,6 @@ class SurveyService
 
             return [$urutanA, $a->kode ?? '', $a->id] <=> [$urutanB, $b->kode ?? '', $b->id];
         })->values();
-    }
-
-    private function pastikanPeriodeBerlangsung(Periode $periode): void
-    {
-        if (! $periode->isBerlangsung()) {
-            throw new \DomainException('Survei hanya dapat dibuat atau diubah pada periode yang sedang berlangsung.');
-        }
     }
 
     /** Ambil hanya pertanyaan dari kategori umum atau fakultas lulusan terkait. */

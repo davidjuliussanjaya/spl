@@ -56,7 +56,7 @@
                                     @endforeach
                                 </select>
                                 @error('periode_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode yang sedang berlangsung. Tambahkan atau ubah periode melalui menu Periode terlebih dahulu.</div>@endif
+                                @if($periodes->isEmpty())<div class="form-text text-danger">Belum ada periode. Tambahkan periode melalui menu Periode terlebih dahulu.</div>@endif
                             </div>
 
                             <div class="col-md-12 mb-2">
