@@ -285,8 +285,13 @@
     .category-period-comparison { border-color: var(--brand-100); }
     .category-comparison-chart-wrap { min-height: 320px; padding: 1rem; }
     .category-comparison-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
-    .category-rating-filter { min-width: 130px; border: 1px solid var(--slate-200); border-radius: 7px; background: #fff; color: var(--slate-700); font-size: .72rem; font-weight: 600; padding: .32rem 1.7rem .32rem .55rem; }
-    .category-rating-filter:focus { border-color: var(--brand-500); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); outline: 0; }
+    .heatmap-rating-legend { align-items: center; display: flex; flex-wrap: wrap; gap: .35rem .7rem; justify-content: center; margin: 0 0 .55rem; }
+    .heatmap-legend-item { align-items: center; background: transparent; border: 0; border-radius: 6px; color: var(--slate-600); cursor: pointer; display: inline-flex; font: inherit; font-size: .75rem; gap: .32rem; padding: .25rem .35rem; }
+    .heatmap-legend-item span { background: currentColor; border-radius: 4px; height: .75rem; width: .75rem; }
+    .heatmap-legend-kurang { color: #dc2626; } .heatmap-legend-cukup { color: #d97706; } .heatmap-legend-baik { color: #2563eb; } .heatmap-legend-sangat-baik { color: #16a34a; }
+    .heatmap-legend-item:hover, .heatmap-legend-item.is-active { background: var(--slate-100); color: var(--slate-900); font-weight: 700; }
+    .heatmap-legend-kurang.is-active { color: #b91c1c; } .heatmap-legend-cukup.is-active { color: #b45309; } .heatmap-legend-baik.is-active { color: #1d4ed8; } .heatmap-legend-sangat-baik.is-active { color: #15803d; }
+    .heatmap-legend-item:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
     .category-comparison-table-wrap { overflow-x: auto; border-top: 1px solid var(--slate-100); }
     .category-comparison-table { width: 100%; min-width: 700px; border-collapse: collapse; font-size: .78rem; }
     .category-comparison-table th { padding: .65rem .75rem; background: var(--slate-50); color: var(--slate-500); font-size: .68rem; font-weight: 700; letter-spacing: .3px; text-align: center; text-transform: uppercase; white-space: nowrap; }
@@ -974,7 +979,8 @@
                 style: { colors: '#334155', fontSize: '11px', fontWeight: 600 }
             }
         },
-        legend: { position: 'top', fontSize: '12px', markers: { radius: 4 } },
+        // Legend interaktif dirender di atas chart agar sekaligus menjadi filter nilai.
+        legend: { show: false },
         grid: { padding: { left: 8, right: 10 } },
         tooltip: { y: { formatter: value => value === null ? 'Tidak ada data' : `${Number(value).toFixed(2)} / 4.00` } }
     });
@@ -1212,9 +1218,10 @@
     }
 
     if (categoryComparisonPeriods.length > 1 && categoryPeriodComparison.length) {
-        const categoryRatingFilter = document.getElementById('category-rating-filter');
+        const categoryRatingLegendItems = [...document.querySelectorAll('[data-rating-filter]')];
+        let selectedCategoryRating = 'all';
         const renderCategoryPeriodComparison = () => {
-            const comparison = filteredCategoryComparison(categoryRatingFilter?.value);
+            const comparison = filteredCategoryComparison(selectedCategoryRating);
 
             if (!comparison.length) {
                 if (categoryPeriodComparisonChart) {
@@ -1233,7 +1240,15 @@
         };
 
         renderCategoryPeriodComparison();
-        categoryRatingFilter?.addEventListener('change', renderCategoryPeriodComparison);
+        categoryRatingLegendItems.forEach((item) => item.addEventListener('click', () => {
+            selectedCategoryRating = item.dataset.ratingFilter || 'all';
+            categoryRatingLegendItems.forEach((legendItem) => {
+                const active = legendItem === item;
+                legendItem.classList.toggle('is-active', active);
+                legendItem.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            renderCategoryPeriodComparison();
+        }));
     }
 
     if (bidangPeningkatanData.length) {

@@ -79,11 +79,7 @@ class SurveyController extends Controller
     // Tambahkan data lulusan jika diperlukan di form
     $lulusan = \App\Models\Lulusan::with('fakultasMaster')->get();
 
-    $periodes = Periode::query()
-        ->whereDate('tanggal_mulai', '<=', today())
-        ->whereDate('tanggal_berakhir', '>=', today())
-        ->orderByDesc('tanggal_mulai')
-        ->get();
+    $periodes = Periode::query()->orderByDesc('tanggal_mulai')->get();
 
     return view('admin.survey.add', compact('perusahaan', 'daftarSoal', 'lulusan', 'periodes'));
 }
@@ -107,10 +103,10 @@ public function verifyCode(Request $request)
                     ->where('is_active', true)
                     ->first();
 
-    if (! $survey || ! $survey->periode?->isBerlangsung()) {
+    if (! $survey) {
         return back()
             ->withInput()
-            ->with('error', 'Kode akses tidak valid, survei tidak aktif atau telah selesai, atau periode pengisian belum berlangsung.');
+            ->with('error', 'Kode akses tidak valid, survei tidak aktif, atau telah selesai.');
     }
 
     return redirect()->route('survey.fill', $survey->access_code);
@@ -190,11 +186,7 @@ public function edit($id)
     $perusahaan = PenggunaLulusan::all();
     $lulusan = Lulusan::with('fakultasMaster')->get();
     $daftarSoal = Soal::with('kategori.fakultas')->where('is_active', 1)->get();
-    $periodes = Periode::query()
-        ->whereDate('tanggal_mulai', '<=', today())
-        ->whereDate('tanggal_berakhir', '>=', today())
-        ->orderByDesc('tanggal_mulai')
-        ->get();
+    $periodes = Periode::query()->orderByDesc('tanggal_mulai')->get();
 
     $responGrouped = $survey->is_completed
         ? ResponJawaban::with('jawaban')->where('survey_id', $id)->get()->groupBy('soal_id')
@@ -223,11 +215,7 @@ public function edit($id)
             ->where('is_active', 1)
             ->get();
 
-        $periodes = Periode::query()
-            ->whereDate('tanggal_mulai', '<=', today())
-            ->whereDate('tanggal_berakhir', '>=', today())
-            ->orderByDesc('tanggal_mulai')
-            ->get();
+        $periodes = Periode::query()->orderByDesc('tanggal_mulai')->get();
 
         return view('admin.survey.bulk', compact('tahunList', 'daftarSoal', 'periodes'));
     }
@@ -306,8 +294,5 @@ public function edit($id)
             abort(403, 'Survei ini tidak aktif.');
         }
 
-        if (! $survey->periode || ! $survey->periode->isBerlangsung()) {
-            abort(403, 'Survei tidak dapat diisi di luar tanggal periode yang ditentukan.');
-        }
     }
 }

@@ -5,14 +5,6 @@
             <p class="panel-subtitle">Heatmap memudahkan melihat kategori yang meningkat atau menurun pada periode/tahun sebelumnya.</p>
         </div>
         <div class="category-comparison-actions">
-            <label class="visually-hidden" for="category-rating-filter">Filter tingkat nilai</label>
-            <select id="category-rating-filter" class="category-rating-filter" aria-label="Filter tingkat nilai heatmap">
-                <option value="all">Semua nilai</option>
-                <option value="kurang">Kurang</option>
-                <option value="cukup">Cukup</option>
-                <option value="baik">Baik</option>
-                <option value="sangat-baik">Sangat Baik</option>
-            </select>
             <span class="chip"><i class="bi bi-grid-3x3-gap-fill"></i> Heatmap 0-4</span>
         </div>
     </div>
@@ -23,6 +15,13 @@
         <div class="empty-state"><i class="bi bi-calendar-plus"></i>Pilih atau tunggu minimal dua periode survei untuk melihat perbandingan nilai kategori.</div>
     @else
         <div class="category-comparison-chart-wrap">
+            <div class="heatmap-rating-legend" role="group" aria-label="Filter tingkat nilai heatmap">
+                <button type="button" class="heatmap-legend-item is-active" data-rating-filter="all" aria-pressed="true">Semua nilai</button>
+                <button type="button" class="heatmap-legend-item heatmap-legend-kurang" data-rating-filter="kurang" aria-pressed="false"><span></span>Kurang</button>
+                <button type="button" class="heatmap-legend-item heatmap-legend-cukup" data-rating-filter="cukup" aria-pressed="false"><span></span>Cukup</button>
+                <button type="button" class="heatmap-legend-item heatmap-legend-baik" data-rating-filter="baik" aria-pressed="false"><span></span>Baik</button>
+                <button type="button" class="heatmap-legend-item heatmap-legend-sangat-baik" data-rating-filter="sangat-baik" aria-pressed="false"><span></span>Sangat Baik</button>
+            </div>
             <div id="chart-category-period-comparison"></div>
         </div>
         {{-- Heatmap menjadi satu-satunya tampilan perbandingan kategori. --}}

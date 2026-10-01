@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SurveyBulkRequest extends FormRequest
 {
@@ -16,12 +15,7 @@ class SurveyBulkRequest extends FormRequest
     {
         return [
             'judul'          => 'required|string|max:255',
-            'periode_id'     => [
-                'required',
-                Rule::exists('periode', 'id')->where(fn ($query) => $query
-                    ->whereDate('tanggal_mulai', '<=', today())
-                    ->whereDate('tanggal_berakhir', '>=', today())),
-            ],
+            'periode_id'     => 'required|exists:periode,id',
             'deskripsi'      => 'nullable|string',
             'tahun_lulus'    => 'required|digits:4|integer',
             'soal_pilihan'   => 'required|array|min:1',
@@ -37,7 +31,6 @@ class SurveyBulkRequest extends FormRequest
             'tahun_lulus.required' => 'Tahun lulus wajib dipilih.',
             'tahun_lulus.digits'   => 'Tahun lulus harus 4 digit.',
             'soal_pilihan.required' => 'Minimal pilih satu pertanyaan.',
-            'periode_id.exists' => 'Pilih periode survei yang sedang berlangsung.',
         ];
     }
 }

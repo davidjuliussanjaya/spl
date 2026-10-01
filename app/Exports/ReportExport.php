@@ -78,25 +78,25 @@ class ReportExport
         $spreadsheet = new Spreadsheet();
         $spreadsheet->removeSheetByIndex(0);
 
-        $tahunList = $this->getTahunList();
+        $periodeList = $this->getPeriodeList();
 
-        if (empty($tahunList)) {
+        if (empty($periodeList)) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('Tidak Ada Data');
             $sheet->setCellValue('A1', 'Tidak ada data survey yang selesai sesuai filter yang dipilih.');
             return $spreadsheet;
         }
 
-        foreach ($tahunList as $tahun) {
+        foreach ($periodeList as $periode) {
             $sheet = $spreadsheet->createSheet();
-            $sheet->setTitle((string) $tahun);
-            $this->buildSheet($sheet, $tahun);
+            $sheet->setTitle(substr((string) $periode, 0, 31));
+            $this->buildSheet($sheet, $periode);
         }
 
         return $spreadsheet;
     }
 
-    private function buildSheet(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, int $tahun): void
+    private function buildSheet(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, string $periode): void
     {
         $row = 1;
 
@@ -120,10 +120,7 @@ class ReportExport
         ]);
         $row++;
 
-        $filterText = "Tahun Lulus: {$tahun}"
-            . (!empty($this->filters['periode'])
-                ? '   |   Periode: ' . implode(', ', $this->filters['periode'])
-                : '')
+        $filterText = "Periode Survei: {$periode}"
             . (!empty($this->filters['program_studi'])
                 ? '   |   Prodi: ' . implode(', ', $this->filters['program_studi'])
                 : '');
@@ -143,8 +140,11 @@ class ReportExport
 
         foreach ($fakultasList as $fakultasMaster) {
             $fakultas = $fakultasMaster->kode;
+            // Seluruh pertanyaan aktif dicantumkan sebagai dokumentasi data.
+            // Hanya pertanyaan rating yang dipakai untuk ringkasan perhitungan.
             $soalList = $this->getSoalAktif();
-            $dataRows = $this->getDataRows($tahun, $fakultas);
+            $soalRatingList = $soalList->where('jenis_soal', 'rating')->values();
+            $dataRows = $this->getDataRows($periode, $fakultas);
 
             if ($dataRows->isEmpty()) {
                 continue;
@@ -209,8 +209,8 @@ class ReportExport
                 $jawabanMap = $this->getJawabanFromArsip($lulusan->jawaban_json, $soalList);
 
                 foreach ($soalList as $soal) {
-                    $nilai = $jawabanMap[$soal->id] ?? null;
-                    $label = $nilai ? ($this->nilaiLabel[$nilai] ?? $nilai) : '-';
+                    $jawaban = $jawabanMap[$soal->id] ?? null;
+                    $label = $this->formatJawabanUntukLaporan($jawaban, $soal->jenis_soal);
                     $sheet->setCellValue("{$col}{$row}", $label);
                     $col++;
                 }
@@ -222,12 +222,13 @@ class ReportExport
                     'alignment' => ['vertical' => Alignment::VERTICAL_CENTER],
                 ]);
 
+                // Ringkasan hanya menggunakan nilai rating, bukan K/L/M.
                 $peProdi[$lulusan->program_studi][] = $jawabanMap;
                 $row++;
             }
 
             $summaryDataPerFakultas[$fakultas] = [
-                'soalList'   => $soalList,
+                'soalList'   => $soalRatingList,
                 'peProdi'    => $peProdi,
                 'color'      => $color,
                 'colorLight' => $colorLight,
@@ -260,14 +261,14 @@ class ReportExport
 
             foreach ($peProdi as $prodi => $jawabanRows) {
                 $jumlahResp = count($jawabanRows);
-                $totalLulusan = $this->getTotalLulusan($tahun, $fakultas, $prodi);
+                $totalLulusan = $this->getTotalLulusan($periode, $fakultas, $prodi);
                 $skorKonteks = $this->satisfactionScoreService->calculate([], $jumlahResp, $totalLulusan);
 
                 // ── Blok Info Prodi ────────────────────────────────────────
                 $infoItems = [
                     'Prodi'        => $prodi,
                     'Fakultas'     => $fakultas,
-                    'Tahun Lulus'  => $tahun,
+                    'Periode Survei' => $periode,
                     'Jumlah Responden (NL)' => $jumlahResp,
                     'Total Lulusan (NJ)' => $totalLulusan,
                     'Response Rate (PR)' => number_format($skorKonteks['response_rate_pct'], 1) . '%',
@@ -331,7 +332,7 @@ class ReportExport
                     foreach ($soalDalamKategori as $soal) {
                         $counts = [4 => 0, 3 => 0, 2 => 0, 1 => 0];
                         foreach ($jawabanRows as $jawabanMap) {
-                            $nilai = $jawabanMap[$soal->id] ?? null;
+                            $nilai = $jawabanMap[$soal->id]['nilai'] ?? null;
                             if ($nilai && isset($counts[$nilai])) {
                                 $counts[$nilai]++;
                             }
@@ -472,7 +473,9 @@ class ReportExport
                 ]);
                 $row++;
 
-                // Rumus resmi: skor murni skala 1--4 dan penalti jika PR < 30%.
+                // Tabel konversi skor tidak disertakan dalam file Excel.
+                // Ringkasan distribusi di atas tetap dipertahankan sebagai laporan utama.
+                if (false) {
                 $row++;
                 $sheet->mergeCells("A{$row}:E{$row}");
                 $sheet->setCellValue("A{$row}", 'KONVERSI SKOR KEPUASAN PENGGUNA LULUSAN');
@@ -539,6 +542,7 @@ class ReportExport
                 ]);
                 $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
                 $row++;
+                }
 
                 $row += 2;
             }
@@ -550,11 +554,12 @@ class ReportExport
         $sheet->getColumnDimension('E')->setAutoSize(true);
     }
 
-    private function getTahunList(): array
+    /** Ambil periode yang benar-benar memiliki arsip respons untuk diekspor. */
+    private function getPeriodeList(): array
     {
         $q = DB::table('survey_arsip')
-            ->whereNotNull('lulusan_tahun_lulus')
-            ->selectRaw('lulusan_tahun_lulus as tahun')
+            ->whereNotNull('periode_kode')
+            ->select('periode_kode')
             ->distinct();
 
         if (!empty($this->filters['periode'])) {
@@ -564,7 +569,7 @@ class ReportExport
             $q->whereIn('lulusan_program_studi', $this->filters['program_studi']);
         }
 
-        return $q->orderBy('tahun')->pluck('tahun')->map(fn($v) => (int) $v)->toArray();
+        return $q->orderBy('periode_kode')->pluck('periode_kode')->all();
     }
 
     private function getSoalAktif()
@@ -572,16 +577,15 @@ class ReportExport
         return DB::table('soal')
             ->leftJoin('kategoris', 'soal.kategori_id', '=', 'kategoris.id')
             ->where('soal.is_active', true)
-            ->where('soal.jenis_soal', 'rating')
             ->orderBy('soal.kode')
-            ->get(['soal.id', 'soal.kode', 'soal.soal', 'soal.kategori_id', 'kategoris.nama_kategori']);
+            ->get(['soal.id', 'soal.kode', 'soal.soal', 'soal.jenis_soal', 'soal.kategori_id', 'kategoris.nama_kategori']);
     }
 
-    private function getDataRows(int $tahun, string $fakultas)
+    private function getDataRows(string $periode, string $fakultas)
     {
         $q = DB::table('survey_arsip')
             ->where('lulusan_fakultas', $fakultas)
-            ->where('lulusan_tahun_lulus', (string) $tahun)
+            ->where('periode_kode', $periode)
             ->select(
                 'lulusan_nama as nama',
                 'lulusan_nim as nim',
@@ -599,14 +603,10 @@ class ReportExport
         if (!empty($this->filters['program_studi'])) {
             $q->whereIn('lulusan_program_studi', $this->filters['program_studi']);
         }
-        if (!empty($this->filters['periode'])) {
-            $q->whereIn('periode_kode', $this->filters['periode']);
-        }
-
         return $q->get();
     }
 
-    private function getTotalLulusan(int $tahun, string $fakultas, string $programStudi): int
+    private function getTotalLulusan(string $periode, string $fakultas, string $programStudi): int
     {
         return DB::table('lulusan')
             ->join('survey', 'survey.lulusan_id', '=', 'lulusan.id')
@@ -615,8 +615,7 @@ class ReportExport
             ->join('program_studi', 'lulusan.program_studi_id', '=', 'program_studi.id')
             ->where('fakultas.kode', $fakultas)
             ->where('program_studi.nama', $programStudi)
-            ->whereYear('tahun_lulus', $tahun)
-            ->when(!empty($this->filters['periode']), fn ($query) => $query->whereIn('periode.kode_periode', $this->filters['periode']))
+            ->where('periode.kode_periode', $periode)
             ->distinct('lulusan.id')
             ->count('lulusan.id');
     }
@@ -638,14 +637,36 @@ class ReportExport
             $kode = $jawaban['kode'] ?? null;
             $nilai = $jawaban['nilai'] ?? null;
 
-            if (! isset($soalIdByKode[$kode]) || ! is_numeric($nilai)) {
+            if (! isset($soalIdByKode[$kode])) {
                 continue;
             }
 
-            $map[$soalIdByKode[$kode]] = (int) $nilai;
+            $map[$soalIdByKode[$kode]] = [
+                'nilai' => is_numeric($nilai) ? (int) $nilai : null,
+                'jawaban' => $jawaban['jawaban'] ?? null,
+            ];
         }
 
         return $map;
+    }
+
+    private function formatJawabanUntukLaporan(?array $jawaban, string $jenisSoal): string
+    {
+        if (! $jawaban) {
+            return '-';
+        }
+
+        if ($jenisSoal === 'rating') {
+            $nilai = $jawaban['nilai'] ?? null;
+            return $nilai ? ($this->nilaiLabel[$nilai] ?? (string) $nilai) : '-';
+        }
+
+        $nilai = $jawaban['jawaban'] ?? null;
+        if (is_array($nilai)) {
+            $nilai = implode('; ', array_filter($nilai, fn ($item) => filled($item)));
+        }
+
+        return filled($nilai) ? (string) $nilai : '-';
     }
 
     private function colLetter(int $n): string

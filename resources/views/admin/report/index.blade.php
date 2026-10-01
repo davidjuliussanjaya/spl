@@ -137,8 +137,8 @@
                                     <i class="bi bi-layout-text-window-reverse fs-5"></i>
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold mb-1">Sheet per Tahun Lulus</h6>
-                                    <p class="text-muted small mb-0">Jika tidak memilih tahun, setiap tahun lulus akan menjadi sheet terpisah dalam satu file Excel.</p>
+                                    <h6 class="fw-bold mb-1">Sheet per Periode Survei</h6>
+                                    <p class="text-muted small mb-0">Setiap periode yang memiliki respons dibuat sebagai sheet terpisah dalam satu file Excel.</p>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                                 </div>
                                 <div>
                                     <h6 class="fw-bold mb-1">Tabel Ringkasan Distribusi</h6>
-                                    <p class="text-muted small mb-0">Di bagian bawah setiap sheet terdapat distribusi penilaian serta konversi skor resmi berdasarkan response rate (NL/NJ) dan ambang kecukupan 30%.</p>
+                                    <p class="text-muted small mb-0">Di bagian bawah setiap sheet terdapat distribusi penilaian per program studi dan kategori.</p>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
 
                     <h6 class="fw-bold mb-3 text-muted text-uppercase small">Kolom yang tersedia</h6>
                     <div class="row g-2">
-                        @foreach(['NIM', 'Nama Lulusan', 'Program Studi', 'Nama Responden', 'Nama Perusahaan', 'Jenis Perusahaan', 'Cabang Kota', 'Cabang Negara', 'Nilai per soal (kode B1, C1, dst.)'] as $col)
+                        @foreach(['NIM', 'Nama Lulusan', 'Program Studi', 'Nama Responden', 'Nama Perusahaan', 'Jenis Perusahaan', 'Cabang Kota', 'Cabang Negara', 'Jawaban semua soal (termasuk K, L, M)', 'Nilai rating untuk perhitungan'] as $col)
                             <div class="col-auto">
                                 <span class="badge bg-secondary-subtle text-secondary border">{{ $col }}</span>
                             </div>
