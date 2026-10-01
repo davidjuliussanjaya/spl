@@ -69,7 +69,10 @@
                 <h4 class="spl-toolbar-title">Daftar sesi {{ $selectedPeriode->nama_periode }} <span class="spl-filter-count">{{ $surveys->total() }} hasil</span></h4>
                 <p class="spl-toolbar-subtitle">Cari berdasarkan judul, lulusan, perusahaan, atau kode akses.</p>
             </div>
-            <a href="{{ route('survey') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Pilih periode lain</a>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ route('survey.period-access-excel', $selectedPeriode) }}" class="btn btn-success"><i class="bi bi-file-earmark-spreadsheet"></i> Download Excel</a>
+                <a href="{{ route('survey') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Pilih periode lain</a>
+            </div>
         </div>
 
         <form action="{{ route('survey') }}" method="GET" class="spl-filter-panel">
@@ -135,7 +138,6 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a href="{{ route('survey.invitation-pdf', $survey->id) }}" class="spl-icon-action spl-pdf-action" title="Unduh surat undangan PDF" aria-label="Unduh surat undangan PDF untuk {{ $survey->penggunalulusan->nama_perusahaan ?? 'perusahaan' }}"><i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Unduh PDF</span></a>
                                     @if($survey->is_completed)
                                         <a href="{{ route('survey.edit', $survey->id) }}" class="spl-icon-action" title="Lihat detail arsip survei" aria-label="Lihat detail arsip survei {{ $survey->judul }}"><i class="bi bi-eye"></i></a>
                                     @else

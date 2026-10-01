@@ -782,6 +782,34 @@ test('administrator can manage categories, use the company data endpoint, and do
         ->assertRedirect(route('kategori.index'));
 });
 
+test('administrator can download all access codes for the selected survey period', function () {
+    $perusahaan = PenggunaLulusan::create(perusahaanData());
+    $lulusan = Lulusan::create([
+        'pengguna_lulusan_id' => $perusahaan->id,
+        'nama' => 'Lulusan Export',
+        'nim' => '22410100999',
+        'program_studi' => $this->programStudi->nama,
+        'fakultas' => $this->fakultas->kode,
+        'program_studi_id' => $this->programStudi->id,
+        'fakultas_id' => $this->fakultas->id,
+        'tahun_lulus' => '2025-08-01',
+    ]);
+    Survey::create([
+        'judul' => 'Survei Export',
+        'tahun' => 2026,
+        'periode_id' => $this->periode->id,
+        'lulusan_id' => $lulusan->id,
+        'pengguna_lulusan_id' => $perusahaan->id,
+        'access_code' => 'EXPORT01',
+        'is_active' => true,
+        'is_completed' => false,
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('survey.period-access-excel', $this->periode))
+        ->assertDownload('Daftar_Akses_Survei_TEST-AKTIF.xlsx');
+});
+
 test('survey only attaches questions from general or matching faculty categories', function () {
     $perusahaan = PenggunaLulusan::create(perusahaanData());
     $lulusan = Lulusan::create([
