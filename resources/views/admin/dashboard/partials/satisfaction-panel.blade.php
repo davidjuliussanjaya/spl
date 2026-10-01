@@ -39,10 +39,10 @@
                     @foreach($kepuasanPerKategori as $kat)
                         <tr data-kategori-row="{{ $kat['kategori'] }}">
                             <td>{{ $kat['kategori'] }}</td>
-                            <td>{{ $kat['pct_sb'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_b'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_k'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
-                            <td>{{ $kat['pct_sk'] }}% @if($canViewDashboardMetrics)<small class="text-muted">({{ $kat['total_respon'] }})</small>@endif</td>
+                            <td>{{ $kat['pct_sb'] }}%</td>
+                            <td>{{ $kat['pct_b'] }}%</td>
+                            <td>{{ $kat['pct_k'] }}%</td>
+                            <td>{{ $kat['pct_sk'] }}%</td>
                             <td class="fw-bold">{{ number_format($kat['skor_akhir'], 2) }}</td>
                         </tr>
                     @endforeach

@@ -135,6 +135,7 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('survey.invitation-pdf', $survey->id) }}" class="spl-icon-action spl-pdf-action" title="Unduh surat undangan PDF" aria-label="Unduh surat undangan PDF untuk {{ $survey->penggunalulusan->nama_perusahaan ?? 'perusahaan' }}"><i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i><span class="visually-hidden">Unduh PDF</span></a>
                                     @if($survey->is_completed)
                                         <a href="{{ route('survey.edit', $survey->id) }}" class="spl-icon-action" title="Lihat detail arsip survei" aria-label="Lihat detail arsip survei {{ $survey->judul }}"><i class="bi bi-eye"></i></a>
                                     @else

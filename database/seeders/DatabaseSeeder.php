@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             FakultasProgramStudiSeeder::class,
             PengolahanPenggunaLulusanArchiveSeeder::class,
             DraftInstrumenUniversitas2026Seeder::class,
+            Fresh2028SurveyPreparationSeeder::class,
         ]);
     }
 }
