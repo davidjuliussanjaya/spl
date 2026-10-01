@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SurveyPeriodAccessExport;
 use App\Http\Requests\SurveyBulkRequest;
 use App\Http\Requests\SurveyStoreRequest;
 use App\Http\Requests\SurveySubmitJawabanRequest;
@@ -18,7 +19,7 @@ use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SurveyController extends Controller
 {
@@ -91,8 +92,12 @@ class SurveyController extends Controller
             $this->surveyService->createSurvey($request->validated());
             return redirect()->route('survey', ['periode_id' => $request->periode_id])
                 ->with('success', 'Sesi Survey berhasil dibuat dan data instansi tersinkronisasi.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        } catch (\DomainException|\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage())->withInput();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Survei belum dapat dibuat. Silakan coba kembali beberapa saat lagi.')->withInput();
         }
     }
 public function verifyCode(Request $request)
@@ -157,7 +162,15 @@ public function fill($code)
             return redirect('/')
                 ->with('success', 'Jawaban Anda telah tersimpan dengan aman.')
                 ->with('clear_survey_draft', $survey->access_code);
-        } catch (\Exception $e) {
+        } catch (\DomainException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->with('error', $e->getMessage())->withInput();
+        } catch (\Throwable $e) {
             report($e);
 
             if ($request->expectsJson()) {
@@ -166,7 +179,7 @@ public function fill($code)
                 ], 500);
             }
 
-            return back()->with('error', 'Gagal menyimpan jawaban: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Survei belum dapat disimpan. Silakan coba kembali beberapa saat lagi.')->withInput();
         }
     }
 public function edit($id)
@@ -211,14 +224,12 @@ public function edit($id)
     return view('admin.survey.view', compact('survey', 'perusahaan', 'lulusan', 'daftarSoal', 'periodes', 'responGrouped', 'selectedCategoryIds'));
 }
 
-    public function downloadInvitationPdf($id)
+    public function downloadPeriodAccessExcel(Periode $periode)
     {
-        $survey = Survey::with(['lulusan.programStudi', 'penggunalulusan', 'periode'])->findOrFail($id);
-        $fillUrl = route('landing');
-
-        return Pdf::loadView('admin.survey.invitation-pdf', compact('survey', 'fillUrl'))
-            ->setPaper('a4')
-            ->download('Undangan_Survei_' . $survey->access_code . '.pdf');
+        return Excel::download(
+            new SurveyPeriodAccessExport($periode, route('landing')),
+            'Daftar_Akses_Survei_' . $periode->kode_periode . '.xlsx',
+        );
     }
 
     public function bulkCreate()
@@ -247,8 +258,12 @@ public function edit($id)
 
             return redirect()->route('survey', ['periode_id' => $request->periode_id])
                 ->with('success', $message);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        } catch (\DomainException|\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage())->withInput();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Survei massal belum dapat dibuat. Silakan coba kembali beberapa saat lagi.')->withInput();
         }
     }
 
@@ -276,8 +291,12 @@ public function edit($id)
             $this->surveyService->updateSurvey($survey, $request->validated());
 
             return redirect()->route('survey', ['periode_id' => $request->periode_id])->with('success', 'Data Survey berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        } catch (\DomainException|\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage())->withInput();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Survei belum dapat diperbarui. Silakan coba kembali beberapa saat lagi.')->withInput();
         }
     }
 
@@ -297,8 +316,10 @@ public function edit($id)
             });
 
             return redirect()->route('survey', ['periode_id' => $survey->periode_id])->with('success', 'Survey berhasil dihapus.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus survey: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Survei belum dapat dihapus. Silakan coba kembali beberapa saat lagi.');
         }
     }
 

@@ -137,8 +137,10 @@ class LulusanController extends Controller
             return redirect()->route('lulusan') // Sesuaikan route index Anda
                 ->with('success', 'Data lulusan berhasil ditambahkan!');
                 
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->withInput()->with('error', 'Data lulusan belum dapat disimpan. Silakan coba kembali beberapa saat lagi.');
         }
     }
 

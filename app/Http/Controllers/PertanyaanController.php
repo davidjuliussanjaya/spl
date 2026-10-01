@@ -36,7 +36,7 @@ class PertanyaanController extends Controller
 
     public function store(PertanyaanStoreRequest $request)
     {
-        $this->pertanyaanService->storePertanyaan($request->all());
+        $this->pertanyaanService->storePertanyaan($request->validated());
 
         return redirect()->route('pertanyaan')->with('success', 'Soal berhasil disimpan!');
     }
@@ -50,7 +50,7 @@ class PertanyaanController extends Controller
 
     public function update(PertanyaanStoreRequest $request, $id)
     {
-        $this->pertanyaanService->updatePertanyaan($id, $request->all());
+        $this->pertanyaanService->updatePertanyaan($id, $request->validated());
 
         return redirect()->route('pertanyaan')->with('success', 'Soal berhasil diupdate!');
     }

@@ -43,8 +43,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/survey/bulk', [SurveyController::class, 'bulkStore'])->name('survey.bulk.store');
         Route::get('/survey/lulusan-by-tahun', [SurveyController::class, 'getLulusanByTahun'])->name('survey.lulusan-by-tahun');
         Route::get('/get-perusahaan/{id}', [SurveyController::class, 'getPerusahaanData']);
+        Route::get('/survey/periode/{periode}/access-excel', [SurveyController::class, 'downloadPeriodAccessExcel'])->name('survey.period-access-excel');
         Route::get('/survey/{id}/edit', [SurveyController::class, 'edit'])->name('survey.edit');
-        Route::get('/survey/{id}/invitation-pdf', [SurveyController::class, 'downloadInvitationPdf'])->name('survey.invitation-pdf');
         Route::put('/survey/{id}', [SurveyController::class, 'update'])->name('survey.update');
         Route::delete('/survey/{id}', [SurveyController::class, 'destroy'])->name('survey.destroy');
 

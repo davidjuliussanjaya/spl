@@ -26,6 +26,7 @@ class PertanyaanStoreRequest extends FormRequest
             'question'  => 'required|string',
             'kategori_id'  => 'required|exists:kategoris,id',
             'type'      => 'required|in:radio,rating,text',
+            'required'  => 'nullable|boolean',
             'allows_multiple_answers' => 'nullable|boolean',
             'allows_custom_answer' => 'nullable|boolean',
             'kode'      => ['nullable', 'string', 'max:255', Rule::unique('soal', 'kode')->ignore($this->route('id'))],
