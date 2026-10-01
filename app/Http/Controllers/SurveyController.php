@@ -18,6 +18,7 @@ use App\Support\DatabaseYearExpression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SurveyController extends Controller
 {
@@ -109,6 +110,8 @@ public function verifyCode(Request $request)
             ->with('error', 'Kode akses tidak valid, survei tidak aktif, atau telah selesai.');
     }
 
+    session(['verified_survey_access_code' => $survey->access_code]);
+
     return redirect()->route('survey.fill', $survey->access_code);
 }
 
@@ -117,6 +120,11 @@ public function fill($code)
     $survey = Survey::with(['lulusan.programStudi', 'lulusan.fakultasMaster', 'penggunalulusan', 'periode'])
                     ->where('access_code', $code)
                     ->firstOrFail();
+
+    if (session('verified_survey_access_code') !== $survey->access_code) {
+        return redirect()->route('landing')
+            ->with('error', 'Masukkan kode akses survei terlebih dahulu untuk membuka formulir.');
+    }
 
     $this->ensurePeriodIsOpen($survey);
 
@@ -202,6 +210,16 @@ public function edit($id)
 
     return view('admin.survey.view', compact('survey', 'perusahaan', 'lulusan', 'daftarSoal', 'periodes', 'responGrouped', 'selectedCategoryIds'));
 }
+
+    public function downloadInvitationPdf($id)
+    {
+        $survey = Survey::with(['lulusan.programStudi', 'penggunalulusan', 'periode'])->findOrFail($id);
+        $fillUrl = route('landing');
+
+        return Pdf::loadView('admin.survey.invitation-pdf', compact('survey', 'fillUrl'))
+            ->setPaper('a4')
+            ->download('Undangan_Survei_' . $survey->access_code . '.pdf');
+    }
 
     public function bulkCreate()
     {
