@@ -363,6 +363,21 @@ test('dashboard applies active filters to every data set used by its cards, char
         'lulusan_id' => $lulusanLain->id, 'pengguna_lulusan_id' => $perusahaan->id,
         'access_code' => 'FILTER24', 'is_completed' => true, 'is_active' => true,
     ]);
+    $kategoriKerjasama = Kategori::create([
+        'nama_kategori' => 'M. Kerjasama Lanjutan',
+        'fakultas_id' => $this->fakultas->id,
+    ]);
+    $soalKerjasama = Soal::create([
+        'soal' => 'Bentuk kerja sama lanjutan',
+        'kode' => 'M1',
+        'jenis_soal' => 'multiple_choice',
+        'kategori_id' => $kategoriKerjasama->id,
+        'allows_multiple_answers' => true,
+        'allows_custom_answer' => true,
+        'is_active' => true,
+    ]);
+    Jawaban::create(['soal_id' => $soalKerjasama->id, 'jawaban' => 'Rekrutmen Lulusan', 'urutan' => 1]);
+    Jawaban::create(['soal_id' => $soalKerjasama->id, 'jawaban' => 'Magang Mahasiswa', 'urutan' => 2]);
 
     foreach ([
         [$surveyTerpilih, $periodeTerpilih, $this->programStudi->nama, 'Kategori Terpilih', 'Feedback terpilih', 4],
@@ -379,8 +394,22 @@ test('dashboard applies active filters to every data set used by its cards, char
             'perusahaan_nama' => $perusahaan->nama_perusahaan,
             'jawaban_json' => [
                 ['kategori' => $kategori, 'jenis' => 'rating', 'nilai' => $nilai],
-                ['kode' => 'L1', 'jenis' => 'multiple_choice', 'jawaban' => [$prodi === $this->programStudi->nama ? 'Kemampuan Berbahasa Asing' : 'Etika dan Integritas']],
+                [
+                    'kode' => 'M1',
+                    'kategori' => 'M. Kerjasama Lanjutan',
+                    'jenis' => 'multiple_choice',
+                    'jawaban' => $prodi === $this->programStudi->nama
+                        ? ['Rekrutmen Lulusan', 'Program kemitraan khusus']
+                        : ['Magang Mahasiswa'],
+                ],
                 ['kategori' => $kategori, 'soal' => 'Saran', 'jenis' => 'essay', 'jawaban' => $feedback],
+                [
+                    'kode' => 'M1',
+                    'kategori' => 'M. Kriteria Lulusan',
+                    'soal' => 'Kriteria lulusan seperti apa yang diharapkan?',
+                    'jenis' => 'essay',
+                    'jawaban' => 'Mampu beradaptasi dengan cepat',
+                ],
             ],
         ]);
     }
@@ -401,8 +430,8 @@ test('dashboard applies active filters to every data set used by its cards, char
         ->and($dashboard['categoryComparisonPeriods'])->toBe([
             ['periode' => $periodeTerpilih->kode_periode, 'label' => $periodeTerpilih->nama_periode],
         ])
-        ->and($dashboard['bidangPeningkatanLabels'])->toBe(['Kemampuan Berbahasa Asing'])
-        ->and($dashboard['bidangPeningkatanData'])->toBe([1])
+        ->and($dashboard['kerjasamaLanjutanLabels'])->toBe(['Rekrutmen Lulusan', 'Lainnya'])
+        ->and($dashboard['kerjasamaLanjutanData'])->toBe([1, 2])
         ->and($dashboard['komentarTerbaru'])->toHaveCount(1)
         ->and($dashboard['komentarTerbaru']->first()->jawaban_text)->toBe('Feedback terpilih');
 });

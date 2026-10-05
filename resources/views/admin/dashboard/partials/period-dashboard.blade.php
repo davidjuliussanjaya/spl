@@ -34,7 +34,7 @@
                             <th>Periode</th>
                             @if($canViewDashboardMetrics)
                                 <th class="metric-col">Jumlah Responden<br>yang Mengisi</th>
-                                <th class="metric-col">Jumlah Alumni<br>yang Dinilai</th>
+                                <th class="metric-col">Kuesioner<br>yang Disebarkan</th>
                                 <th>Respons</th>
                             @endif
                             <th>Indeks</th>
@@ -83,7 +83,7 @@
                                         <th>Periode</th>
                                         @if($isAdmin)
                                             <th class="metric-col">Jumlah Responden<br>yang Mengisi</th>
-                                            <th class="metric-col">Jumlah Alumni<br>yang Dinilai</th>
+                                            <th class="metric-col">Kuesioner<br>yang Disebarkan</th>
                                             <th>Respons</th>
                                         @endif
                                         <th>Indeks</th>

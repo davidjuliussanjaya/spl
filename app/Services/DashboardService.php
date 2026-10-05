@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\SurveyArsip;
 use App\Models\Lulusan;
 use App\Models\Survey;
+use App\Models\Soal;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class DashboardService
 {
@@ -307,21 +309,58 @@ class DashboardService
             })
             ->values();
 
-        // L1 adalah pertanyaan pilihan ganda tentang bidang yang perlu ditingkatkan.
-        // Satu respons dapat memuat beberapa pilihan, sehingga setiap pilihan dihitung
-        // sebagai satu bagian pada distribusi pie chart.
-        $bidangPeningkatan = $arsipList
+        // Grafik memakai respons M1 dari Kriteria Lulusan (arsip lama) dan
+        // Kerjasama Lanjutan. Hanya pilihan resmi Kerjasama Lanjutan yang
+        // memiliki label sendiri; respons lain digabungkan ke kategori Lainnya.
+        $soalKerjasamaLanjutan = Soal::query()
+            ->with(['jawaban' => fn ($query) => $query->orderBy('urutan')])
+            ->whereRaw('UPPER(kode) = ?', ['M1'])
+            ->where('jenis_soal', 'multiple_choice')
+            ->whereHas('kategori', fn ($query) => $query->whereRaw('LOWER(nama_kategori) LIKE ?', ['%kerjasama lanjutan%']))
+            ->latest('id')
+            ->first();
+
+        $pilihanKerjasama = collect($soalKerjasamaLanjutan?->jawaban ?? [])
+            ->pluck('jawaban')
+            ->map(fn ($jawaban) => trim((string) $jawaban))
+            ->filter()
+            ->unique()
+            ->values();
+        $labelPilihanKerjasama = $pilihanKerjasama
+            ->mapWithKeys(fn ($jawaban) => [Str::lower($jawaban) => $jawaban]);
+        $jumlahPilihanKerjasama = $pilihanKerjasama->mapWithKeys(fn ($jawaban) => [$jawaban => 0])->all();
+        $jumlahLainnya = 0;
+
+        $jawabanKerjasama = $arsipList
             ->flatMap(function ($arsip) {
                 return collect($arsip->jawaban_json ?? [])
-                    ->filter(fn (array $jawaban) => strtoupper((string) ($jawaban['kode'] ?? '')) === 'L1')
+                    ->filter(fn (array $jawaban) => strtoupper((string) ($jawaban['kode'] ?? '')) === 'M1'
+                        && (Str::contains(Str::lower((string) ($jawaban['kategori'] ?? '')), 'kerjasama lanjutan')
+                            || Str::contains(Str::lower((string) ($jawaban['kategori'] ?? '')), 'kriteria lulusan')))
                     ->flatMap(fn (array $jawaban) => Arr::wrap($jawaban['jawaban'] ?? []));
             })
             ->filter(fn ($jawaban) => filled($jawaban))
-            ->map(fn ($jawaban) => trim((string) $jawaban))
-            ->countBy()
-            ->sortDesc();
-        $bidangPeningkatanLabels = $bidangPeningkatan->keys()->values()->all();
-        $bidangPeningkatanData = $bidangPeningkatan->values()->all();
+            ->map(fn ($jawaban) => trim((string) $jawaban));
+
+        foreach ($jawabanKerjasama as $jawaban) {
+            $labelResmi = $labelPilihanKerjasama->get(Str::lower($jawaban));
+
+            if ($labelResmi !== null) {
+                $jumlahPilihanKerjasama[$labelResmi]++;
+            } else {
+                $jumlahLainnya++;
+            }
+        }
+
+        $kerjasamaLanjutan = collect($jumlahPilihanKerjasama)
+            ->filter(fn ($jumlah) => $jumlah > 0);
+
+        if ($jumlahLainnya > 0) {
+            $kerjasamaLanjutan->put('Lainnya', $jumlahLainnya);
+        }
+
+        $kerjasamaLanjutanLabels = $kerjasamaLanjutan->keys()->values()->all();
+        $kerjasamaLanjutanData = $kerjasamaLanjutan->values()->all();
 
         $komentarTerbaru = $arsipList
             ->sortByDesc('submitted_at')
@@ -357,8 +396,8 @@ class DashboardService
             'respondenProdiLabels',
             'respondenProdiData',
             'prodiDetails',
-            'bidangPeningkatanLabels',
-            'bidangPeningkatanData',
+            'kerjasamaLanjutanLabels',
+            'kerjasamaLanjutanData',
             'kepuasanPerKategori',
             'kepuasanRingkasan',
             'totalResponKepuasan',

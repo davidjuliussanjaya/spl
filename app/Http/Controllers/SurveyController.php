@@ -166,7 +166,7 @@ public function fill($code)
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => $e->getMessage(),
-                ], 422);
+                ], 409);
             }
 
             return back()->with('error', $e->getMessage())->withInput();

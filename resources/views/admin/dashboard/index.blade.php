@@ -83,6 +83,11 @@
     @media(max-width:1399px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
     @media(max-width:991px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
     @media(max-width:575px) { .stat-grid { grid-template-columns: 1fr; gap: .7rem; } }
+    /* Role user memiliki empat KPI; gunakan seluruh lebar tanpa kolom kosong. */
+    .stat-grid.stat-grid-user { grid-template-columns: repeat(4, 1fr); }
+    @media(max-width:1399px) { .stat-grid.stat-grid-user { grid-template-columns: repeat(4, 1fr); } }
+    @media(max-width:1199px) { .stat-grid.stat-grid-user { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width:575px) { .stat-grid.stat-grid-user { grid-template-columns: 1fr; gap: .7rem; } }
 
     .panel, .stat-card {
         background: #fff; border: 1px solid var(--slate-200);
@@ -406,7 +411,7 @@
         </div>
     </div>
 
-    <div class="stat-grid">
+    <div class="stat-grid {{ $isAdmin ? 'stat-grid-admin' : 'stat-grid-user' }}">
         <div class="stat-card kpi-card kpi-respondents">
             <div class="stat-top">
                 <span class="stat-label">Jumlah Responden yang Mengisi</span>
@@ -430,15 +435,17 @@
             <div class="stat-sub">Lulusan dalam cakupan filter survei</div>
         </div>
 
-        <div class="stat-card kpi-card kpi-response-minimum">
-            <div class="stat-top">
-                <span class="stat-label">Response Rate Minimum</span>
-                <div class="stat-icon-wrap"><i class="bi bi-bullseye"></i></div>
+        @if($isAdmin)
+            <div class="stat-card kpi-card kpi-response-minimum">
+                <div class="stat-top">
+                    <span class="stat-label">Response Rate Minimum</span>
+                    <div class="stat-icon-wrap"><i class="bi bi-bullseye"></i></div>
+                </div>
+                <span class="stat-value kpi-count" data-count-up data-count="{{ $skorKepuasan['minimum_response_rate_pct'] ?? 0 }}" data-count-decimals="1" aria-live="polite">{{ number_format($skorKepuasan['minimum_response_rate_pct'] ?? 0, 1) }}</span>
+                <span class="stat-unit">%</span>
+                <div class="stat-sub">Target minimal {{ number_format($skorKepuasan['minimum_response_count'] ?? 0) }} responden dari {{ number_format($totalLulusan ?? 0) }} alumni pada filter aktif.</div>
             </div>
-            <span class="stat-value kpi-count" data-count-up data-count="{{ $skorKepuasan['minimum_response_rate_pct'] ?? 0 }}" data-count-decimals="1" aria-live="polite">{{ number_format($skorKepuasan['minimum_response_rate_pct'] ?? 0, 1) }}</span>
-            <span class="stat-unit">%</span>
-            <div class="stat-sub">Target minimal {{ number_format($skorKepuasan['minimum_response_count'] ?? 0) }} responden dari {{ number_format($totalLulusan ?? 0) }} alumni pada filter aktif.</div>
-        </div>
+        @endif
         <div class="stat-card kpi-card kpi-index">
             <div class="stat-top">
                 <span class="stat-label">Indeks Kepuasan Pengguna</span>
@@ -472,29 +479,29 @@
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h6 class="panel-title">Bidang yang Perlu Ditingkatkan</h6>
-                    <p class="panel-subtitle">Distribusi jawaban pertanyaan L1 sesuai filter aktif</p>
+                    <h6 class="panel-title">Kerjasama Lanjutan</h6>
+                    <p class="panel-subtitle">Distribusi pilihan kerja sama lanjutan sesuai filter aktif</p>
                 </div>
-                <span class="fb-tag">Pilihan L1</span>
+                <span class="fb-tag">Pilihan M1</span>
             </div>
             <div class="panel-body">
-                @if(count($bidangPeningkatanData))
+                @if(count($kerjasamaLanjutanData))
                     @php
                         $pieColors = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#ea580c', '#4f46e5'];
-                        $totalPilihanPeningkatan = array_sum($bidangPeningkatanData);
+                        $totalPilihanKerjasama = array_sum($kerjasamaLanjutanData);
                     @endphp
-                    <div id="chart-bidang-peningkatan" class="improvement-chart"></div>
-                    <div class="improvement-legend" aria-label="Rincian pilihan bidang yang perlu ditingkatkan">
-                        @foreach($bidangPeningkatanLabels as $index => $label)
+                    <div id="chart-kerjasama-lanjutan" class="improvement-chart"></div>
+                    <div class="improvement-legend" aria-label="Rincian pilihan kerja sama lanjutan">
+                        @foreach($kerjasamaLanjutanLabels as $index => $label)
                             <div class="improvement-legend-item">
                                 <span class="improvement-legend-color" style="background:{{ $pieColors[$index % count($pieColors)] }}"></span>
                                 <span class="improvement-legend-label">{{ $label }}</span>
-                                <span class="improvement-legend-value">{{ $bidangPeningkatanData[$index] }} · {{ number_format(($bidangPeningkatanData[$index] / $totalPilihanPeningkatan) * 100, 1) }}%</span>
+                                <span class="improvement-legend-value">{{ $kerjasamaLanjutanData[$index] }} · {{ number_format(($kerjasamaLanjutanData[$index] / $totalPilihanKerjasama) * 100, 1) }}%</span>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="empty-state"><i class="bi bi-pie-chart"></i>Belum ada jawaban pilihan untuk bidang yang perlu ditingkatkan.</div>
+                    <div class="empty-state"><i class="bi bi-pie-chart"></i>Belum ada jawaban untuk pilihan kerja sama lanjutan.</div>
                 @endif
             </div>
         </div>
@@ -626,8 +633,8 @@
     const respondenProdiLabels = @json($respondenProdiLabels);
     const prodiDetails = @json($prodiDetails);
     const kategoriDetails = @json($kategoriDetails);
-    const bidangPeningkatanLabels = @json($bidangPeningkatanLabels);
-    const bidangPeningkatanData = @json($bidangPeningkatanData);
+    const kerjasamaLanjutanLabels = @json($kerjasamaLanjutanLabels);
+    const kerjasamaLanjutanData = @json($kerjasamaLanjutanData);
     const initialKategori = @json($activeKategori);
     const compactLimit = 6;
     const periodTrendLimit = 6;
@@ -1036,9 +1043,9 @@
         tooltip: { y: { formatter: (value) => formatPct(value) } }
     });
 
-    const bidangPeningkatanOptions = () => ({
-        series: bidangPeningkatanData,
-        labels: bidangPeningkatanLabels,
+    const kerjasamaLanjutanOptions = () => ({
+        series: kerjasamaLanjutanData,
+        labels: kerjasamaLanjutanLabels,
         chart: { type: 'donut', height: 240, toolbar: { show: false }, fontFamily: 'inherit' },
         colors: ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#ea580c', '#4f46e5'],
         stroke: { colors: ['#fff'], width: 3 },
@@ -1077,7 +1084,7 @@
     let kepuasanStackChart = null;
     let periodTrendChart = null;
     let categoryPeriodComparisonChart = null;
-    let bidangPeningkatanChart = null;
+    let kerjasamaLanjutanChart = null;
     const feedbackPageSize = 10;
     const compactProdi = sliceData(respondenProdiLabels, respondenProdiData);
     const compactKinerja = sliceData(chartLabels, chartData);
@@ -1251,11 +1258,11 @@
         }));
     }
 
-    if (bidangPeningkatanData.length) {
-        bidangPeningkatanChart = renderChart(
-            bidangPeningkatanChart,
-            '#chart-bidang-peningkatan',
-            bidangPeningkatanOptions()
+    if (kerjasamaLanjutanData.length) {
+        kerjasamaLanjutanChart = renderChart(
+            kerjasamaLanjutanChart,
+            '#chart-kerjasama-lanjutan',
+            kerjasamaLanjutanOptions()
         );
     }
 
