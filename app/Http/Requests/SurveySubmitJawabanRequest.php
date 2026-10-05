@@ -16,18 +16,18 @@ class SurveySubmitJawabanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama_pengisi'      => 'required|string|max:255',
+            'nama_pengisi'      => 'required|string|max:100',
             'jabatan_pengisi'   => 'required|string|max:255',
-            'hp_pengisi'        => ['required', 'string', 'max:50', 'regex:/^[0-9]+$/'],
+            'hp_pengisi'        => ['required', 'string', 'max:18', 'regex:/^[0-9]{1,18}$/'],
             'email_pengisi'     => 'required|email|max:255',
-            'nama_perusahaan'   => 'required|string|max:255',
+            'nama_perusahaan'   => 'required|string|max:250',
             'nomor_badan_hukum' => 'nullable|string|max:255',
             'jenis_perusahaan'  => 'nullable|string|max:255',
-            'alamat_perusahaan' => 'nullable|string',
-            'kontak_perusahaan' => ['nullable', 'string', 'max:255', 'regex:/^[0-9]+$/'],
-            'cabang_kota'       => 'nullable|integer|min:0',
-            'cabang_negara'     => 'nullable|integer|min:0',
-            'jumlah_lulusan_bekerja' => 'required|integer|min:1',
+            'alamat_perusahaan' => 'nullable|string|max:1000',
+            'kontak_perusahaan' => ['nullable', 'string', 'max:18', 'regex:/^[0-9]{1,18}$/'],
+            'cabang_kota'       => ['nullable', 'integer', 'min:0', 'regex:/^[0-9]{1,2}$/'],
+            'cabang_negara'     => ['nullable', 'integer', 'min:0', 'regex:/^[0-9]{1,2}$/'],
+            'jumlah_lulusan_bekerja' => ['required', 'integer', 'min:1', 'regex:/^[0-9]{1,3}$/'],
             'jawaban'                => 'nullable|array',
             'jawaban.*'              => 'nullable',
             'mc'                     => 'nullable|array',
@@ -90,15 +90,21 @@ class SurveySubmitJawabanRequest extends FormRequest
                     continue;
                 }
 
-                if (! $soal->is_required) {
-                    continue;
-                }
-
                 if ($soal->jenis_soal === 'essay') {
-                    if (! filled($this->input("jawaban.{$soalId}"))) {
+                    $jawabanEssay = (string) $this->input("jawaban.{$soalId}", '');
+
+                    if ($soal->is_required && ! filled($jawabanEssay)) {
                         $validator->errors()->add("jawaban.{$soalId}", 'Pertanyaan wajib ini harus diisi.');
                     }
 
+                    if (mb_strlen($jawabanEssay) > 10000) {
+                        $validator->errors()->add("jawaban.{$soalId}", 'Jawaban essay maksimal 10.000 karakter.');
+                    }
+
+                    continue;
+                }
+
+                if (! $soal->is_required) {
                     continue;
                 }
 

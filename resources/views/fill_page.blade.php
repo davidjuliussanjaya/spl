@@ -501,6 +501,9 @@
             .company-stat { min-width: 72px; padding-left: .65rem; }
             .section-heading { font-size: 1.03rem; }
         }
+        .survey-table tr.survey-question-invalid > td { background: #fff1f2 !important; }
+        .survey-table tr.survey-question-invalid .td-option { box-shadow: inset 0 0 0 1px #fca5a5; }
+        .survey-question-invalid { border: 1px solid #fca5a5 !important; border-radius: .5rem; padding: .85rem; }
     </style>
 </head>
 <body>
@@ -592,7 +595,7 @@
                     <div class="d-flex align-items-center gap-2">
                         <input type="text" name="jumlah_lulusan_bekerja" class="form-control"
                                style="max-width: 160px"
-                               inputmode="numeric" pattern="[0-9]+" required value="{{ old('jumlah_lulusan_bekerja') }}"
+                               inputmode="numeric" pattern="[0-9]{1,3}" maxlength="3" required value="{{ old('jumlah_lulusan_bekerja') }}"
                                placeholder="Minimal 1 orang">
                     </div>
                     <div class="form-text">Diisi oleh perusahaan sesuai jumlah lulusan yang bekerja saat ini, minimal 1 orang.</div>
@@ -607,7 +610,7 @@
                     <div class="row g-3 border-top pt-3 mt-1">
                         <div class="col-md-12">
                             <label class="form-label small text-secondary fw-bold mb-1">Nama Perusahaan <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_perusahaan" class="form-control" required placeholder="Nama Perusahaan..." value="{{ $survey->penggunalulusan->nama_perusahaan ?? '' }}">
+                            <input type="text" name="nama_perusahaan" class="form-control" required maxlength="250" placeholder="Nama Perusahaan..." value="{{ $survey->penggunalulusan->nama_perusahaan ?? '' }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary fw-bold mb-1">Nomor Badan Hukum</label>
@@ -629,8 +632,7 @@
                                 $currentJenis = $survey->penggunalulusan->jenis_perusahaan ?? '';
                                 $isLainnya = $currentJenis !== '' && !in_array($currentJenis, $jenisOptions);
                             @endphp
-                            <select name="jenis_perusahaan" id="fill_jenis_select" class="form-control"
-                                    onchange="document.getElementById('fill_jenis_lainnya_wrap').classList.toggle('d-none',this.value!=='_lainnya_')">
+                            <select name="jenis_perusahaan" id="fill_jenis_select" class="form-control">
                                 <option value="" disabled {{ !$currentJenis ? 'selected' : '' }}>Pilih Jenis Perusahaan</option>
                                 <option value="Teknologi Informasi / Software / Digital" {{ $currentJenis === 'Teknologi Informasi / Software / Digital' ? 'selected' : '' }}>Teknologi Informasi / Software / Digital</option>
                                 <option value="Keuangan / Perbankan / Bisnis" {{ $currentJenis === 'Keuangan / Perbankan / Bisnis' ? 'selected' : '' }}>Keuangan / Perbankan / Bisnis</option>
@@ -645,40 +647,69 @@
                             <div id="fill_jenis_lainnya_wrap" class="mt-1 {{ $isLainnya ? '' : 'd-none' }}">
                                 <input type="text" id="fill_jenis_lainnya_text" class="form-control form-control-sm"
                                        placeholder="Sebutkan jenis perusahaan..."
-                                       value="{{ $isLainnya ? $currentJenis : '' }}"
-                                       oninput="document.getElementById('fill_jenis_select').value='_lainnya_'">
+                                       value="{{ $isLainnya ? $currentJenis : '' }}" {{ $isLainnya ? '' : 'disabled' }}>
                             </div>
                         </div>
                         <script>
-                        document.querySelector('form').addEventListener('submit', function(e) {
-                            var sel = document.getElementById('fill_jenis_select');
-                            var text = document.getElementById('fill_jenis_lainnya_text');
-                            if (sel && sel.value === '_lainnya_') {
-                                if (!text.value.trim()) {
-                                    e.preventDefault();
-                                    text.focus();
-                                    text.classList.add('is-invalid');
+                        (function () {
+                            const form = document.querySelector('form[action*="submit-survey"]');
+                            const select = document.getElementById('fill_jenis_select');
+                            const otherWrap = document.getElementById('fill_jenis_lainnya_wrap');
+                            const otherText = document.getElementById('fill_jenis_lainnya_text');
+
+                            if (!form || !select || !otherWrap || !otherText) return;
+
+                            const syncOtherCompanyType = function () {
+                                const isOther = select.value === '_lainnya_';
+                                otherWrap.classList.toggle('d-none', !isOther);
+                                otherText.disabled = !isOther;
+
+                                // Nilai "Lainnya" sebelumnya tidak boleh ikut terbawa
+                                // ketika pengguna memilih jenis perusahaan dari dropdown.
+                                if (!isOther) {
+                                    otherText.value = '';
+                                    otherText.classList.remove('is-invalid');
+                                    otherText.nextElementSibling?.matches('[data-client-validation-error]') && (otherText.nextElementSibling.hidden = true);
+                                }
+                            };
+
+                            select.addEventListener('change', syncOtherCompanyType);
+                            form.addEventListener('spl:draft-restored', syncOtherCompanyType);
+
+                            form.addEventListener('submit', function (event) {
+                                if (select.value !== '_lainnya_') return;
+
+                                const otherValue = otherText.value.trim();
+                                if (!otherValue) {
+                                    event.preventDefault();
+                                    otherText.focus();
+                                    otherText.classList.add('is-invalid');
                                     return;
                                 }
-                                sel.value = text.value.trim();
-                            }
-                        });
+
+                                // Server menerima satu nilai jenis_perusahaan, baik dari
+                                // daftar standar maupun teks pada pilihan "Lainnya".
+                                select.value = otherValue;
+                            });
+
+                            syncOtherCompanyType();
+                        })();
                         </script>
                         <div class="col-md-12">
                             <label class="form-label small text-secondary fw-bold mb-1">Alamat Perusahaan</label>
-                            <textarea name="alamat_perusahaan" class="form-control" rows="2" placeholder="Alamat lengkap...">{{ $survey->penggunalulusan->alamat_perusahaan ?? '' }}</textarea>
+                            <textarea name="alamat_perusahaan" class="form-control" rows="2" maxlength="1000" placeholder="Alamat lengkap...">{{ $survey->penggunalulusan->alamat_perusahaan ?? '' }}</textarea>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Kontak Perusahaan</label>
-                            <input type="text" name="kontak_perusahaan" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="255" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
+                            <input type="text" name="kontak_perusahaan" class="form-control" inputmode="numeric" pattern="[0-9]{1,18}" maxlength="18" placeholder="Telp/WA Perusahaan..." value="{{ $survey->penggunalulusan->kontak_perusahaan ?? '' }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Nasional</label>
-                            <input type="text" name="cabang_kota" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah cabang..." value="{{ $survey->penggunalulusan->cabang_kota ?? 0 }}">
+                            <input type="text" name="cabang_kota" class="form-control" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" placeholder="Jumlah cabang..." value="{{ $survey->penggunalulusan->cabang_kota ?? 0 }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary fw-bold mb-1">Jumlah Cabang Luar Negeri</label>
-                            <input type="text" name="cabang_negara" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? 0 }}">
+                            <input type="text" name="cabang_negara" class="form-control" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" placeholder="Jumlah negara..." value="{{ $survey->penggunalulusan->cabang_negara ?? 0 }}">
                         </div>
                     </div>
                 </div>
@@ -693,7 +724,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Nama Lengkap Penyelia <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_pengisi" class="form-control" required placeholder="Nama Anda..." value="{{ $survey->penggunalulusan->nama_penyelia ?? '' }}">
+                        <input type="text" name="nama_pengisi" class="form-control" required maxlength="100" placeholder="Nama Anda..." value="{{ $survey->penggunalulusan->nama_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Jabatan / Posisi <span class="text-danger">*</span></label>
@@ -701,7 +732,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Nomor HP <span class="text-danger">*</span></label>
-                        <input type="text" name="hp_pengisi" class="form-control" required inputmode="numeric" pattern="[0-9]+" maxlength="50" placeholder="08..." value="{{ $survey->penggunalulusan->kontak_penyelia ?? '' }}">
+                        <input type="text" name="hp_pengisi" class="form-control" required inputmode="numeric" pattern="[0-9]{1,18}" maxlength="18" placeholder="08..." value="{{ $survey->penggunalulusan->kontak_penyelia ?? '' }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-secondary fw-bold mb-1">Alamat Email <span class="text-danger">*</span></label>
@@ -751,11 +782,14 @@
                                 </thead>
                                 <tbody>
                                     @foreach($ratingSoal as $s)
-                                        <tr>
+                                        <tr data-required-rating="{{ $s->is_required ? 'true' : 'false' }}">
                                             <td class="td-no">{{ $loop->iteration }}</td>
                                             <td>
                                                 {{ $s->soal }}
                                                 @if($s->is_required) <span class="text-danger">*</span> @endif
+                                                @if($s->is_required)
+                                                    <div class="text-danger small mt-2" data-rating-error hidden>Pilih salah satu nilai untuk pertanyaan wajib ini.</div>
+                                                @endif
                                             </td>
                                             @foreach($s->jawaban as $j)
                                                 <td class="td-option">
@@ -806,7 +840,7 @@
                                                        value="{{ $j->id }}"
                                                        @checked($allowsMultipleAnswers ? in_array($j->id, (array) $oldMultipleChoice) : (string) $oldMultipleChoice === (string) $j->id)
                                                        @if(! $allowsMultipleAnswers && $allowsCustomAnswer)
-                                                           onchange="var txt = document.getElementById('mc_other_text_{{ $s->id }}'); var other = document.getElementById('mc_other_check_{{ $s->id }}'); other.checked = false; txt.disabled = true; txt.value = '';"
+                                                           onchange="var txt = document.getElementById('mc_other_text_{{ $s->id }}'); var other = document.getElementById('mc_other_check_{{ $s->id }}'); other.checked = false; txt.disabled = true; txt.value = ''; txt.classList.add('d-none');"
                                                        @endif
                                                        id="mc_{{ $s->id }}_{{ $j->id }}">
                                                 <label class="form-check-label" for="mc_{{ $s->id }}_{{ $j->id }}">
@@ -831,6 +865,7 @@
                                                        onchange="
                                                            var txt = document.getElementById('mc_other_text_{{ $s->id }}');
                                                            txt.disabled = !this.checked;
+                                                           txt.classList.toggle('d-none', !this.checked);
                                                            if (this.checked) txt.focus();
                                                            else txt.value = '';
                                                        ">
@@ -841,7 +876,7 @@
                                             <input type="text"
                                                    name="mc_custom[{{ $s->id }}]"
                                                    id="mc_other_text_{{ $s->id }}"
-                                                   class="mc-other-input ms-4 d-block"
+                                                   class="mc-other-input ms-4 {{ old('mc_custom.' . $s->id) ? 'd-block' : 'd-none' }}"
                                                    style="max-width: 420px"
                                                    placeholder="Tuliskan jawaban Anda..."
                                                    value="{{ old('mc_custom.' . $s->id) }}"
@@ -867,14 +902,15 @@
                                 </div>
                             @endif
                             @foreach($essaySoal as $s)
-                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}">
+                                <div class="mb-4 {{ !$loop->last ? 'pb-4 border-bottom-dashed' : '' }}" data-required-essay="{{ $s->is_required ? 'true' : 'false' }}">
                                     <label class="form-label fs-6 mb-2 text-dark fw-bold">
                                         <span class="text-dinamika me-1">{{ $loop->iteration }}.</span> {{ $s->soal }}
                                         @if($s->is_required) <span class="text-danger">*</span> @endif
                                     </label>
-                                    <textarea name="jawaban[{{ $s->id }}]" class="form-control" rows="3"
+                                    <textarea name="jawaban[{{ $s->id }}]" class="form-control" rows="3" maxlength="10000"
                                               placeholder="Tuliskan umpan balik Anda di sini..."
                                               {{ $s->is_required ? 'required' : '' }}>{{ old('jawaban.' . $s->id) }}</textarea>
+                                    @if($s->is_required)<div class="text-danger small mt-1" data-essay-error hidden>Jawaban untuk pertanyaan wajib ini belum diisi.</div>@endif
                                     @error('jawaban.' . $s->id)<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                 </div>
                             @endforeach
@@ -947,18 +983,74 @@
                 }, collapsedSection ? 400 : 0);
             };
 
-            if (!form.checkValidity()) {
-                event.preventDefault();
-
-                const firstInvalidField = form.querySelector(':invalid');
-                revealInvalidField(firstInvalidField);
-
-                return;
-            }
-
             let firstInvalidGroup = null;
 
-            document.querySelectorAll('[data-required-multiple="true"]').forEach(function (group) {
+            const setFieldWarning = function (field, isValid) {
+                let warning = field.nextElementSibling;
+
+                if (isValid && (!warning || !warning.matches('[data-client-validation-error]'))) {
+                    field.classList.remove('is-invalid');
+                    return;
+                }
+
+                if (!warning || !warning.matches('[data-client-validation-error]')) {
+                    warning = document.createElement('div');
+                    warning.className = 'text-danger small mt-1';
+                    warning.dataset.clientValidationError = 'true';
+                    field.insertAdjacentElement('afterend', warning);
+                }
+
+                field.classList.toggle('is-invalid', !isValid);
+                warning.hidden = isValid;
+
+                if (!isValid) {
+                    warning.textContent = field.validity.valueMissing
+                        ? 'Isian wajib ini belum diisi.'
+                        : (field.type === 'email' || field.validity.typeMismatch
+                            ? 'Masukkan alamat email yang valid.'
+                            : 'Periksa kembali format isian ini.');
+                }
+            };
+
+            form.querySelectorAll('input, select, textarea').forEach(function (field) {
+                if (!field.willValidate || field.closest('[data-required-rating="true"], [data-required-essay="true"]')) {
+                    return;
+                }
+
+                const isValid = field.checkValidity();
+                setFieldWarning(field, isValid);
+
+                if (!isValid && !firstInvalidGroup) {
+                    firstInvalidGroup = field;
+                }
+            });
+
+            const jenisSelect = document.getElementById('fill_jenis_select');
+            const jenisLainnya = document.getElementById('fill_jenis_lainnya_text');
+            if (jenisSelect?.value === '_lainnya_' && jenisLainnya) {
+                const isValid = jenisLainnya.value.trim() !== '';
+                setFieldWarning(jenisLainnya, isValid);
+
+                if (!isValid && !firstInvalidGroup) {
+                    firstInvalidGroup = jenisLainnya;
+                }
+            }
+
+            form.querySelectorAll('[data-required-rating="true"]').forEach(function (row) {
+                const isValid = Array.from(row.querySelectorAll('input[type="radio"]')).some(function (input) {
+                    return input.checked;
+                });
+                const error = row.querySelector('[data-rating-error]');
+
+                row.classList.toggle('survey-question-invalid', !isValid);
+                error.hidden = isValid;
+
+                if (!isValid && !firstInvalidGroup) {
+                    firstInvalidGroup = row;
+                }
+            });
+
+            form.querySelectorAll('[data-required-multiple="true"]').forEach(function (group) {
                 const hasCheckedAnswer = Array.from(group.querySelectorAll('input[name^="mc["]:not([data-other-choice])')).some(function (input) {
                     return input.checked;
                 });
@@ -975,10 +1067,32 @@
                 }
             });
 
+            form.querySelectorAll('[data-required-essay="true"]').forEach(function (group) {
+                const field = group.querySelector('textarea');
+                const isValid = field.value.trim() !== '';
+                const error = group.querySelector('[data-essay-error]');
+
+                field.classList.toggle('is-invalid', !isValid);
+                group.classList.toggle('survey-question-invalid', !isValid);
+                error.hidden = isValid;
+
+                if (!isValid && !firstInvalidGroup) {
+                    firstInvalidGroup = group;
+                }
+            });
+
             if (firstInvalidGroup) {
                 event.preventDefault();
-                firstInvalidGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalidGroup.querySelector('input[type="checkbox"], input[type="radio"]')?.focus();
+                const invalidField = firstInvalidGroup.matches?.('input, select, textarea')
+                    ? firstInvalidGroup
+                    : firstInvalidGroup.querySelector('input[type="checkbox"], input[type="radio"], textarea');
+
+                if (invalidField) {
+                    revealInvalidField(invalidField);
+                } else {
+                    firstInvalidGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
                 return;
             }
 
@@ -997,6 +1111,66 @@
             const resultAction = document.getElementById('surveyResultAction');
             const resultModal = window.bootstrap?.Modal?.getOrCreateInstance?.(resultModalElement);
             const landingUrl = @json(route('landing'));
+
+            const findFieldByErrorName = function (errorName) {
+                if (!errorName) return null;
+
+                const parts = errorName.split('.');
+                const names = [errorName];
+
+                if (parts.length > 1) {
+                    names.push(parts.reduce(function (name, part, index) {
+                        return index === 0 ? part : `${name}[${part}]`;
+                    }, ''));
+                }
+
+                // Pilihan ganda dengan jawaban lebih dari satu memakai nama mc[id][].
+                if (parts[0] === 'mc' && parts.length > 1) {
+                    names.push(`${parts[0]}[${parts[1]}][]`);
+                }
+
+                return names
+                    .map((name) => form.querySelector(`[name="${CSS.escape(name)}"]`))
+                    .find(Boolean) || null;
+            };
+
+            const showServerValidationErrors = function (errors) {
+                Object.entries(errors || {}).forEach(function ([errorName, messages]) {
+                    const field = findFieldByErrorName(errorName);
+                    if (!field) return;
+
+                    const message = Array.isArray(messages) ? messages[0] : messages;
+                    const multipleGroup = field.closest('[data-required-multiple]');
+                    const essayGroup = field.closest('[data-required-essay]');
+
+                    if (multipleGroup) {
+                        const warning = multipleGroup.querySelector('[data-multiple-error]');
+                        multipleGroup.classList.add('border', 'border-danger');
+                        if (warning) {
+                            warning.textContent = message;
+                            warning.hidden = false;
+                        }
+                        return;
+                    }
+
+                    if (essayGroup) {
+                        const warning = essayGroup.querySelector('[data-essay-error]');
+                        field.classList.add('is-invalid');
+                        essayGroup.classList.add('survey-question-invalid');
+                        if (warning) {
+                            warning.textContent = message;
+                            warning.hidden = false;
+                        }
+                        return;
+                    }
+
+                    setFieldWarning(field, false);
+                    const warning = field.nextElementSibling;
+                    if (warning?.matches('[data-client-validation-error]')) {
+                        warning.textContent = message;
+                    }
+                });
+            };
 
             const hideResultModal = function () {
                 if (resultModal) {
@@ -1026,6 +1200,12 @@
                 resultModalElement.style.display = 'block';
                 resultModalElement.classList.add('show');
                 resultModalElement.setAttribute('aria-hidden', 'false');
+            };
+
+            const returnToForm = function () {
+                hideResultModal();
+                savingOverlay.hidden = true;
+                submitButton.disabled = false;
             };
 
             savingOverlay.hidden = false;
@@ -1058,10 +1238,9 @@
 
                     if (response.status === 422) {
                         const firstErrorName = Object.keys(payload.errors || {})[0];
-                        const firstErrorField = firstErrorName
-                            ? form.querySelector(`[name="${CSS.escape(firstErrorName)}"]`)
-                            : null;
+                        const firstErrorField = findFieldByErrorName(firstErrorName);
 
+                        showServerValidationErrors(payload.errors);
                         revealInvalidField(firstErrorField);
 
                         showResult({
@@ -1070,32 +1249,170 @@
                             message: 'Masih ada isian yang perlu diperiksa. Lengkapi isian tersebut lalu kirim kembali survei.',
                             actionLabel: 'Periksa kembali',
                             action: () => {
-                                hideResultModal();
-                                submitButton.disabled = false;
+                                returnToForm();
                                 revealInvalidField(firstErrorField);
                             },
                         });
                         return;
                     }
 
+                    if (response.status === 409) {
+                        showResult({
+                            success: false,
+                            title: 'Survei tidak dapat dikirim',
+                            message: payload.message || 'Survei ini sudah tidak dapat diisi.',
+                            actionLabel: 'Kembali ke halaman awal',
+                            action: () => window.location.assign(landingUrl),
+                        });
+                        return;
+                    }
+
+                    if (response.status === 419) {
+                        showResult({
+                            success: false,
+                            title: 'Sesi formulir telah berakhir',
+                            message: 'Masukkan kembali kode akses survei untuk melanjutkan pengisian.',
+                            actionLabel: 'Masukkan kode kembali',
+                            action: () => window.location.assign(landingUrl),
+                        });
+                        return;
+                    }
+
+                    if (response.status === 403 || response.status === 404) {
+                        showResult({
+                            success: false,
+                            title: 'Survei tidak dapat diakses',
+                            message: payload.message || 'Survei ini sudah selesai, tidak aktif, atau tidak tersedia.',
+                            actionLabel: 'Kembali ke halaman awal',
+                            action: () => window.location.assign(landingUrl),
+                        });
+                        return;
+                    }
+
                     showResult({
                         success: false,
-                        title: 'Survei gagal tersimpan',
+                        title: 'Penyimpanan belum berhasil',
                         message: payload.message || 'Terjadi kendala saat menyimpan survei. Silakan coba kembali nanti.',
-                        actionLabel: 'Kembali ke halaman awal',
-                        action: () => window.location.assign(landingUrl),
+                        actionLabel: 'Kembali ke formulir',
+                        action: returnToForm,
                     });
                 })
                 .catch(function () {
                     showResult({
                         success: false,
-                        title: 'Survei gagal tersimpan',
+                        title: 'Koneksi bermasalah',
                         message: 'Koneksi bermasalah. Silakan periksa koneksi internet Anda dan coba kembali.',
-                        actionLabel: 'Kembali ke halaman awal',
-                        action: () => window.location.assign(landingUrl),
+                        actionLabel: 'Kembali ke formulir',
+                        action: returnToForm,
                     });
                 });
         });
+    </script>
+    <script>
+        (function () {
+            const form = document.querySelector('form[action*="submit-survey"]');
+            if (!form) {
+                return;
+            }
+
+            const setLiveWarning = function (field) {
+                if (!field.willValidate || field.disabled) {
+                    return;
+                }
+
+                const isValid = field.checkValidity();
+                let warning = field.nextElementSibling;
+
+                if (isValid && (!warning || !warning.matches('[data-client-validation-error]'))) {
+                    field.classList.remove('is-invalid');
+                    return;
+                }
+
+                if (!warning || !warning.matches('[data-client-validation-error]')) {
+                    warning = document.createElement('div');
+                    warning.className = 'text-danger small mt-1';
+                    warning.dataset.clientValidationError = 'true';
+                    field.insertAdjacentElement('afterend', warning);
+                }
+
+                field.classList.toggle('is-invalid', !isValid);
+                warning.hidden = isValid;
+
+                if (!isValid) {
+                    warning.textContent = field.validity.valueMissing
+                        ? 'Isian wajib ini belum diisi.'
+                        : (field.type === 'email' || field.validity.typeMismatch
+                            ? 'Masukkan alamat email yang valid.'
+                            : 'Gunakan format isian yang sesuai.');
+                }
+            };
+
+            const refreshRatingWarning = function (row) {
+                if (!row || row.dataset.requiredRating !== 'true') {
+                    return;
+                }
+
+                const isValid = Array.from(row.querySelectorAll('input[type="radio"]')).some((input) => input.checked);
+                const warning = row.querySelector('[data-rating-error]');
+                row.classList.toggle('survey-question-invalid', !isValid);
+                warning.hidden = isValid;
+            };
+
+            const refreshMultipleWarning = function (group) {
+                if (!group || group.dataset.requiredMultiple !== 'true') {
+                    return;
+                }
+
+                const hasCheckedAnswer = Array.from(group.querySelectorAll('input[name^="mc["]:not([data-other-choice])')).some((input) => input.checked);
+                const otherAnswer = group.querySelector('.mc-other-input')?.value.trim() ?? '';
+                const isValid = hasCheckedAnswer || otherAnswer !== '';
+                const warning = group.querySelector('[data-multiple-error]');
+                warning.hidden = isValid;
+                group.classList.toggle('border', !isValid);
+                group.classList.toggle('border-danger', !isValid);
+            };
+
+            const refreshEssayWarning = function (group) {
+                if (!group || group.dataset.requiredEssay !== 'true') {
+                    return;
+                }
+
+                const field = group.querySelector('textarea');
+                const isValid = field.value.trim() !== '';
+                const warning = group.querySelector('[data-essay-error]');
+                field.classList.toggle('is-invalid', !isValid);
+                group.classList.toggle('survey-question-invalid', !isValid);
+                warning.hidden = isValid;
+            };
+
+            form.addEventListener('input', function (event) {
+                const field = event.target;
+                if (field.matches('input, textarea') && !field.closest('[data-required-rating], [data-required-essay]')) {
+                    setLiveWarning(field);
+                }
+
+                refreshEssayWarning(field.closest('[data-required-essay]'));
+                refreshMultipleWarning(field.closest('[data-required-multiple]'));
+            });
+
+            form.addEventListener('change', function (event) {
+                const field = event.target;
+                if (field.matches('input, select, textarea') && !field.closest('[data-required-rating], [data-required-essay]')) {
+                    setLiveWarning(field);
+                }
+
+                refreshRatingWarning(field.closest('[data-required-rating]'));
+                refreshMultipleWarning(field.closest('[data-required-multiple]'));
+            });
+
+            form.addEventListener('blur', function (event) {
+                if (event.target.matches('input, select, textarea') && !event.target.closest('[data-required-rating], [data-required-essay]')) {
+                    setLiveWarning(event.target);
+                }
+
+                refreshEssayWarning(event.target.closest('[data-required-essay]'));
+            }, true);
+        })();
     </script>
     <x-form-draft-cache />
 </body>
