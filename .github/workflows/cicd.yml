@@ -1,0 +1,93 @@
+name: CI/CD
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Alur:
+#   push ke main → job "deploy": SSH ke server, lalu SEMUA proses dijalankan
+#   DI SERVER:
+#     maintenance → git pull → composer install → npm ci + build
+#     → migrate → optimize → queue restart → up
+#
+# 🚀 Runner GitHub hanya memicu SSH. Node.js, Composer, PHP, npm semuanya
+#    dijalankan di server produksi.
+#
+# Secret & Variables (Settings → Secrets and variables → Actions):
+#   vars.UNDIKA_HOST              contoh: 123.45.67.89
+#   vars.UNDIKA_PORT              contoh: 22
+#   vars.UNDIKA_USER              contoh: deploy
+#   vars.UNDIKA_PATH              contoh: /var/www/my-apps
+#   secrets.UNDIKA_SSH_PRIVATE_KEY (private key ed25519/rsa)
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ke server (SSH)
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.UNDIKA_HOST }}
+          port: ${{ vars.UNDIKA_PORT }}
+          username: ${{ vars.UNDIKA_USER }}
+          key: ${{ secrets.UNDIKA_SSH_PRIVATE_KEY }}
+          command_timeout: 15m
+          script: |
+            set -e
+
+            cd ${{ vars.UNDIKA_PATH }}
+
+            git config --global --add safe.directory ${{ vars.UNDIKA_PATH }} 2>/dev/null || true
+
+            # pastikan situs keluar dari maintenance walau deploy gagal
+            trap 'php8.4 artisan up || true' EXIT
+
+            echo "▶ 1/8 maintenance mode"
+            php8.4 artisan down --refresh=15 --retry=60 || true
+
+            echo "▶ 2/8 git pull (hard reset ke origin/main)"
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
+            echo "▶ 3/8 composer install (no-dev)"
+            php8.4 /usr/local/bin/composer install \
+              --no-dev \
+              --optimize-autoloader \
+              --no-interaction \
+              --no-ansi
+
+            echo "▶ 4/8 npm ci + build (di server)"
+            npm ci
+            npm run build
+
+            echo "▶ 5/8 migrate (force)"
+            php8.4 artisan migrate --force
+
+            echo "▶ 6/8 optimize + storage link"
+            php8.4 artisan optimize
+            php8.4 artisan storage:link --quiet || true
+
+            echo "▶ 7/8 restart queue worker"
+            php8.4 artisan queue:restart || true
+
+            echo "▶ 8/8 maintenance off"
+            php8.4 artisan up
+
+            echo "▶ verifikasi"
+            php8.4 artisan about --only=environment,drivers || true
+
+            echo "✅ Deploy selesai."
